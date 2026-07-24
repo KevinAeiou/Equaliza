@@ -15,7 +15,7 @@ import {
 	FieldValues,
 } from "react-hook-form"
 import { AVATARS } from "@/src/constants/avatars"
-import { cn } from "@/lib/utils"
+import { cn } from "@/src/lib/utils"
 
 
 interface FormAvatarFieldProps<T extends FieldValues> {

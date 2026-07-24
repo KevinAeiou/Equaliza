@@ -1,4 +1,4 @@
-""
+"use client"
 
 import { AVATARS } from "@/src/constants/avatars"
 import { useAuth } from "@/src/features/auth/context/AuthProvider"

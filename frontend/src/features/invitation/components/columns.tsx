@@ -83,7 +83,7 @@ export const columns = (
 			accessorKey: "link",
 			header: "Link",
 			cell: ({ row }) => {
-				return <LinkCell link={row.original.link} />
+				return <LinkCell key={row.original.id} link={row.original.link} />
 			},
 		},
 		{

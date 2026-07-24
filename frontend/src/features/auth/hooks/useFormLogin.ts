@@ -1,3 +1,5 @@
+"use client"
+
 import { FormLoginSchemaType } from "@/src/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
