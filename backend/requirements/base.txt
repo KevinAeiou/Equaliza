@@ -1,4 +1,4 @@
-Django==6.0.7
+Django==5.2.4
 django-cors-headers==4.9.0
 django-filter==25.2
 django-model-utils==5.0.0
