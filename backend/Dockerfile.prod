@@ -23,9 +23,9 @@ RUN adduser --disabled-password --gecos "" appuser
 
 COPY --chown=appuser:appuser . .
 
-USER appuser
-
 RUN python manage.py collectstatic --noinput
+
+USER appuser
 
 EXPOSE 8000
 
