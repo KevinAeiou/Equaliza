@@ -41,7 +41,7 @@ class InvitationViewSet(viewsets.ModelViewSet):
 
         invitation = CreateInvitationService.execute(
             user=request.user,
-            data=serializer.validated_data,
+            data=serializer.validated_data["email"],
         )
 
         return Response(
