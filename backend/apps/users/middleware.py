@@ -16,7 +16,7 @@ class RefreshCookieMiddleware(MiddlewareMixin):
             value=access,
             httponly=True,
             secure=settings.SECURE_COOKIES,
-            samesite="None",
+            samesite="None" if settings.SECURE_COOKIES else "Lax",
             path="/",
         )
 
