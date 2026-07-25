@@ -39,7 +39,7 @@ export function useFormRegister() {
 		try {
 			await register({
 				...data,
-				token,
+				...(token ? { token } : {}),
 			})
 
 			form.reset()
