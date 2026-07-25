@@ -36,6 +36,7 @@ class Migration(migrations.Migration):
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('updated_by', models.ForeignKey(blank=True, db_column='updated_by', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='updated_%(class)s_set', to=settings.AUTH_USER_MODEL)),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                ('avatar', models.CharField(choices=[('avatar-1', 'Avatar 1'), ('avatar-2', 'Avatar 2'), ('avatar-3', 'Avatar 3'), ('avatar-4', 'Avatar 4'), ('avatar-5', 'Avatar 5'), ('avatar-6', 'Avatar 6'), ('avatar-7', 'Avatar 7')], default='avatar-1', max_length=30)),
             ],
             options={
                 'db_table': 'users',
