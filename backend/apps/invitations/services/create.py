@@ -19,6 +19,9 @@ class CreateInvitationService:
             updated_by=user,
         )
 
-        InvitationEmailService.send(invitation)
+        try:
+            InvitationEmailService.send(invitation)
+        except Exception:
+            pass
 
         return invitation
