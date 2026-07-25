@@ -10,9 +10,7 @@ def criar_superusuario(apps, schema_editor):
     admin_password = os.getenv("ADMIN_PASSWORD", "@Senha123")
 
     if not User.objects.filter(email=admin_email).exists():
-        User.objects.create_superuser(
-            username="Administrador", email=admin_email, password=admin_password
-        )
+        User.objects.create_superuser(email=admin_email, password=admin_password) # pyright: ignore[reportCallIssue]
 
 
 class Migration(migrations.Migration):
