@@ -96,7 +96,7 @@ export const MemberContributionChart = ({
 	const { chartData } = useMemberContributionChart(filters)
 
 	return (
-		<Card className="col-span-full">
+		<Card className="col-span-full min-w-0 overflow-hidden">
 			<CardHeader>
 				<CardTitle>Contribuição dos membros</CardTitle>
 
@@ -105,13 +105,13 @@ export const MemberContributionChart = ({
 				</CardDescription>
 			</CardHeader>
 
-			<CardContent>
-				<div className="grid gap-8 lg:grid-cols-2">
+			<CardContent className="min-w-0 overflow-hidden p-4 sm:p-6">
+				<div className="grid min-w-0 gap-4 lg:grid-cols-2 lg:gap-6">
 					<ChartContainer
 						config={chartConfig}
-						className="h-87.5 w-full"
+						className="h-87.5 w-full min-w-0 sm:h-100"
 					>
-						<ResponsiveContainer>
+						<ResponsiveContainer width="100%" height="100%">
 							<BarChart data={chartData?.member_contributions}>
 								<CartesianGrid vertical={false} />
 
@@ -119,11 +119,16 @@ export const MemberContributionChart = ({
 									dataKey="member"
 									tickLine={false}
 									axisLine={false}
+									tick={{ fontSize: 12 }}
+									tickFormatter={(value: string) =>
+										value.length > 8 ? `${value.slice(0, 8)}…` : value
+									}
 								/>
 
 								<YAxis
 									tickLine={false}
 									axisLine={false}
+									tick={{ fontSize: 12 }}
 								/>
 
 								<ChartTooltip
@@ -154,9 +159,9 @@ export const MemberContributionChart = ({
 
 					<ChartContainer
 						config={chartConfig}
-						className="h-87.5 w-full"
+						className="h-87.5 w-full min-w-0 sm:h-100"
 					>
-						<ResponsiveContainer>
+						<ResponsiveContainer width="100%" height="100%">
 							<BarChart
 								layout="vertical"
 								data={chartData?.member_contributions}
@@ -168,7 +173,11 @@ export const MemberContributionChart = ({
 								<YAxis
 									type="category"
 									dataKey="member"
-									width={90}
+									width={70}
+									tick={{ fontSize: 12 }}
+									tickFormatter={(value: string) =>
+										value.length > 8 ? `${value.slice(0, 8)}…` : value
+									}
 								/>
 
 								<ReferenceLine
