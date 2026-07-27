@@ -25,7 +25,7 @@ export const UserSettingsSheet = ({
 			open={open}
 			onOpenChange={onOpenChange}
 		>
-			<SheetContent className="w-full sm:max-w-md">
+			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
 				<div className="flex h-full flex-col">
 					<SheetHeader>
 						<SheetTitle>Configurações</SheetTitle>
@@ -66,6 +66,8 @@ export const UserSettingsSheet = ({
 					</div>
 
 					<SheetFooter>
+						<Separator className="my-2" />
+
 						<Button
 							variant="secondary"
 							onClick={() => onOpenChange(false)}
