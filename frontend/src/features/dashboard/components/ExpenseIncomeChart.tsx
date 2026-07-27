@@ -25,6 +25,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/src/components/ui/chart"
+
 import { useExpenseIncomeChart } from "../hooks/useExpenseIncomeChart"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 
@@ -49,7 +50,7 @@ export const ExpenseIncomeChart = ({
 	const { chartData } = useExpenseIncomeChart(filters)
 
 	return (
-		<Card className="col-span-full">
+		<Card className="col-span-full min-w-0 overflow-hidden">
 			<CardHeader>
 				<CardTitle>Receitas x Despesas</CardTitle>
 
@@ -58,11 +59,11 @@ export const ExpenseIncomeChart = ({
 				</CardDescription>
 			</CardHeader>
 
-			<CardContent>
-				<div className="grid gap-8 lg:grid-cols-2">
+			<CardContent className="min-w-0 overflow-hidden p-4 sm:p-6">
+				<div className="grid min-w-0 gap-4 lg:grid-cols-2 lg:gap-6">
 					<ChartContainer
 						config={chartConfig}
-						className="h-87.5 w-full"
+						className="h-87.5 w-full min-w-0 sm:h-100"
 					>
 						<ResponsiveContainer width="100%" height="100%">
 							<BarChart data={chartData?.income_vs_expense}>
@@ -72,11 +73,13 @@ export const ExpenseIncomeChart = ({
 									dataKey="month"
 									tickLine={false}
 									axisLine={false}
+									tick={{ fontSize: 12 }}
 								/>
 
 								<YAxis
 									tickLine={false}
 									axisLine={false}
+									tick={{ fontSize: 12 }}
 								/>
 
 								<ChartTooltip
@@ -107,21 +110,28 @@ export const ExpenseIncomeChart = ({
 
 					<ChartContainer
 						config={chartConfig}
-						className="h-87.5 w-full"
+						className="h-87.5 w-full min-w-0 sm:h-100"
 					>
-						<ResponsiveContainer>
+						<ResponsiveContainer width="100%" height="100%">
 							<BarChart
 								layout="vertical"
 								data={chartData?.expenses_by_category}
 							>
 								<CartesianGrid horizontal={false} />
 
-								<XAxis type="number" />
+								<XAxis
+									type="number"
+									tick={{ fontSize: 12 }}
+								/>
 
 								<YAxis
 									type="category"
 									dataKey="category"
-									width={100}
+									width={70}
+									tick={{ fontSize: 12 }}
+									tickFormatter={(value: string) =>
+										value.length > 8 ? `${value.slice(0, 8)}…` : value
+									}
 								/>
 
 								<ChartTooltip
