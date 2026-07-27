@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/src/components/ui/card"
-import { useFinanceTable as useFinanceCard } from "../hooks/useFinanceTable"
+import { useFinanceCard } from "../hooks/useFinanceTable"
 import { FinanceEntryType } from "@/src/types"
 import { DataTable } from "@/src/components/dataTable"
 

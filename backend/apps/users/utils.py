@@ -22,7 +22,7 @@ def set_auth_cookies(
         value=str(access),
         httponly=True,
         secure=settings.SECURE_COOKIES,
-        samesite="Lax",
+        samesite="None" if settings.SECURE_COOKIES else "Lax",
         path="/",
     )
 
@@ -31,7 +31,7 @@ def set_auth_cookies(
         value=str(refresh),
         httponly=True,
         secure=settings.SECURE_COOKIES,
-        samesite="Lax",
+        samesite="None" if settings.SECURE_COOKIES else "Lax",
         path="/",
         max_age=int(refresh_lifetime.total_seconds()),
     )

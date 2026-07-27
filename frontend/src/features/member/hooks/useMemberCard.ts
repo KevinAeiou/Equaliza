@@ -37,15 +37,27 @@ export const useMemberCard = () => {
 	}
 
 	const handleToggleStatus = async (member: MemberProps) => {
-		await MemberService.toggleStatus(member.id)
+		try {
+			await MemberService.toggleStatus(member.id)
 
-		setMembers((current) =>
-			current.map((item) =>
-				item.id === member.id
-					? { ...item, is_active: !item.is_active }
-					: item
+			setMembers((current) =>
+				current.map((item) =>
+					item.id === member.id
+						? { ...item, is_active: !item.is_active }
+						: item
+				)
 			)
-		)
+
+			toast.success(`Status alterado com sucesso!`)
+		} catch (error) {
+			const message = isApiError(error)
+				? error.message
+				: "Erro desconhecido ao alterar o status do membro"
+
+			toast.error(message)
+		} finally {
+			setLoading(false)
+		}
 	}
 
 	const handleOpenDelete = (member: MemberProps) => {

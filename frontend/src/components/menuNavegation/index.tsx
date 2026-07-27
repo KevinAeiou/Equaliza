@@ -36,20 +36,32 @@ export const MenuNavegation = () => {
 					items={families}
 					value={selectedFamily?.id.toString() ?? ""}
 					onValueChange={handleFamilyChange}
+					disabled={families.length === 0}
 				>
 					<SelectTrigger className="w-full">
-						<SelectValue placeholder="Selecione uma família" />
+						<SelectValue
+							placeholder={families.length === 0
+								? "Nenhuma família cadastrada"
+								: "Selecione uma família"
+							}
+						/>
 					</SelectTrigger>
 
 					<SelectContent>
 						<SelectGroup>
-							<SelectLabel>Família atual</SelectLabel>
+							<SelectLabel>Famílias</SelectLabel>
 
-							{families.map((item) => (
-								<SelectItem key={item.value} value={item.value}>
-									{item.label}
+							{families.length === 0 ? (
+								<SelectItem value="empty" disabled>
+									Nenhuma família cadastrada
 								</SelectItem>
-							))}
+							) : (
+								families.map((item) => (
+									<SelectItem key={item.value} value={item.value}>
+										{item.label}
+									</SelectItem>
+								))
+							)}
 						</SelectGroup>
 					</SelectContent>
 				</Select>
@@ -95,6 +107,21 @@ export const MenuNavegation = () => {
 								<ListItem
 									title="Visualizar membros"
 									href="/member"
+								/>
+							</ul>
+						</NavigationMenuContent>
+					</NavigationMenuItem>
+				)}
+
+				{canInvite && (
+					<NavigationMenuItem>
+						<NavigationMenuTrigger>Famílias</NavigationMenuTrigger>
+
+						<NavigationMenuContent>
+							<ul className="w-56 p-2 space-y-1">
+								<ListItem
+									title="Visualizar famílias"
+									href="/family"
 								/>
 							</ul>
 						</NavigationMenuContent>

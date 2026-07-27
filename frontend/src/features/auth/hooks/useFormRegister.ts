@@ -1,3 +1,5 @@
+"use client"
+
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
@@ -37,7 +39,7 @@ export function useFormRegister() {
 		try {
 			await register({
 				...data,
-				token,
+				...(token ? { token } : {}),
 			})
 
 			form.reset()

@@ -1,27 +1,28 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from .views import (
-    CurrentFamilyView,
-    FamilyMemberListView,
-    FamilyMemberDeleteView,
-	FamilyMemberStatusView,
+from .viewsets import (
+    FamilyViewSet,
+    FamilyMemberViewSet,
+)
+
+router = DefaultRouter()
+
+router.register(
+    "members",
+    FamilyMemberViewSet,
+    basename="family-member",
+)
+
+router.register(
+    "",
+    FamilyViewSet,
+    basename="family",
 )
 
 urlpatterns = [
-    path("current/", CurrentFamilyView.as_view(), name="current"),
     path(
-        "members/",
-        FamilyMemberListView.as_view(),
-        name="members-list",
-    ),
-    path(
-        "members/<int:pk>/",
-        FamilyMemberDeleteView.as_view(),
-        name="members-delete",
-    ),
-    path(
-        "members/<int:pk>/status/",
-        FamilyMemberStatusView.as_view(),
-        name="members-status",
+        "",
+        include(router.urls),
     ),
 ]

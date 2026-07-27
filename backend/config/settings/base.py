@@ -25,6 +25,8 @@ SECURE_COOKIES = env.bool(
     default=not DEBUG,
 )
 
+CORS_ALLOW_CREDENTIALS = True
+
 AUTH_COOKIE_ACCESS = "access_token"
 AUTH_COOKIE_REFRESH = "refresh_token"
 

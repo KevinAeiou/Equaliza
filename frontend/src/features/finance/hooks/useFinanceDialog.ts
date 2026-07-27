@@ -101,9 +101,9 @@ export const useFinanceDialog = <T extends FinanceEntryType>({
 		if (financeId) {
 			const loadFinance = async () => {
 				const response = await FinanceService.retrieve(type, financeId)
-	
+
 				setFinance(response)
-	
+
 				form.reset({
 					amount: response.amount,
 					date: parseISO(response.date),
@@ -111,12 +111,12 @@ export const useFinanceDialog = <T extends FinanceEntryType>({
 					description: response.description,
 				})
 			}
-	
-			loadFinance()	
+
+			loadFinance()
 			return
 		}
-		
-		form.reset((getDefaultValues()))
+
+		form.reset(getDefaultValues())
 	}, [financeId, form, type])
 
 	return {

@@ -25,7 +25,7 @@ export const useInviteDialog = (
 			const response = await invitationApi.create(data.email)
 			form.reset()
 
-			toast.success(response.message)
+			toast.success(response.message ?? `Convite criado com sucesso!`)
 			setOpen(false)
 		} catch (error: unknown) {
 			if (isApiError(error)) {
@@ -48,7 +48,6 @@ export const useInviteDialog = (
 		form,
 		onSubmit,
 		loading,
-		open, setOpen,
 		handleClose,
 	}
 }

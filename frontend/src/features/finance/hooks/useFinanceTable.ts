@@ -14,7 +14,7 @@ import { FinanceCardProps } from "../components/FinanceCard"
 
 export type Finance = ExpenseProps | IncomeProps
 
-export const useFinanceTable = ({
+export const useFinanceCard = ({
 	type,
 	setOpen,
 	setFinanceId,
