@@ -56,4 +56,8 @@ export class AuthService {
 
 		return response.data
 	}
+
+	static async changeCurrentFamily(family_id: number) {
+		await authenticationApi.changeCurrentFamily(family_id)
+	}
 }

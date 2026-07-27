@@ -41,6 +41,7 @@ export const FinanceTabs = ({
 					refresh={refresh}
 				/>
 			</TabsContent>
+
 			<TabsContent
 				value="INCOME"
 				className="w-full h-full"

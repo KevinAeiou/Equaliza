@@ -17,6 +17,7 @@ import {
 import { InviteProps } from "@/src/types"
 import { Badge } from "@/src/components/ui/badge"
 import { useState } from "react"
+import { formatDate } from "@/src/lib/utils"
 
 const LinkCell = ({ link }: { link: string }) => {
 	const [copied, setCopied] = useState<boolean>(false)
@@ -97,20 +98,7 @@ export const columns = (
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			),
-			cell: ({ row }) => {
-				const date = new Date(row.original.expires_at)
-
-				return new Intl.DateTimeFormat("pt-BR", {
-					day: "2-digit",
-					month: "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-					minute: "2-digit",
-					hour12: false,
-				})
-					.format(date)
-					.replace(",", "")
-			},
+			cell: ({ row }) => formatDate(row.original.expires_at),
 		},
 		{
 			accessorKey: "status",

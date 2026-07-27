@@ -36,6 +36,7 @@ export const useInvitationCard = () => {
 
 			try {
 				const response = await InvitationService.list()
+
 				setInvites(response)
 			} catch (error) {
 				const message = isApiError(error)

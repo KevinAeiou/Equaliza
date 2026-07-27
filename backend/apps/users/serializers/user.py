@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from apps.users.models import User
 from apps.families.models import FamilyMember
-from .family import FamilySerializer
+from apps.families.serializers import ListFamilySerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    current_family = FamilySerializer(read_only=True)
+    current_family = ListFamilySerializer(read_only=True)
 
     families = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_families(self, obj):
         memberships = obj.memberships.select_related("family").filter(is_active=True)
 
-        return FamilySerializer(
+        return ListFamilySerializer(
             [m.family for m in memberships],
             many=True,
         ).data

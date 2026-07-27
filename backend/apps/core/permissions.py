@@ -8,9 +8,9 @@ class IsFamilyMember(BasePermission):
 
     def has_permission(self, request, view):
         family = request.user.current_family
-        
+
         if family is None:
-            return False
+            return True
 
         return FamilyMember.objects.is_member(
             family=family,
@@ -25,7 +25,7 @@ class IsFamilyAdministrator(BasePermission):
         family = request.user.current_family
 
         if family is None:
-            return False
+            return True
 
         return FamilyMember.objects.is_administrator(
             family=family,

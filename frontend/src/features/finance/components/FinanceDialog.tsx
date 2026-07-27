@@ -15,6 +15,7 @@ import { FormDateField } from "./FormDateField"
 import { FormSelectField } from "./FormSelectField"
 import { FormTextAreaField } from "./FormTextAreaField"
 import { FINANCE_DESCRIPTION_MAX_LENGTH } from "../schemas/finance.schema"
+import { formatDate } from "@/src/lib/utils"
 
 interface FinanceDialogProps {
 	type: FinanceEntryType
@@ -112,7 +113,7 @@ export const FinanceDialog = ({
 								</span>
 
 								<span className="font-medium text-muted-foreground">
-									{finance.created_at && new Date(finance.created_at).toLocaleString("pt-BR")}
+									{finance.created_at && formatDate(finance.created_at)}
 								</span>
 							</div>
 
@@ -122,7 +123,7 @@ export const FinanceDialog = ({
 								</span>
 
 								<span className="font-medium text-muted-foreground">
-									{finance.updated_at && new Date(finance.updated_at).toLocaleString("pt-BR")}
+									{finance.updated_at && formatDate(finance.updated_at)}
 								</span>
 							</div>
 						</div>
