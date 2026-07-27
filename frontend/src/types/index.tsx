@@ -37,6 +37,8 @@ export interface ApiResponse<T = unknown> {
 export interface FamilyProps {
 	id: number
 	name: string
+	created_at: string
+	updated_at: string
 }
 
 export interface AvatarProps {
@@ -124,6 +126,10 @@ export interface FinancialPayload {
 	category?: number
 	date?: string
 	description?: string
+}
+
+export interface FamilyPayload {
+	name: string
 }
 
 export interface DashboardChartsProps {

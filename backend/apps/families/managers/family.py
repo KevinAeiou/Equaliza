@@ -7,7 +7,11 @@ class FamilyManager(models.Manager):
         return super().get_queryset()
 
     def for_user(self, user):
-        return self.filter(
-            memberships__user=user, memberships__is_active=True
-        ).distinct()
-
+        return (
+            self.get_queryset()
+            .filter(
+                memberships__user=user,
+            )
+            .distinct()
+            .order_by("-created_at")
+        )

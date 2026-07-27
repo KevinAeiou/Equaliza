@@ -80,8 +80,21 @@ export const AuthenticationAPI = () => ({
 		} catch (error: unknown) {
 			throw configureError(error, `editar usuário`)
 		}
-	}
+	},
 
+	changeCurrentFamily: async (familyId: number) => {
+		try {
+			await api({
+				url: `current/`,
+				method: "PATCH",
+				data: {
+					family_id: familyId,
+				},
+			})
+		} catch (error: unknown) {
+			throw configureError(error, "alterar família atual")
+		}
+	},
 })
 
 export const authenticationApi = AuthenticationAPI()

@@ -16,6 +16,7 @@ import {
 } from "@/src/components/ui/dropdown-menu"
 
 import { MemberProps } from "@/src/types"
+import { formatDate } from "@/src/lib/utils"
 
 export const columns = (
 	onDelete: (member: MemberProps) => void,
@@ -81,18 +82,7 @@ export const columns = (
 				</Button>
 			),
 			cell: ({ row }) => {
-				const date = new Date(row.original.joined_at)
-
-				return new Intl.DateTimeFormat("pt-BR", {
-					day: "2-digit",
-					month: "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-					minute: "2-digit",
-					hour12: false,
-				})
-					.format(date)
-					.replace(",", "")
+				return formatDate(row.original.joined_at)
 			},
 		},
 		{
@@ -144,7 +134,7 @@ export const columns = (
 								</DropdownMenuItem>
 
 								<DropdownMenuSeparator />
-								
+
 								<DropdownMenuItem
 									variant="destructive"
 									onClick={() => onDelete(member)}

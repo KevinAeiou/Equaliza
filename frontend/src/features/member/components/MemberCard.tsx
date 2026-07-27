@@ -19,7 +19,7 @@ export const MemberCard = () => {
 				<DataTable
 					table={table}
 					loading={loading}
-					emptyMessage="Nenhum convite encontrado."
+					emptyMessage="Nenhum membro da família encontrado."
 				/>
 			</CardContent>
 

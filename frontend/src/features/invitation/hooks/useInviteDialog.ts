@@ -48,7 +48,6 @@ export const useInviteDialog = (
 		form,
 		onSubmit,
 		loading,
-		open, setOpen,
 		handleClose,
 	}
 }

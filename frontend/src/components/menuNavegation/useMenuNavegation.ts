@@ -1,7 +1,5 @@
-import { useState } from "react"
+import { AuthService } from "@/src/features/auth/services/auth.service"
 import { useAuth } from "../../features/auth/context/AuthProvider"
-import { FamilyProps } from "@/src/types"
-import { FamilyAPI } from "../../features/member/infra/family"
 import { useInvitationScreen } from "../../features/invitation/hooks/useInvitationScreen"
 
 export const useMenuNavegation = () => {
@@ -12,16 +10,12 @@ export const useMenuNavegation = () => {
 	const { user, refreshUser } = useAuth()
 
 	const hasRole = (...roles: string[]) => {
-		if (!user?.role) return false
+		if (!user?.role) return true
 
 		return roles.includes(user.role)
 	}
 
-	const [selectedFamily, setSelectedFamily] = useState<FamilyProps | undefined>(
-		() => user?.current_family ?? undefined
-	)
-
-	const familyAPI = FamilyAPI()
+	const selectedFamily = user?.current_family
 
 	const canInvite = hasRole("Responsável", "Administrador")
 
@@ -38,9 +32,7 @@ export const useMenuNavegation = () => {
 		if (!family) return
 
 		try {
-			await familyAPI.changeCurrentFamily(family.id)
-
-			setSelectedFamily(family)
+			await AuthService.changeCurrentFamily(family.id)
 
 			await refreshUser()
 		} catch (error) {

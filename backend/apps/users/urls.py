@@ -4,8 +4,9 @@ from .views import (
     LoginView,
     LogoutView,
     MeView,
-	RegisterView,
-	ProfileView,
+    RegisterView,
+    ProfileView,
+    CurrentFamilyView,
 )
 
 urlpatterns = [
@@ -33,5 +34,10 @@ urlpatterns = [
         "profile/",
         ProfileView.as_view(),
         name="profile",
+    ),
+    path(
+        "current/",
+        CurrentFamilyView.as_view(),
+        name="current",
     ),
 ]

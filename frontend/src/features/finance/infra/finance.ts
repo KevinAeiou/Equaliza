@@ -38,7 +38,7 @@ export const FinanceAPI = () => ({
 			throw configureError(error, "buscar finança")
 		}
 	},
-	
+
 	list: async <T extends FinanceEntryType>(
 		type: T
 	): Promise<FinanceResponse<T>[]> => {
@@ -50,7 +50,6 @@ export const FinanceAPI = () => ({
 		return response.data
 	},
 
-
 	listCategories: async (): Promise<CategoryProps[]> => {
 		const response = await api<CategoryProps[]>({
 			url: "finances/categories/",
@@ -59,7 +58,6 @@ export const FinanceAPI = () => ({
 
 		return response.data
 	},
-
 
 	create: async (
 		type: FinanceEntryType,
@@ -76,7 +74,6 @@ export const FinanceAPI = () => ({
 		}
 	},
 
-
 	update: async (
 		type: FinanceEntryType,
 		id: number,
@@ -92,7 +89,6 @@ export const FinanceAPI = () => ({
 			throw configureError(error, "atualizar finança")
 		}
 	},
-
 
 	delete: async (
 		type: FinanceEntryType,
