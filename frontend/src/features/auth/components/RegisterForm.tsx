@@ -30,7 +30,7 @@ export function RegisterForm() {
 				</NavigationButton>
 			</FormHeaderField>
 
-			<CardContent>
+			<CardContent className="mb-4">
 				<form
 					id="form-register"
 					className="space-y-6"
