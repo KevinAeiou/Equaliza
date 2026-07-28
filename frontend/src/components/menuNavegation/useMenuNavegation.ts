@@ -1,5 +1,5 @@
 import { AuthService } from "@/src/features/auth/services/auth.service"
-import { useAuth } from "../../features/auth/context/AuthProvider"
+import { useAuth } from "../providers/AuthProvider"
 import { useInvitationScreen } from "../../features/invitation/hooks/useInvitationScreen"
 
 export const useMenuNavegation = () => {

@@ -7,7 +7,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FormLoginSchema } from "../schemas/login.shema"
 import { isApiError } from "@/src/lib/utils"
-import { useAuth } from "../context/AuthProvider"
+import { useAuth } from "../../../components/providers/AuthProvider"
 
 export const useFormLogin = () => {
 	const router = useRouter()

@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/context/AuthProvider"
+import { useAuth } from "@/src/components/providers/AuthProvider"
 import { getDefaultValues, ProfileFormSchema, ProfileFormSchemaType } from "@/src/schemas/profile.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect } from "react"

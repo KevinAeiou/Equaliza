@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { FormRegisterSchema } from "../schemas/register.shema"
 import { FormRegisterShemaType } from "@/src/types"
-import { useAuth } from "../context/AuthProvider"
+import { useAuth } from "../../../components/providers/AuthProvider"
 import { useRouter, useSearchParams } from "next/navigation"
 import { isApiError } from "@/src/lib/utils"
 

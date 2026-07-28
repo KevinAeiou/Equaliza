@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { ProtectedRouteProps } from "@/src/types"
 import Loading from "@/src/app/loading"
-import { useAuth } from "@/src/features/auth/context/AuthProvider"
+import { useAuth } from "@/src/components/providers/AuthProvider"
 
 export default function ProtectedRoute({
 	children,
@@ -15,7 +15,7 @@ export default function ProtectedRoute({
 
 		if (authLoading) return
 
-		if (!isLoggedIn) {			
+		if (!isLoggedIn) {
 			router.replace("/login")
 			return
 		}
