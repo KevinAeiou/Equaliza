@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Loading from "@/src/app/loading"
-import { useAuth } from "@/src/features/auth/context/AuthProvider"
+import { useAuth } from "@/src/components/providers/AuthProvider"
 
 
 export default function PublicRoute({
