@@ -8,6 +8,7 @@ import { Field, FieldGroup } from "@/src/components/ui/field"
 import { FormPasswordField } from "./FormPasswordField"
 import { FormHeaderField } from "./FormHeaderField"
 import { NavigationButton } from "./NavigationButton"
+import Image from "next/image"
 
 export function LoginForm() {
 	const {
@@ -18,6 +19,26 @@ export function LoginForm() {
 
 	return (
 		<Card className="w-full max-w-md shadow-xl">
+			<div className="mb-4 flex justify-center">
+				<Image
+					src="/logo.svg"
+					alt="Equaliza"
+					width={180}
+					height={48}
+					className="block dark:hidden transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
+					priority
+				/>
+
+				<Image
+					src="/logo-white.svg"
+					alt="Equaliza"
+					width={180}
+					height={48}
+					className="hidden dark:block transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
+					priority
+				/>
+			</div>
+
 			<FormHeaderField
 				title="Entrar"
 				description="Informe seu e-mail e senha para acessar sua conta."
@@ -27,7 +48,7 @@ export function LoginForm() {
 				</NavigationButton>
 			</FormHeaderField>
 
-			<CardContent>
+			<CardContent className="mb-4">
 				<form
 					id="form-login"
 					className="space-y-6"
