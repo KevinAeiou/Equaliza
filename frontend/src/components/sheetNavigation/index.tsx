@@ -79,6 +79,16 @@ export const SheetNavigation = () => {
 								alt="Equaliza"
 								width={42}
 								height={42}
+								className="block dark:hidden transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
+
+							/>
+
+							<Image
+								src="/logo-icon-white.svg"
+								alt="Equaliza"
+								width={42}
+								height={42}
+								className="hidden dark:block transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
 							/>
 
 							<div>

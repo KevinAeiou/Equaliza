@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { FamilyService } from "../services/family.service"
 import { columns } from "../components/columns"
 import { FamilyProps } from "@/src/types"
-import { useAuth } from "../../auth/context/AuthProvider"
+import { useAuth } from "../../../components/providers/AuthProvider"
 
 interface UseFamilyCardProps {
 	refresh: number

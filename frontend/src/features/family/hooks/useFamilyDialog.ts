@@ -6,7 +6,7 @@ import { isApiError } from "@/src/lib/utils"
 import { toast } from "sonner"
 import { FormFamilySchema, FormFamilySchemaType, getDefaultValues } from "../schemas/family.shema"
 import { FamilyProps } from "@/src/types"
-import { useAuth } from "../../auth/context/AuthProvider"
+import { useAuth } from "../../../components/providers/AuthProvider"
 
 interface UseFamilyDialog {
 	setOpen: (value: boolean) => void

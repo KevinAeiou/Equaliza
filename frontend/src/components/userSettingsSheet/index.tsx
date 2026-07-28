@@ -10,6 +10,9 @@ import {
 	SheetTitle,
 } from "@/src/components/ui/sheet"
 import { Separator } from "@/src/components/ui/separator"
+import { Field, FieldLabel } from "../ui/field"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
+import { useTheme } from "next-themes"
 
 interface UserSettingsSheetProps {
 	open: boolean
@@ -20,6 +23,14 @@ export const UserSettingsSheet = ({
 	open,
 	onOpenChange,
 }: UserSettingsSheetProps) => {
+	const { theme, setTheme } = useTheme()
+
+	const themeOptions = [
+		{ value: "light", label: "Claro" },
+		{ value: "dark", label: "Escuro" },
+		{ value: "system", label: "Sistema" },
+	]
+
 	return (
 		<Sheet
 			open={open}
@@ -36,17 +47,42 @@ export const UserSettingsSheet = ({
 					</SheetHeader>
 
 					<div className="flex-1 space-y-6 px-4 py-6">
-						<section className="space-y-3">
+						<section className="space-y-4">
 							<h3 className="text-sm font-semibold">
-								Perfil
+								Preferências
 							</h3>
 
-							<Button
-								variant="outline"
-								className="w-full justify-start"
-							>
-								Alterar avatar
-							</Button>
+							<Field>
+								<FieldLabel htmlFor="theme">
+									Tema
+								</FieldLabel>
+
+								<Select
+									id="theme"
+									items={themeOptions}
+									value={theme}
+									onValueChange={(value) => value !== null && setTheme(value)}
+								>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Selecione um tema" />
+									</SelectTrigger>
+
+									<SelectContent>
+										<SelectGroup>
+											<SelectLabel>Aparência</SelectLabel>
+
+											{themeOptions.map((item) => (
+												<SelectItem
+													key={item.value}
+													value={item.value}
+												>
+													{item.label}
+												</SelectItem>
+											))}
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							</Field>
 						</section>
 
 						<Separator />

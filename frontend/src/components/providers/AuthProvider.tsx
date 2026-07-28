@@ -17,7 +17,7 @@ import {
 	UserProps,
 } from "@/src/types"
 
-import { AuthService } from "../services/auth.service"
+import { AuthService } from "../../features/auth/services/auth.service"
 import { ProfileFormSchemaType } from "@/src/schemas/profile.schema"
 
 const AuthContext = createContext({} as AuthContextType)

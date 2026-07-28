@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from "@/src/components/ui/navigation-menu"
 import { ListItem } from "@/src/components/listItem"
 import { useUserNavigation } from "./useUserNavigation"
-import { LogOut, LucideUser2 } from "lucide-react"
+import { LogOut, LucideUser2, Settings } from "lucide-react"
 import { UserSettingsSheet } from "../userSettingsSheet"
 import { Separator } from "../ui/separator"
 import { ProfileDialog } from "../profileDialog"
@@ -56,14 +56,14 @@ export const UserNavegation = () => {
 								onClick={() => setShowProfile(true)}
 							/>
 							{/* TODO: Implementar menu de configurações e preferencias do sistema */}
-							{/* <ListItem
+							<ListItem
 								icon={Settings}
 								title="Configurações"
 								onClick={() => setShowSettings(true)}
-							/> */}
+							/>
 
 							<Separator />
-							
+
 							<ListItem
 								icon={LogOut}
 								title="Sair"
