@@ -46,9 +46,6 @@ export const DashboardFilters = ({
 			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
 				<SheetHeader>
 					<SheetTitle>Filtros do Dashboard</SheetTitle>
-			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
-				<SheetHeader>
-					<SheetTitle>Filtros do Dashboard</SheetTitle>
 
 					<SheetDescription>
 						Selecione os períodos e categorias desejadas.
