@@ -1,10 +1,8 @@
-import { CategoryProps, FinanceEntryType } from "@/src/types"
-import { FinanceAPI, FinanceResponse } from "../infra/finance"
+import { CategoryProps, FinanceEntryType, FinanceParams } from "@/src/types"
+import { financeApi, FinanceResponse } from "../infra/finance"
 import { FormFinanceSchemaType } from "../schemas/finance.schema"
 import { format } from "date-fns"
-
-const financeApi = FinanceAPI()
-
+import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
 
 export class FinanceService {
 
@@ -16,16 +14,29 @@ export class FinanceService {
 	}
 
 	static async list<T extends FinanceEntryType>(
-		type: T
+		type: T,
+		filters: FormFinanceFilterSchemaType
 	): Promise<FinanceResponse<T>[]> {
-		return await financeApi.list(type)
-	}
+		const params: FinanceParams = {
+			from_date: filters.period.from
+				? format(filters.period.from, "yyyy-MM-dd")
+				: undefined,
 
+			to_date: filters.period.to
+				? format(filters.period.to, "yyyy-MM-dd")
+				: undefined,
+
+			categories: filters.categories.length
+				? filters.categories
+				: undefined,
+		}
+
+		return await financeApi.list(type, params)
+	}
 
 	static async listCategories(): Promise<CategoryProps[]> {
 		return await financeApi.listCategories()
 	}
-
 
 	static async create(
 		type: FinanceEntryType,
@@ -42,7 +53,6 @@ export class FinanceService {
 		await financeApi.create(type, payload)
 	}
 
-
 	static async update(
 		type: FinanceEntryType,
 		id: number,
@@ -58,7 +68,6 @@ export class FinanceService {
 
 		await financeApi.update(type, id, payload)
 	}
-
 
 	static async delete(
 		type: FinanceEntryType,

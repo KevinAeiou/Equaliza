@@ -1,67 +1,120 @@
-import { Button } from "@/src/components/ui/button"
-import { Calendar } from "@/src/components/ui/calendar"
-import { Field } from "@/src/components/ui/field"
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { useFinanceFilters } from "../hooks/useFinanceFilters"
+"use client"
 
-export const FinanceFilters = () => {
+import { Button } from "@/src/components/ui/button"
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetFooter,
+	SheetHeader,
+	SheetTitle,
+} from "@/src/components/ui/sheet"
+import { Separator } from "@/src/components/ui/separator"
+
+import { FormDateRangeField } from "../../dashboard/components/FormDateRangeField"
+import { FormSinglePeriodField } from "../../dashboard/components/FormSiglePeriodField"
+import { FormSelectField } from "./FormSelectField"
+
+import { useFinanceFilters } from "../hooks/useFinanceFilters"
+import { FormMultiSelectField } from "../../dashboard/components/FormMultiSelectField"
+import { FinanceEntryType } from "@/src/types"
+import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
+import { PeriodType } from "../../dashboard/schemas/filters.schema"
+
+interface FinanceFiltersProps {
+	type: FinanceEntryType
+	showFilter: boolean
+	setShowFilter: (value: boolean) => void
+	onApply: (filters: FormFinanceFilterSchemaType) => void
+}
+
+export const FinanceFilters = ({
+	type,
+	showFilter,
+	setShowFilter,
+	onApply,
+}: FinanceFiltersProps) => {
 	const {
-		date, setDate,
-	} = useFinanceFilters()
+		form,
+		periodType,
+		onSubmit,
+		categoryOptions,
+		periodOptions,
+		handleClear,
+	} = useFinanceFilters({ setShowFilter, onApply, type })
 
 	return (
-		<div className="flex gap-3">
-			<Select >
-				<SelectTrigger className="w-52">
-					<SelectValue />
-				</SelectTrigger>
+		<Sheet
+			open={showFilter}
+			onOpenChange={setShowFilter}
+		>
+			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
+				<SheetHeader>
+					<SheetTitle>Filtros</SheetTitle>
 
-				<SelectContent>
-					<SelectItem value="day">Dia</SelectItem>
-					<SelectItem value="week">Semana</SelectItem>
-					<SelectItem value="month">Mês</SelectItem>
-					<SelectItem value="year">Ano</SelectItem>
-					<SelectItem value="period">Ano</SelectItem>
-					<Field className="mx-auto w-60">
-						<Popover>
-							<PopoverTrigger render={
-								<Button
-									variant="outline"
-									id="date-picker-range"
-									className="justify-start px-2.5 font-normal"
-								>
-									<CalendarIcon data-icon="inline-start" />
-									{date?.from ? (
-										date.to ? (
-											<>
-												{format(date.from, "LLL dd, y")} -{" "}
-												{format(date.to, "LLL dd, y")}
-											</>
-										) : (
-											format(date.from, "LLL dd, y")
-										)
-									) : (
-										<span>Selecione o período</span>
-									)}
-								</Button>
-							} />
+					<SheetDescription>
+						Selecione o período e as categorias desejadas.
+					</SheetDescription>
+				</SheetHeader>
 
-							<PopoverContent className="w-auto p-0" align="start">
-								<Calendar
-									mode="range"
-									defaultMonth={date?.from}
-									selected={date}
-									onSelect={setDate}
-									numberOfMonths={2}
+				<form
+					id="form-finance-filters"
+					className="space-y-6"
+					onSubmit={form.handleSubmit(onSubmit)}
+				>
+					<div className="flex flex-col gap-4 px-4">
+						<div className="flex items-end gap-2">
+							<FormSelectField
+								control={form.control}
+								name="type"
+								label="Período"
+								options={periodOptions}
+							/>
+
+							{periodType === PeriodType.PERIOD ? (
+								<FormDateRangeField
+									control={form.control}
+									name="period"
 								/>
-							</PopoverContent>
-						</Popover>
-					</Field>
-				</SelectContent>
-			</Select>
-		</div>
+							) : (
+								<FormSinglePeriodField
+									control={form.control}
+									name="period"
+									type={periodType}
+								/>
+							)}
+						</div>
+
+						<FormMultiSelectField
+							control={form.control}
+							name="categories"
+							label="Categorias"
+							placeholder="Todas"
+							options={categoryOptions}
+						/>
+					</div>
+				</form>
+
+				<SheetFooter className="gap-4">
+					<Separator className="my-2" />
+
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleClear}
+					>
+						Limpar filtros
+					</Button>
+
+					<Button
+						type="submit"
+						form="form-finance-filters"
+						className="w-full"
+					>
+						Aplicar filtros
+					</Button>
+				</SheetFooter>
+			</SheetContent>
+		</Sheet>
 	)
 }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { getDefaultValues, FormDashboardFilterSchema, FormDashboardFilterSchemaType } from "../schemas/filters.schema"
+import { useForm, useWatch } from "react-hook-form"
+import { getDefaultValues, FormDashboardFilterSchema, FormDashboardFilterSchemaType, PeriodType } from "../schemas/filters.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CategoryProps, SelectOption } from "@/src/types"
 import { FinanceService } from "../../finance/services/financial.service"
-import { isApiError } from "@/src/lib/utils"
+import { getPeriod, isApiError } from "@/src/lib/utils"
 import { toast } from "sonner"
 
 interface UseDashboardFiltersProps {
@@ -28,9 +28,44 @@ export const useDashboardFilters = ({
 		value: category.id,
 	}))
 
+	const periodOptions: SelectOption<string>[] = [
+		{
+			label: "Dia",
+			value: PeriodType.DAY,
+		},
+		{
+			label: "Semana",
+			value: PeriodType.WEEK,
+		},
+		{
+			label: "Mês",
+			value: PeriodType.MONTH,
+		},
+		{
+			label: "Ano",
+			value: PeriodType.YEAR,
+		},
+		{
+			label: "Período personalizado",
+			value: PeriodType.PERIOD,
+		},
+	]
+
+	const type = useWatch({
+		control: form.control,
+		name: "type",
+	})
+
 	const onSubmit = (values: FormDashboardFilterSchemaType) => {
-		console.log(values)
 		onApply(values)
+
+		setShowFilter(false)
+	}
+
+	const handleClear = () => {
+		form.reset(getDefaultValues())
+
+		onApply(getDefaultValues())
 
 		setShowFilter(false)
 	}
@@ -55,9 +90,18 @@ export const useDashboardFilters = ({
 		loadCategories()
 	}, [])
 
+	useEffect(() => {
+		if (type === PeriodType.PERIOD) return
+
+		form.setValue("period", getPeriod(type))
+	}, [form, type])
+
 	return {
 		form,
+		type,
 		onSubmit,
 		categoryOptions,
+		handleClear,
+		periodOptions,
 	}
 }

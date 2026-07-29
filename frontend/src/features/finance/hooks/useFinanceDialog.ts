@@ -1,11 +1,11 @@
-import { isApiError } from "@/src/lib/utils"
+import { applyApiValidationErrors, isApiError } from "@/src/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Resolver } from "react-hook-form"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { FinanceService } from "../services/financial.service"
-import { defaultValues as getDefaultValues, FormFinanceSchema, FormFinanceSchemaType } from "../schemas/finance.schema"
+import { getDefaultValues, FormFinanceSchema, FormFinanceSchemaType } from "../schemas/finance.schema"
 import { CategoryProps, FinanceEntryType, SelectOption } from "@/src/types"
 import { FinanceResponse } from "../infra/finance"
 import { parseISO } from "date-fns"
@@ -61,9 +61,13 @@ export const useFinanceDialog = <T extends FinanceEntryType>({
 
 			onSuccess()
 		} catch (error: unknown) {
-			if (isApiError(error)) {
-				toast.error(error.message)
+			if (!isApiError(error)) return
+
+			if (applyApiValidationErrors(form, error)) {
+				return
 			}
+
+			toast.error(error.message)
 		} finally {
 			setLoading(false)
 		}

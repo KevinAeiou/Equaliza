@@ -19,6 +19,7 @@ import {
 import { ListItem } from "@/src/components/listItem"
 import { useMenuNavegation } from "./useMenuNavegation"
 import { InviteDialog } from "@/src/features/invitation/components/InviteDialog"
+import { FamilyDialog } from "@/src/features/family/components/FamilyDialog"
 
 export const MenuNavegation = () => {
 	const {
@@ -27,6 +28,7 @@ export const MenuNavegation = () => {
 		handleFamilyChange,
 		canInvite,
 		showInviteDialog, setShowInviteDialog,
+		showFamilyDialog, setShowFamilyDialog,
 	} = useMenuNavegation()
 
 	return (
@@ -123,6 +125,11 @@ export const MenuNavegation = () => {
 									title="Visualizar famílias"
 									href="/family"
 								/>
+
+								<ListItem
+									title="Nova família"
+									onClick={() => setShowFamilyDialog(true)}
+								/>
 							</ul>
 						</NavigationMenuContent>
 					</NavigationMenuItem>
@@ -145,6 +152,11 @@ export const MenuNavegation = () => {
 			<InviteDialog
 				open={showInviteDialog}
 				setOpen={setShowInviteDialog}
+			/>
+
+			<FamilyDialog
+				open={showFamilyDialog}
+				setOpen={setShowFamilyDialog}
 			/>
 		</NavigationMenu>
 	)

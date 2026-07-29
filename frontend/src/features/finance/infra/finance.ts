@@ -4,10 +4,10 @@ import {
 	CategoryProps,
 	ExpenseProps,
 	FinanceEntryType,
+	FinanceParams,
 	FinancialPayload,
 	IncomeProps,
 } from "@/src/types"
-
 
 export type FinanceResponse<T extends FinanceEntryType> =
 	T extends "EXPENSE"
@@ -21,7 +21,7 @@ const getEndpoint = (type: FinanceEntryType) =>
 		: "income/"
 
 
-export const FinanceAPI = () => ({
+const FinanceAPI = () => ({
 
 	retrieve: async <T extends FinanceEntryType>(
 		type: T,
@@ -40,11 +40,13 @@ export const FinanceAPI = () => ({
 	},
 
 	list: async <T extends FinanceEntryType>(
-		type: T
+		type: T,
+		params: FinanceParams,
 	): Promise<FinanceResponse<T>[]> => {
 		const response = await api<FinanceResponse<T>[]>({
 			url: `finances/${getEndpoint(type)}`,
 			method: "GET",
+			params,
 		})
 
 		return response.data
@@ -104,3 +106,5 @@ export const FinanceAPI = () => ({
 		}
 	},
 })
+
+export const financeApi = FinanceAPI()

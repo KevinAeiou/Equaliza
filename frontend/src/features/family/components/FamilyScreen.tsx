@@ -5,7 +5,6 @@ import { useFamilyScreen } from "../hooks/useFamilyScreen"
 import { FamilyCard } from "./FamilyCard"
 import { FamilyDialog } from "./FamilyDialog"
 
-
 export const FamilyScreen = () => {
 	const {
 		open, setOpen,
@@ -14,18 +13,20 @@ export const FamilyScreen = () => {
 	} = useFamilyScreen()
 
 	return (
-		<section className="flex h-full flex-col gap-4">
+		<section className="flex h-full flex-col gap-2">
 			<HeaderScreen
 				title="Famílias"
 				subtitle="Gerencie suas famílias registradas."
-			>
+			></HeaderScreen>
+
+			<div className="flex justify-end w-full">
 				<Button
 					onClick={() => setOpen(true)}
 				>
 					<Plus className="mr-2 h-4 w-4" />
 					Nova família
 				</Button>
-			</HeaderScreen>
+			</div>
 
 			<FamilyCard
 				refresh={refresh}

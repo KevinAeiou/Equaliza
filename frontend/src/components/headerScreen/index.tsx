@@ -11,11 +11,10 @@ export const HeaderScreen = ({
 	subtitle,
 	children,
 }: HeaderScreenProps) => {
-
 	return (
-		<div className="flex items-start justify-between">
-			<div>
-				<h1 className="text-3xl font-bold tracking-tight">
+		<div className="flex gap-4 flex-row items-center justify-center">
+			<div className="min-w-0 flex-1">
+				<h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
 					{title}
 				</h1>
 
@@ -24,7 +23,11 @@ export const HeaderScreen = ({
 				</p>
 			</div>
 
-			{children}
+			{children && (
+				<div className="w-auto shrink-0">
+					{children}
+				</div>
+			)}
 		</div>
 	)
 }

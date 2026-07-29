@@ -1,5 +1,6 @@
 import { FinanceEntryType } from "@/src/types"
 import { useState } from "react"
+import { FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
 
 
 export const useFinanceScreen = () => {
@@ -7,11 +8,23 @@ export const useFinanceScreen = () => {
 	const [financeId, setFinanceId] = useState<number | undefined>(undefined)
 	const [type, setType] = useState<FinanceEntryType>("EXPENSE")
 	const [refresh, setRefresh] = useState<number>(0)
+	const [showFilter, setShowFilter] = useState<boolean>(false)
+	const [filters, setFilters] = useState<FormFinanceFilterSchemaType>(
+		getDefaultValues()
+	)
+
+	const handleTypeChange = (value: FinanceEntryType) => {
+		setType(value)
+		setFilters(getDefaultValues())
+	}
 
 	return {
-		type, setType,
+		type,
 		open, setOpen,
 		refresh, setRefresh,
 		financeId, setFinanceId,
+		showFilter, setShowFilter,
+		filters, setFilters,
+		handleTypeChange,
 	}
 }
