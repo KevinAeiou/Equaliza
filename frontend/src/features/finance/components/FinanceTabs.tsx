@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs"
 import { FinanceCard } from "./FinanceCard"
 import { FinanceEntryType } from "@/src/types"
+import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
 
 interface FinanceTabsProps {
 	refresh: number
@@ -8,6 +9,7 @@ interface FinanceTabsProps {
 	setType: (value: FinanceEntryType) => void
 	setOpen: (value: boolean) => void
 	setFinanceId: (value?: number) => void
+	filters: FormFinanceFilterSchemaType
 }
 
 export const FinanceTabs = ({
@@ -15,6 +17,7 @@ export const FinanceTabs = ({
 	type, setType,
 	setOpen,
 	setFinanceId,
+	filters,
 }: FinanceTabsProps) => {
 
 	return (
@@ -39,6 +42,7 @@ export const FinanceTabs = ({
 					setOpen={setOpen}
 					setFinanceId={setFinanceId}
 					refresh={refresh}
+					filters={filters}
 				/>
 			</TabsContent>
 
@@ -51,6 +55,7 @@ export const FinanceTabs = ({
 					setOpen={setOpen}
 					setFinanceId={setFinanceId}
 					refresh={refresh}
+					filters={filters}
 				/>
 			</TabsContent>
 		</Tabs>

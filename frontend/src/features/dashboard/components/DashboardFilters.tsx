@@ -13,8 +13,10 @@ import {
 import { useDashboardFilters } from "../hooks/useDashboardFilters"
 import { FormDateRangeField } from "./FormDateRangeField"
 import { FormMultiSelectField } from "./FormMultiSelectField"
-import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
+import { PeriodType, FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 import { Separator } from "@/src/components/ui/separator"
+import { FormSelectField } from "../../finance/components/FormSelectField"
+import { FormSinglePeriodField } from "./FormSiglePeriodField"
 
 interface DashboardFiltersProps {
 	showFilter: boolean
@@ -29,8 +31,11 @@ export const DashboardFilters = ({
 }: DashboardFiltersProps) => {
 	const {
 		form,
+		type,
 		onSubmit,
 		categoryOptions,
+		handleClear,
+		periodOptions,
 	} = useDashboardFilters({ setShowFilter, onApply })
 
 	return (
@@ -52,15 +57,28 @@ export const DashboardFilters = ({
 					className="space-y-6"
 					onSubmit={form.handleSubmit(onSubmit)}
 				>
+					<div className="flex flex-col gap-4 px-4">
+						<div className="flex gap-2 items-end">
+							<FormSelectField
+								control={form.control}
+								name="type"
+								label="Período"
+								options={periodOptions}
+							/>
 
-					<div className="flex flex-col gap-6 px-4">
-
-						<FormDateRangeField
-							control={form.control}
-							name="period"
-							label="Período"
-						/>
-
+							{type === PeriodType.PERIOD ? (
+								<FormDateRangeField
+									control={form.control}
+									name="period"
+								/>
+							) : (
+								<FormSinglePeriodField
+									name="period"
+									control={form.control}
+									type={type}
+								/>
+							)}
+						</div>
 
 						<FormMultiSelectField
 							control={form.control}
@@ -72,8 +90,16 @@ export const DashboardFilters = ({
 					</div>
 				</form>
 
-				<SheetFooter>
+				<SheetFooter className="gap-4">
 					<Separator className="my-2" />
+
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleClear}
+					>
+						Limpar filtros
+					</Button>
 
 					<Button
 						type="submit"

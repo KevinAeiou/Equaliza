@@ -2,6 +2,7 @@ import z from "zod"
 import { FormLoginSchema } from "../features/auth/schemas/login.shema"
 import { FormRegisterSchema } from "../features/auth/schemas/register.shema"
 import { ProfileFormSchemaType } from "../schemas/profile.schema"
+import { AxiosError } from "axios"
 
 export type UserRole = "client" | "admin" | "super"
 
@@ -71,11 +72,13 @@ export interface InviteProps {
 	link: string
 }
 
+export type ApiValidationErrors = Record<string, string[]>
+
 export interface ApiError {
 	status: number
 	statusText: string
 	message: string
-	originalError?: unknown
+	originalError?: AxiosError<ErrorResponse>
 }
 
 export interface CategoryProps {
@@ -176,8 +179,14 @@ export interface DashboardSummaryProps {
 }
 
 export interface DashboardParams {
-	from?: string
-	to?: string
+	from_date?: string
+	to_date?: string
+	categories?: number[]
+}
+
+export interface FinanceParams {
+	from_date?: string
+	to_date?: string
 	categories?: number[]
 }
 
@@ -190,10 +199,9 @@ export interface MemberProps {
 	is_active: boolean
 }
 
-export type ErrorResponse =
-	| Record<string, string[]>
-	| Record<string, string>
-	| { detail: string }
+export type ErrorResponse = {
+	detail?: string
+} & Record<string, string | string[] | undefined>
 
 export const userInitialState = {} as UserProps
 

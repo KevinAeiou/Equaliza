@@ -1,11 +1,15 @@
 import { AuthService } from "@/src/features/auth/services/auth.service"
 import { useAuth } from "../providers/AuthProvider"
 import { useInvitationScreen } from "../../features/invitation/hooks/useInvitationScreen"
+import { useFamilyScreen } from "@/src/features/family/hooks/useFamilyScreen"
 
 export const useMenuNavegation = () => {
 	const {
 		open: showInviteDialog, setOpen: setShowInviteDialog,
 	} = useInvitationScreen()
+	const {
+		open: showFamilyDialog, setOpen: setShowFamilyDialog,
+	} = useFamilyScreen()
 
 	const { user, refreshUser } = useAuth()
 
@@ -46,5 +50,6 @@ export const useMenuNavegation = () => {
 		handleFamilyChange,
 		canInvite,
 		showInviteDialog, setShowInviteDialog,
+		showFamilyDialog, setShowFamilyDialog,
 	}
 }

@@ -19,6 +19,7 @@ export const useFinanceCard = ({
 	setOpen,
 	setFinanceId,
 	refresh,
+	filters,
 }: FinanceCardProps) => {
 	const [finances, setFinances] = useState<Finance[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
@@ -28,7 +29,7 @@ export const useFinanceCard = ({
 		setLoading(true)
 
 		try {
-			const response = await FinanceService.list(type)
+			const response = await FinanceService.list(type, filters)
 
 			setFinances(response)
 		} catch (error) {
@@ -40,7 +41,7 @@ export const useFinanceCard = ({
 		} finally {
 			setLoading(false)
 		}
-	}, [type])
+	}, [type, filters])
 
 	const handleDelete = useCallback(async (finance: Finance) => {
 		try {

@@ -17,14 +17,14 @@ export const DashboardScreen = () => {
 	)
 
 	return (
-		<section className="flex flex-col gap-4">
+		<section className="flex flex-col gap-2">
 			<HeaderScreen
 				title="Dashboard"
 				subtitle="Acompanhe o resumo financeiro da sua família."
 			>
 				<Button
 					variant="outline"
-					className="gap-2"
+					className="gap-2 w-full sm:w-auto"
 					onClick={() => setShowFilters((prev) => !prev)}
 				>
 					<SlidersHorizontal size={16} />

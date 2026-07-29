@@ -55,7 +55,20 @@ export const FormSelectField = <
 								? ""
 								: field.value?.toString() ?? ""
 						}
-						onValueChange={(value) => field.onChange(value === "" ? undefined : Number(value))}
+						onValueChange={(value) => {
+							if (value === "") {
+								field.onChange(undefined)
+								return
+							}
+
+							const firstOption = options[0]
+
+							field.onChange(
+								typeof firstOption?.value === "number"
+									? Number(value)
+									: value
+							)
+						}}
 						disabled={disabled || options.length === 0}
 						items={options}
 					>
@@ -71,7 +84,9 @@ export const FormSelectField = <
 							} />
 						</SelectTrigger>
 
-						<SelectContent>
+						<SelectContent
+							className="w-full"
+						>
 							{options.length === 0 ? (
 								<div className="px-2 py-4 text-center text-sm text-muted-foreground">
 									Nenhuma opção disponível.

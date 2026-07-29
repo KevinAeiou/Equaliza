@@ -6,8 +6,13 @@ import { InvitationService } from "../services/invitation.service"
 import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
 import { columns } from "../components/columns"
 
+interface UseInvitarionCardProps {
+	refresh: number
+}
 
-export const useInvitationCard = () => {
+export const useInvitationCard = ({
+	refresh,
+}: UseInvitarionCardProps) => {
 	const [invites, setInvites] = useState<InviteProps[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [sorting, setSorting] = useState<SortingState>([])
@@ -50,7 +55,7 @@ export const useInvitationCard = () => {
 		}
 
 		loadInvitations()
-	}, [])
+	}, [refresh])
 
 	const table = useReactTable({
 		data: invites,

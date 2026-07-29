@@ -6,11 +6,11 @@ import { format } from "date-fns"
 const buildDashboardParams = (
 	filters: FormDashboardFilterSchemaType,
 ): DashboardParams => ({
-	from: filters.period.from
+	from_date: filters.period.from
 		? format(filters.period.from, "yyyy-MM-dd")
 		: undefined,
 
-	to: filters.period.to
+	to_date: filters.period.to
 		? format(filters.period.to, "yyyy-MM-dd")
 		: undefined,
 
