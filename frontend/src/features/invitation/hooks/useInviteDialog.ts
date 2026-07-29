@@ -2,14 +2,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { FormInvitationSchema, FormInvitationSchemaType, getDefaultValues } from "../../member/schemas/invitation.schema"
 import { useState } from "react"
-import { isApiError } from "@/src/lib/utils"
+import { applyApiValidationErrors, isApiError } from "@/src/lib/utils"
 import { toast } from "sonner"
 import { invitationApi } from "../infra/invite"
 
-
-export const useInviteDialog = (
+interface UseInviteDialogProps {
 	setOpen: (value: boolean) => void
-) => {
+	onSuccess: () => void
+}
+
+export const useInviteDialog = ({
+	setOpen,
+	onSuccess,
+}: UseInviteDialogProps) => {
 	const [loading, setLoading] = useState<boolean>(false)
 
 
@@ -23,17 +28,19 @@ export const useInviteDialog = (
 
 		try {
 			const response = await invitationApi.create(data.email)
-			form.reset()
 
 			toast.success(response.message ?? `Convite criado com sucesso!`)
-			setOpen(false)
+
+			handleClose()
+			onSuccess()
 		} catch (error: unknown) {
-			if (isApiError(error)) {
-				form.setError("email", {
-					type: "server",
-					message: error.message,
-				})
+			if (!isApiError(error)) return
+
+			if (applyApiValidationErrors(form, error)) {
+				return
 			}
+
+			toast.error(error.message)
 		} finally {
 			setLoading(false)
 		}

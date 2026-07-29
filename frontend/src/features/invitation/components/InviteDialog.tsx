@@ -14,18 +14,20 @@ import { useInviteDialog } from "../hooks/useInviteDialog"
 interface InviteDialogProps {
 	open: boolean
 	setOpen: (value: boolean) => void
+	onSuccess?: () => void
 }
 
 export const InviteDialog = ({
 	open,
 	setOpen,
+	onSuccess = () => { },
 }: InviteDialogProps) => {
 	const {
 		form,
 		onSubmit,
 		loading,
 		handleClose,
-	} = useInviteDialog(setOpen)
+	} = useInviteDialog({ setOpen, onSuccess })
 
 	return (
 		<Dialog

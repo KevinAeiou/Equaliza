@@ -17,17 +17,17 @@ import { formatDate } from "@/src/lib/utils"
 interface FamilyDialogProps {
 	open: boolean
 	setOpen: (value: boolean) => void
-	onSuccess: () => void
+	onSuccess?: () => void
 	selectedFamily?: FamilyProps
-	setSelectedFamily: (family?: FamilyProps) => void
+	setSelectedFamily?: (family?: FamilyProps) => void
 }
 
 export const FamilyDialog = ({
 	open,
 	setOpen,
-	onSuccess,
+	onSuccess = () => { },
 	selectedFamily,
-	setSelectedFamily,
+	setSelectedFamily = () => { },
 }: FamilyDialogProps) => {
 	const {
 		form,

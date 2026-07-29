@@ -31,12 +31,13 @@ export const HeaderApp = () => {
 						priority
 					/>
 				</Link>
+
 				<MenuNavegation />
 
 				<UserNavegation />
 			</div>
 
-			<div className="md:hidden">
+			<div className="flex md:hidden">
 				<SheetNavigation />
 			</div>
 		</header>

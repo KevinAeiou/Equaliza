@@ -2,6 +2,8 @@ from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from apps.finance.serializers import (
     CreateIncomeSerializer,
     ListIncomeSerializer,
@@ -13,10 +15,13 @@ from apps.finance.services import (
     ListIncomeService,
     UpdateIncomeService,
 )
+from apps.finance.filters import IncomeFilter
 from apps.core.permissions import IsFamilyMember
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IncomeFilter
     permission_classes = [
         IsAuthenticated,
         IsFamilyMember,

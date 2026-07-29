@@ -1,3 +1,4 @@
+import { DefaultValues } from "react-hook-form"
 import z from "zod"
 
 export const FormInvitationSchema = z.object({
@@ -5,7 +6,7 @@ export const FormInvitationSchema = z.object({
 		.email("Informe um e-mail válido"),
 })
 
-export const getDefaultValues = (): FormInvitationSchemaType => ({
+export const getDefaultValues = (): DefaultValues<FormInvitationSchemaType> => ({
 	email: "",
 })
 

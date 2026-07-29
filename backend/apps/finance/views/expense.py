@@ -2,6 +2,8 @@ from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from apps.finance.serializers import (
     CreateExpenseSerializer,
     ListExpenseSerializer,
@@ -13,10 +15,13 @@ from apps.finance.services import (
     ListExpenseService,
     UpdateExpenseService,
 )
+from apps.finance.filters import ExpenseFilter
 from apps.core.permissions import IsFamilyMember
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ExpenseFilter
     permission_classes = [
         IsAuthenticated,
         IsFamilyMember,

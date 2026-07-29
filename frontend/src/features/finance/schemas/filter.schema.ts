@@ -1,15 +1,8 @@
 import { endOfMonth, startOfMonth } from "date-fns"
 import { z } from "zod"
+import { PeriodType } from "../../dashboard/schemas/filters.schema"
 
-export enum PeriodType {
-	DAY = "DAY",
-	WEEK = "WEEK",
-	MONTH = "MONTH",
-	YEAR = "YEAR",
-	PERIOD = "PERIOD",
-}
-
-export const FormDashboardFilterSchema = z.object({
+export const FormFinanceFilterSchema = z.object({
 	type: z.enum(PeriodType),
 
 	period: z.object({
@@ -20,9 +13,11 @@ export const FormDashboardFilterSchema = z.object({
 	categories: z.array(z.number()),
 })
 
-export type FormDashboardFilterSchemaType = z.infer<typeof FormDashboardFilterSchema>
+export type FormFinanceFilterSchemaType = z.infer<
+	typeof FormFinanceFilterSchema
+>
 
-export const getDefaultValues = (): FormDashboardFilterSchemaType => ({
+export const getDefaultValues = (): FormFinanceFilterSchemaType => ({
 	type: PeriodType.MONTH,
 
 	period: {
