@@ -14,8 +14,8 @@ export const MemberCard = () => {
 	} = useMemberCard()
 
 	return (
-		<Card className="flex flex-1 flex-col overflow-hidden">
-			<CardContent>
+		<Card className="flex h-full flex-col overflow-hidden">
+			<CardContent className="flex flex-1 min-h-0 flex-col px-6 pt-0">
 				<DataTable
 					table={table}
 					loading={loading}
