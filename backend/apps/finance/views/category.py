@@ -1,3 +1,5 @@
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,9 +17,12 @@ from apps.finance.services import (
     UpdateFinancialCategoryService,
     DeleteFinancialCategoryService,
 )
+from apps.finance.filters import CategoryFilter
 
 
 class FinancialCategoryViewSet(viewsets.ModelViewSet):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CategoryFilter
     permission_classes = [
         IsAuthenticated,
         IsFamilyAdministrator,

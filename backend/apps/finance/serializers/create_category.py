@@ -6,7 +6,7 @@ from .base_category import BaseFinancialCategorySerializer
 
 class CreateFinancialCategorySerializer(BaseFinancialCategorySerializer):
 
-    def validate_name(self, attrs):
+    def validate(self, attrs):
         family = self.context["request"].user.current_family
 
         if FinancialCategory.objects.exists_by_name(

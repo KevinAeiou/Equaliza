@@ -21,3 +21,10 @@ class FinancialCategory(models.Model):
                 name="unique_financial_category_per_family",
             ),
         ]
+
+    @property
+    def is_used(self):
+        return (
+            self.expenses.exists()  # pyright: ignore[reportAttributeAccessIssue]
+            or self.incomes.exists()  # pyright: ignore[reportAttributeAccessIssue]
+        )

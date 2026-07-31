@@ -84,7 +84,7 @@ export interface ApiError {
 export interface CategoryProps {
 	id: number
 	name: string
-	type: string
+	type: FinanceEntryType
 }
 
 export interface ExpenseProps {
@@ -133,6 +133,11 @@ export interface FinancialPayload {
 
 export interface FamilyPayload {
 	name: string
+}
+
+export interface CategoryPayload {
+	name: string
+	type: FinanceEntryType
 }
 
 export interface DashboardChartsProps {
@@ -188,6 +193,11 @@ export interface FinanceParams {
 	from_date?: string
 	to_date?: string
 	categories?: number[]
+}
+
+export interface CategoryParams {
+	name: string
+	type: string
 }
 
 export interface MemberProps {

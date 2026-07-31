@@ -15,7 +15,11 @@ class BaseFinancial(BaseModel):
         max_length=DESCRIPTION_MAX_LENGTH,
         blank=True,
     )
-    category = models.ForeignKey(FinancialCategory, on_delete=models.PROTECT)
+    category = models.ForeignKey(
+        FinancialCategory,
+        on_delete=models.PROTECT,
+        related_name="%(class)ss",
+    )
 
     class Meta:
         abstract = True
