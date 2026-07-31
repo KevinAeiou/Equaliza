@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/src/components/ui/card"
-import { useFinanceCard } from "../hooks/useFinanceTable"
+import { useFinanceCard } from "../hooks/useFinanceCard"
 import { FinanceEntryType } from "@/src/types"
 import { DataTable } from "@/src/components/dataTable"
 import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
@@ -28,7 +28,7 @@ export const FinanceCard = ({
 
 	return (
 		<Card className="flex h-full flex-1 flex-col overflow-hidden">
-			<CardContent className="flex-1 overflow-hidden p-0">
+			<CardContent>
 				<DataTable
 					table={table}
 					loading={loading}

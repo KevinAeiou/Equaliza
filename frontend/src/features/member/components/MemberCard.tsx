@@ -15,7 +15,7 @@ export const MemberCard = () => {
 
 	return (
 		<Card className="flex flex-1 flex-col overflow-hidden">
-			<CardContent className="flex-1 overflow-hidden p-0">
+			<CardContent>
 				<DataTable
 					table={table}
 					loading={loading}

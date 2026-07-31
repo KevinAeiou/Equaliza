@@ -15,7 +15,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu"
 
-import { Finance } from "../hooks/useFinanceTable"
+import { Finance } from "../hooks/useFinanceCard"
 import { FinanceEntryType as FinanceEntryType } from "@/src/types"
 import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"

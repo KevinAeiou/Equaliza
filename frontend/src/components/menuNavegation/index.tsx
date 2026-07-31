@@ -81,72 +81,74 @@ export const MenuNavegation = () => {
 					</NavigationMenuContent>
 				</NavigationMenuItem>
 				{canInvite && (
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Convites</NavigationMenuTrigger>
+					<>
+						<NavigationMenuItem>
+							<NavigationMenuTrigger>Convites</NavigationMenuTrigger>
 
-						<NavigationMenuContent>
-							<ul className="w-56 p-2 space-y-1">
-								<ListItem
-									title="Visualizar convites"
-									href="/invitation"
-								/>
+							<NavigationMenuContent>
+								<ul className="w-56 p-2 space-y-1">
+									<ListItem
+										title="Visualizar convites"
+										href="/invitation"
+									/>
 
-								<ListItem
-									title="Novo convite"
-									onClick={() => setShowInviteDialog(true)}
-								/>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
+									<ListItem
+										title="Novo convite"
+										onClick={() => setShowInviteDialog(true)}
+									/>
+								</ul>
+							</NavigationMenuContent>
+						</NavigationMenuItem>
+						<NavigationMenuItem>
+							<NavigationMenuTrigger>Membros</NavigationMenuTrigger>
+
+							<NavigationMenuContent>
+								<ul className="w-56 p-2 space-y-1">
+									<ListItem
+										title="Visualizar membros"
+										href="/member"
+									/>
+								</ul>
+							</NavigationMenuContent>
+						</NavigationMenuItem>
+
+						<NavigationMenuItem>
+							<NavigationMenuTrigger>Famílias</NavigationMenuTrigger>
+
+							<NavigationMenuContent>
+								<ul className="w-56 p-2 space-y-1">
+									<ListItem
+										title="Visualizar famílias"
+										href="/family"
+									/>
+
+									<ListItem
+										title="Nova família"
+										onClick={() => setShowFamilyDialog(true)}
+									/>
+								</ul>
+							</NavigationMenuContent>
+						</NavigationMenuItem>
+
+						<NavigationMenuItem>
+							<NavigationMenuTrigger>Finanças</NavigationMenuTrigger>
+
+							<NavigationMenuContent>
+								<ul className="w-56 p-2 space-y-1">
+									<ListItem
+										title="Visualizar finanças"
+										href="/finance"
+									/>
+
+									<ListItem
+										title="Categorias"
+										href="/category"
+									/>
+								</ul>
+							</NavigationMenuContent>
+						</NavigationMenuItem>
+					</>
 				)}
-
-				{canInvite && (
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Membros</NavigationMenuTrigger>
-
-						<NavigationMenuContent>
-							<ul className="w-56 p-2 space-y-1">
-								<ListItem
-									title="Visualizar membros"
-									href="/member"
-								/>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-				)}
-
-				{canInvite && (
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Famílias</NavigationMenuTrigger>
-
-						<NavigationMenuContent>
-							<ul className="w-56 p-2 space-y-1">
-								<ListItem
-									title="Visualizar famílias"
-									href="/family"
-								/>
-
-								<ListItem
-									title="Nova família"
-									onClick={() => setShowFamilyDialog(true)}
-								/>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-				)}
-
-				<NavigationMenuItem>
-					<NavigationMenuTrigger>Finanças</NavigationMenuTrigger>
-
-					<NavigationMenuContent>
-						<ul className="w-56 p-2 space-y-1">
-							<ListItem
-								title="Visualizar finanças"
-								href="/finance"
-							/>
-						</ul>
-					</NavigationMenuContent>
-				</NavigationMenuItem>
 			</NavigationMenuList>
 
 			<InviteDialog

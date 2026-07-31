@@ -20,7 +20,7 @@ export const FamilyCard = ({
 	} = useFamilyCard({ refresh, setOpen, setSelectedFamily })
 
 	return (
-		<Card>
+		<Card className="flex h-full flex-1 flex-col overflow-hidden">
 			<CardContent>
 				<DataTable
 					table={table}

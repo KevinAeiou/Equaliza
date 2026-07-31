@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, Home, Wallet, Users, Mail, LogOut, PencilSparklesIcon } from "lucide-react"
+import { Menu, Home, Wallet, Users, Mail, LogOut, PencilSparklesIcon, Tags } from "lucide-react"
 
 import { Button } from "@/src/components/ui/button"
 import {
@@ -200,6 +200,20 @@ export const SheetNavigation = () => {
 										>
 											<Mail className="mr-2 h-4 w-4" />
 											Convites
+										</Link>
+									</Button>
+
+									<Button
+										variant="ghost"
+										className="justify-start"
+										onClick={handleClose}
+									>
+										<Link
+											className="flex"
+											href="/category"
+										>
+											<Tags className="mr-2 h-4 w-4" />
+											Categorias
 										</Link>
 									</Button>
 								</>
