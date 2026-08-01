@@ -61,9 +61,7 @@ export const useFamilyDialog = ({
 		} catch (error: unknown) {
 			if (!isApiError(error)) return
 
-			if (applyApiValidationErrors(form, error)) {
-				return
-			}
+			if (applyApiValidationErrors(form, error)) return
 
 			toast.error(error.message)
 		} finally {

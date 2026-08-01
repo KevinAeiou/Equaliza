@@ -7,12 +7,13 @@ import { useAuth } from "@/src/components/providers/AuthProvider"
 
 export default function ProtectedRoute({
 	children,
+	role,
 }: ProtectedRouteProps) {
-	const { isLoggedIn, logout, authLoading } = useAuth()
+	const { user, isLoggedIn, logout, authLoading } = useAuth()
+
 	const router = useRouter()
 
 	useEffect(() => {
-
 		if (authLoading) return
 
 		if (!isLoggedIn) {
@@ -20,6 +21,11 @@ export default function ProtectedRoute({
 			return
 		}
 	}, [authLoading, isLoggedIn, logout, router]);
+
+	if (role && !role.includes(user.role)) {
+		router.replace("/unauthorized")
+		return
+	}
 
 	if (authLoading) {
 		return <Loading />

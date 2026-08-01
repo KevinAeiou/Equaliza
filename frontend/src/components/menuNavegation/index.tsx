@@ -26,7 +26,7 @@ export const MenuNavegation = () => {
 		families,
 		selectedFamily,
 		handleFamilyChange,
-		canInvite,
+		isAdmin,
 		showInviteDialog, setShowInviteDialog,
 		showFamilyDialog, setShowFamilyDialog,
 	} = useMenuNavegation()
@@ -80,7 +80,8 @@ export const MenuNavegation = () => {
 						</ul>
 					</NavigationMenuContent>
 				</NavigationMenuItem>
-				{canInvite && (
+
+				{isAdmin && (
 					<>
 						<NavigationMenuItem>
 							<NavigationMenuTrigger>Convites</NavigationMenuTrigger>
@@ -111,44 +112,46 @@ export const MenuNavegation = () => {
 								</ul>
 							</NavigationMenuContent>
 						</NavigationMenuItem>
-
-						<NavigationMenuItem>
-							<NavigationMenuTrigger>Famílias</NavigationMenuTrigger>
-
-							<NavigationMenuContent>
-								<ul className="w-56 p-2 space-y-1">
-									<ListItem
-										title="Visualizar famílias"
-										href="/family"
-									/>
-
-									<ListItem
-										title="Nova família"
-										onClick={() => setShowFamilyDialog(true)}
-									/>
-								</ul>
-							</NavigationMenuContent>
-						</NavigationMenuItem>
-
-						<NavigationMenuItem>
-							<NavigationMenuTrigger>Finanças</NavigationMenuTrigger>
-
-							<NavigationMenuContent>
-								<ul className="w-56 p-2 space-y-1">
-									<ListItem
-										title="Visualizar finanças"
-										href="/finance"
-									/>
-
-									<ListItem
-										title="Categorias"
-										href="/category"
-									/>
-								</ul>
-							</NavigationMenuContent>
-						</NavigationMenuItem>
 					</>
 				)}
+
+				<NavigationMenuItem>
+					<NavigationMenuTrigger>Finanças</NavigationMenuTrigger>
+
+					<NavigationMenuContent>
+						<ul className="w-56 p-2 space-y-1">
+							<ListItem
+								title="Visualizar finanças"
+								href="/finance"
+							/>
+
+							{isAdmin && (
+								<ListItem
+									title="Categorias"
+									href="/category"
+								/>
+							)}
+						</ul>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
+
+				<NavigationMenuItem>
+					<NavigationMenuTrigger>Famílias</NavigationMenuTrigger>
+
+					<NavigationMenuContent>
+						<ul className="w-56 p-2 space-y-1">
+							<ListItem
+								title="Visualizar famílias"
+								href="/family"
+							/>
+
+							<ListItem
+								title="Nova família"
+								onClick={() => setShowFamilyDialog(true)}
+							/>
+						</ul>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
 			</NavigationMenuList>
 
 			<InviteDialog

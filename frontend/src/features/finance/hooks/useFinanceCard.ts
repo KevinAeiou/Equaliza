@@ -11,6 +11,7 @@ import { isApiError } from "@/src/lib/utils"
 import { FinanceService } from "../services/financial.service"
 import { ExpenseProps, IncomeProps } from "@/src/types"
 import { FinanceCardProps } from "../components/FinanceCard"
+import { useAuth } from "@/src/components/providers/AuthProvider"
 
 export type Finance = ExpenseProps | IncomeProps
 
@@ -24,6 +25,10 @@ export const useFinanceCard = ({
 	const [finances, setFinances] = useState<Finance[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [sorting, setSorting] = useState<SortingState>([])
+
+	const { user } = useAuth()
+
+	const currentFamilyId = user.current_family?.id
 
 	const loadFinances = useCallback(async () => {
 		setLoading(true)
@@ -83,7 +88,7 @@ export const useFinanceCard = ({
 
 	useEffect(() => {
 		loadFinances()
-	}, [loadFinances, refresh])
+	}, [loadFinances, refresh, currentFamilyId])
 
 	return {
 		table,

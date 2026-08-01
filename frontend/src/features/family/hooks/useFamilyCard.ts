@@ -23,8 +23,11 @@ export const useFamilyCard = ({
 	const [sorting, setSorting] = useState<SortingState>([])
 
 	const {
+		user,
 		refreshUser,
 	} = useAuth()
+
+	const currentFamilyId = user.current_family?.id
 
 	const handleEditFamily = useCallback(async (family: FamilyProps) => {
 		setSelectedFamily(family)
@@ -84,7 +87,7 @@ export const useFamilyCard = ({
 
 	useEffect(() => {
 		loadFamilies()
-	}, [loadFamilies, refresh])
+	}, [loadFamilies, refresh, currentFamilyId])
 
 	return {
 		table,
