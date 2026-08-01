@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { columns } from "../components/Columns"
 import { CategoryService } from "../services/category.service"
 import { FormCategoryFilterSchemaType } from "../schemas/filter.schema"
+import { useAuth } from "@/src/components/providers/AuthProvider"
 
 
 interface UseCategoryCardProps {
@@ -24,6 +25,10 @@ export const useCategoryCard = ({
 	const [families, setFamilies] = useState<CategoryProps[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [sorting, setSorting] = useState<SortingState>([])
+
+	const { user } = useAuth()
+
+	const currentFamilyId = user.current_family?.id
 
 	const loadCategories = useCallback(async () => {
 		setLoading(true)
@@ -81,7 +86,7 @@ export const useCategoryCard = ({
 
 	useEffect(() => {
 		loadCategories()
-	}, [loadCategories, refresh])
+	}, [loadCategories, refresh, currentFamilyId])
 
 	return {
 		table,

@@ -4,11 +4,15 @@ import { FormRegisterSchema } from "../features/auth/schemas/register.shema"
 import { ProfileFormSchemaType } from "../schemas/profile.schema"
 import { AxiosError } from "axios"
 
-export type UserRole = "client" | "admin" | "super"
+export enum UserRole {
+	ADMIN = "Administrador",
+	OWNER = "Responsável",
+	MEMBER = "Membro",
+}
 
 export interface ProtectedRouteProps {
 	children: React.ReactNode
-	role?: UserRole | undefined
+	role?: UserRole[] | undefined
 }
 
 export interface Credentials {
@@ -52,7 +56,7 @@ export interface UserProps {
 	first_name: string
 	last_name: string
 	email: string
-	role: string
+	role: UserRole
 	current_family: FamilyProps
 	families: FamilyProps[]
 	avatar: AvatarProps

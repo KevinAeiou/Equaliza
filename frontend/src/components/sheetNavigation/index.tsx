@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, Home, Wallet, Users, Mail, LogOut, PencilSparklesIcon, Tags } from "lucide-react"
+import { Menu, Home, Wallet, Users, Mail, LogOut, PencilSparklesIcon, Tags, UserRoundPlus } from "lucide-react"
 
 import { Button } from "@/src/components/ui/button"
 import {
@@ -40,7 +40,7 @@ export const SheetNavigation = () => {
 		families,
 		selectedFamily,
 		handleFamilyChange,
-		canInvite,
+		isAdmin,
 		showInviteDialog,
 		setShowInviteDialog,
 	} = useMenuNavegation()
@@ -173,7 +173,21 @@ export const SheetNavigation = () => {
 								</Link>
 							</Button>
 
-							{canInvite && (
+							<Button
+								variant="ghost"
+								className="justify-start"
+								onClick={handleClose}
+							>
+								<Link
+									className="flex"
+									href="/family"
+								>
+									<UserRoundPlus className="mr-2 h-4 w-4" />
+									Famílias
+								</Link>
+							</Button>
+
+							{isAdmin && (
 								<>
 									<Button
 										variant="ghost"

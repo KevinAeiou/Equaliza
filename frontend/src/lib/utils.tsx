@@ -133,9 +133,15 @@ export function applyApiValidationErrors<T extends FieldValues>(
 		return false
 	}
 
-	Object.entries(errors).forEach(([field, messages]) => {
+	const formValues = form.getValues()
+
+	for (const [field, messages] of Object.entries(errors)) {
+		if (!(field in formValues)) {
+			return false
+		}
+
 		if (!messages) {
-			return
+			continue
 		}
 
 		const message = Array.isArray(messages) ? messages[0] : messages
@@ -146,7 +152,7 @@ export function applyApiValidationErrors<T extends FieldValues>(
 				message,
 			})
 		}
-	})
+	}
 
 	return true
 }
