@@ -17,8 +17,8 @@ class DashboardFilter(filters.FilterSet):
 
         data = cast(QueryDict, self.data)
 
-        from_date = data.get("from")
-        to_date = data.get("to")
+        from_date = data.get("from_date")
+        to_date = data.get("to_date")
 
         if from_date:
             queryset = queryset.filter(date__gte=from_date)
