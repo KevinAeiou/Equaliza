@@ -107,8 +107,12 @@ export const useFinanceFilters = ({
 	}, [form, periodType])
 
 	useEffect(() => {
-		form.reset(getDefaultValues())
-	}, [type])
+		form.setValue("categories", [], {
+			shouldDirty: false,
+			shouldTouch: false,
+			shouldValidate: false,
+		})
+	}, [form, type])
 
 	return {
 		form,

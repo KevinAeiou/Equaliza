@@ -15,7 +15,10 @@ export const useFinanceScreen = () => {
 
 	const handleTypeChange = (value: FinanceEntryType) => {
 		setType(value)
-		setFilters(getDefaultValues())
+		setFilters((current) => ({
+			...current,
+			categories: [],
+		}))
 	}
 
 	return {
