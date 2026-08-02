@@ -17,8 +17,8 @@ export const InvitationCard = ({
 	} = useInvitationCard({ refresh })
 
 	return (
-		<Card className="flex flex-1 flex-col overflow-hidden">
-			<CardContent className="flex-1 overflow-hidden p-0">
+		<Card className="flex flex-col overflow-hidden">
+			<CardContent className="flex flex-1 min-h-0 flex-col px-6 pt-0">
 				<DataTable
 					table={table}
 					loading={loading}

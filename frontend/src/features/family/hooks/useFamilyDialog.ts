@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { FamilyService } from "../services/family.service"
-import { isApiError } from "@/src/lib/utils"
+import { applyApiValidationErrors, isApiError } from "@/src/lib/utils"
 import { toast } from "sonner"
 import { FormFamilySchema, FormFamilySchemaType, getDefaultValues } from "../schemas/family.shema"
 import { FamilyProps } from "@/src/types"
@@ -59,12 +59,13 @@ export const useFamilyDialog = ({
 
 			await refreshUser()
 		} catch (error: unknown) {
-			if (isApiError(error)) {
-				form.setError("name", {
-					type: "server",
-					message: error.message,
-				})
+			if (!isApiError(error)) return
+
+			if (applyApiValidationErrors(form, error)) {
+				return
 			}
+
+			toast.error(error.message)
 		} finally {
 			setLoading(false)
 		}

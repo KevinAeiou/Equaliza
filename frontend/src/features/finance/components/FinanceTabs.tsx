@@ -23,7 +23,7 @@ export const FinanceTabs = ({
 	return (
 		<Tabs
 			defaultValue="EXPENSE"
-			className="w-full h-full items-center"
+			className="flex w-full h-full min-h-0 items-center"
 			value={type}
 			onValueChange={(value) => setType(value as FinanceEntryType)}
 		>
@@ -35,7 +35,7 @@ export const FinanceTabs = ({
 
 			<TabsContent
 				value="EXPENSE"
-				className="w-full"
+				className="flex-1 min-h-0 w-full"
 			>
 				<FinanceCard
 					type="EXPENSE"
