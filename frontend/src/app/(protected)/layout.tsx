@@ -1,6 +1,6 @@
 "use client"
 
-import ProtectedRoute from "@/src/components/auth/ProtectedRoute"
+import { AuthenticatedRoute } from "@/src/components/auth/AuthenticatedRoute"
 import { HeaderApp } from "@/src/components/headerApp"
 
 export default function ProtectedLayout({
@@ -10,13 +10,13 @@ export default function ProtectedLayout({
 }) {
 	return (
 		<main className="flex h-screen flex-col bg-muted/30 px-4">
-			<ProtectedRoute>
+			<AuthenticatedRoute>
 				<HeaderApp />
 
 				<div className="flex-1 overflow-auto px-4 py-4">
 					{children}
 				</div>
-			</ProtectedRoute>
+			</AuthenticatedRoute>
 		</main>
 	)
 }
