@@ -1,28 +1,14 @@
 "use client"
 
-import { Button } from "@/src/components/ui/button"
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetFooter,
-	SheetHeader,
-	SheetTitle,
-} from "@/src/components/ui/sheet"
-import { Separator } from "@/src/components/ui/separator"
-
-import { FormDateRangeField } from "../../dashboard/components/FormDateRangeField"
-import { FormSinglePeriodField } from "../../dashboard/components/FormSiglePeriodField"
-import { FormSelectField } from "./FormSelectField"
-
-import { useFinanceFilters } from "../hooks/useFinanceFilters"
-import { FormMultiSelectField } from "../../dashboard/components/FormMultiSelectField"
+import { FilterSection, FilterSheet, FormChipsField } from "@/src/components/filters"
 import { FinanceEntryType } from "@/src/types"
+import { PeriodFilterFields } from "../../dashboard/components/PeriodFilterFields"
+import { useFinanceFilters } from "../hooks/useFinanceFilters"
 import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
-import { PeriodType } from "../../dashboard/schemas/filters.schema"
 
 interface FinanceFiltersProps {
 	type: FinanceEntryType
+	filters: FormFinanceFilterSchemaType
 	showFilter: boolean
 	setShowFilter: (value: boolean) => void
 	onApply: (filters: FormFinanceFilterSchemaType) => void
@@ -30,6 +16,7 @@ interface FinanceFiltersProps {
 
 export const FinanceFilters = ({
 	type,
+	filters,
 	showFilter,
 	setShowFilter,
 	onApply,
@@ -39,82 +26,40 @@ export const FinanceFilters = ({
 		periodType,
 		onSubmit,
 		categoryOptions,
-		periodOptions,
 		handleClear,
-	} = useFinanceFilters({ setShowFilter, onApply, type })
+	} = useFinanceFilters({ filters, showFilter, setShowFilter, onApply, type })
+
+	const selected = form.watch("categories").length
+	const entries = type === "EXPENSE" ? "despesas" : "receitas"
 
 	return (
-		<Sheet
+		<FilterSheet
 			open={showFilter}
 			onOpenChange={setShowFilter}
+			title={`Filtrar ${entries}`}
+			description={`Escolha o período e as categorias das ${entries} exibidas.`}
+			formId="form-finance-filters"
+			onSubmit={form.handleSubmit(onSubmit)}
+			onClear={handleClear}
 		>
-			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
-				<SheetHeader>
-					<SheetTitle>Filtros</SheetTitle>
+			<PeriodFilterFields
+				control={form.control}
+				typeName="type"
+				periodName="period"
+				type={periodType}
+			/>
 
-					<SheetDescription>
-						Selecione o período e as categorias desejadas.
-					</SheetDescription>
-				</SheetHeader>
-
-				<form
-					id="form-finance-filters"
-					className="space-y-6"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
-					<div className="flex flex-col gap-4 px-4">
-						<div className="flex items-end gap-2">
-							<FormSelectField
-								control={form.control}
-								name="type"
-								label="Período"
-								options={periodOptions}
-							/>
-
-							{periodType === PeriodType.PERIOD ? (
-								<FormDateRangeField
-									control={form.control}
-									name="period"
-								/>
-							) : (
-								<FormSinglePeriodField
-									control={form.control}
-									name="period"
-									type={periodType}
-								/>
-							)}
-						</div>
-
-						<FormMultiSelectField
-							control={form.control}
-							name="categories"
-							label="Categorias"
-							placeholder="Todas"
-							options={categoryOptions}
-						/>
-					</div>
-				</form>
-
-				<SheetFooter className="gap-4">
-					<Separator className="my-2" />
-
-					<Button
-						type="button"
-						variant="outline"
-						onClick={handleClear}
-					>
-						Limpar filtros
-					</Button>
-
-					<Button
-						type="submit"
-						form="form-finance-filters"
-						className="w-full"
-					>
-						Aplicar filtros
-					</Button>
-				</SheetFooter>
-			</SheetContent>
-		</Sheet>
+			<FilterSection
+				title="Categorias"
+				hint={selected ? `${selected} selecionada${selected > 1 ? "s" : ""}` : undefined}
+			>
+				<FormChipsField
+					control={form.control}
+					name="categories"
+					groups={[{ options: categoryOptions }]}
+					emptyMessage={`Nenhuma categoria de ${entries} cadastrada.`}
+				/>
+			</FilterSection>
+		</FilterSheet>
 	)
 }

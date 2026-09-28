@@ -46,6 +46,12 @@ export interface FamilyProps {
 	updated_at: string
 }
 
+export interface FamilyOverviewProps extends FamilyProps {
+	role: UserRole | null
+	is_active_member: boolean
+	members_count: number
+}
+
 export interface AvatarProps {
 	id: string
 	url: string
@@ -70,7 +76,9 @@ export interface InviteValidationProps {
 
 export interface InviteProps {
 	id: number
+	created_at: string
 	expires_at: string,
+	accepted_at: string | null
 	email: string,
 	status: string
 	link: string
@@ -89,6 +97,13 @@ export interface CategoryProps {
 	id: number
 	name: string
 	type: FinanceEntryType
+	is_default?: boolean
+	usage_count?: number | null
+}
+
+export interface FinanceAuthorProps {
+	id: number
+	name: string
 }
 
 export interface ExpenseProps {
@@ -96,6 +111,7 @@ export interface ExpenseProps {
 	amount: number
 	date: string
 	category: CategoryProps
+	created_by: FinanceAuthorProps | null
 	created_at?: string
 	updated_at?: string
 	description?: string
@@ -106,6 +122,7 @@ export interface IncomeProps {
 	amount: number
 	date: string
 	category: CategoryProps
+	created_by: FinanceAuthorProps | null
 	created_at?: string
 	updated_at?: string
 	description?: string
@@ -147,6 +164,7 @@ export interface CategoryPayload {
 export interface DashboardChartsProps {
 	income_vs_expense: {
 		month: string
+		period: string
 		income: number
 		expense: number
 	}[]
@@ -209,6 +227,7 @@ export interface MemberProps {
 	name: string
 	email: string
 	role: string
+	avatar: string
 	joined_at: string
 	is_active: boolean
 }

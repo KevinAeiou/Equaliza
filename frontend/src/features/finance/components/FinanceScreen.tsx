@@ -1,10 +1,14 @@
+import { Plus } from "lucide-react"
 import { Button } from "@/src/components/ui/button"
-import { Plus, SlidersHorizontal } from "lucide-react"
-import { FinanceTabs } from "./FinanceTabs"
+import { FilterButton } from "@/src/components/filters"
+import { HeaderScreen } from "@/src/components/headerScreen"
+import { ActiveFilters } from "../../dashboard/components/ActiveFilters"
+import { PeriodNavigator } from "../../dashboard/components/PeriodNavigator"
+import { countFinanceFilters } from "../hooks/useFinanceFilters"
 import { useFinanceScreen } from "../hooks/useFinanceScreen"
 import { FinanceDialog } from "./FinanceDialog"
-import { HeaderScreen } from "@/src/components/headerScreen"
 import { FinanceFilters } from "./FinanceFilters"
+import { FinanceTabs } from "./FinanceTabs"
 
 export const FinanceScreen = () => {
 	const {
@@ -15,33 +19,44 @@ export const FinanceScreen = () => {
 		showFilter, setShowFilter,
 		filters, setFilters,
 		handleTypeChange,
+		categoryOptions,
 	} = useFinanceScreen()
 
 	return (
-		<section className="flex h-full flex-col gap-2">
-			<HeaderScreen
-				title="Finanças"
-				subtitle="Gerencie despesas e receitas da família."
-			>
-				<Button
-					variant="outline"
-					className="gap-2 w-full sm:w-auto"
-					onClick={() => setShowFilter((prev) => !prev)}
-				>
-					<SlidersHorizontal size={16} />
-					Filtros
-				</Button>
-			</HeaderScreen>
+		<section className="mx-auto flex h-full w-full max-w-7xl flex-col gap-4 sm:gap-6">
+			<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+				<HeaderScreen
+					title="Finanças"
+					subtitle="Gerencie as despesas e receitas da família."
+				/>
 
-			<div className="flex justify-end w-full">
-				<Button
-					onClick={() => setOpen(true)}
-					className="gap-2 w-full sm:w-auto"
-				>
-					<Plus className="mr-2 h-4 w-4" />
-					Nova movimentação
-				</Button>
+				<div className="flex flex-wrap gap-2">
+					<PeriodNavigator
+						filters={filters}
+						onChange={setFilters}
+					/>
+
+					<FilterButton
+						activeCount={countFinanceFilters(filters)}
+						onClick={() => setShowFilter((prev) => !prev)}
+						compact
+					/>
+
+					<Button
+						onClick={() => setOpen(true)}
+						className="h-10 w-full gap-2 sm:w-auto"
+					>
+						<Plus className="size-4" />
+						{type === "EXPENSE" ? "Nova despesa" : "Nova receita"}
+					</Button>
+				</div>
 			</div>
+
+			<ActiveFilters
+				filters={filters}
+				categoryOptions={categoryOptions}
+				onChange={setFilters}
+			/>
 
 			<FinanceTabs
 				refresh={refresh}
@@ -63,10 +78,11 @@ export const FinanceScreen = () => {
 
 			<FinanceFilters
 				type={type}
+				filters={filters}
 				showFilter={showFilter}
 				setShowFilter={setShowFilter}
 				onApply={setFilters}
 			/>
-		</section >
+		</section>
 	)
 }

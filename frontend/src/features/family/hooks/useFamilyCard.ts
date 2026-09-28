@@ -1,10 +1,9 @@
 import { isApiError } from "@/src/lib/utils"
-import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { FamilyService } from "../services/family.service"
-import { columns } from "../components/columns"
-import { FamilyProps } from "@/src/types"
+import { FamilyOverviewProps, FamilyProps } from "@/src/types"
+import { AuthService } from "@/src/features/auth/services/auth.service"
 import { useAuth } from "../../../components/providers/AuthProvider"
 
 interface UseFamilyCardProps {
@@ -18,9 +17,10 @@ export const useFamilyCard = ({
 	setOpen,
 	setSelectedFamily,
 }: UseFamilyCardProps) => {
-	const [families, setFamilies] = useState<FamilyProps[]>([])
-	const [loading, setLoading] = useState<boolean>(false)
-	const [sorting, setSorting] = useState<SortingState>([])
+	const [families, setFamilies] = useState<FamilyOverviewProps[]>([])
+	const [loading, setLoading] = useState<boolean>(true)
+	const [reloadKey, setReloadKey] = useState<number>(0)
+	const [familyToDelete, setFamilyToDelete] = useState<FamilyOverviewProps | null>(null)
 
 	const {
 		user,
@@ -29,34 +29,19 @@ export const useFamilyCard = ({
 
 	const currentFamilyId = user.current_family?.id
 
-	const handleEditFamily = useCallback(async (family: FamilyProps) => {
+	const handleEditFamily = useCallback((family: FamilyProps) => {
 		setSelectedFamily(family)
 		setOpen(true)
 	}, [setOpen, setSelectedFamily])
 
-	const loadFamilies = useCallback(async () => {
-		setLoading(true)
+	const handleConfirmDelete = async () => {
+		if (!familyToDelete) return
 
 		try {
-			const response = await FamilyService.list()
+			await FamilyService.delete(familyToDelete.id)
 
-			setFamilies(response)
-		} catch (error) {
-			const message = isApiError(error)
-				? error.message
-				: "Erro desconhecido ao listar famílias"
-
-			toast.error(message)
-		} finally {
-			setLoading(false)
-		}
-	}, [])
-
-	const handleDeleteFamily = useCallback(async (family: FamilyProps) => {
-		try {
-			await FamilyService.delete(family.id)
-
-			await loadFamilies()
+			setFamilyToDelete(null)
+			setReloadKey((key) => key + 1)
 
 			await refreshUser()
 
@@ -68,29 +53,52 @@ export const useFamilyCard = ({
 
 			toast.error(message)
 		}
-	}, [loadFamilies, refreshUser])
+	}
 
-	const tableColumns = useMemo(() => columns(handleEditFamily, handleDeleteFamily),
-		[handleDeleteFamily, handleEditFamily]
-	)
+	const handleUseFamily = async (family: FamilyOverviewProps) => {
+		try {
+			await AuthService.changeCurrentFamily(family.id)
 
-	const table = useReactTable({
-		data: families,
-		columns: tableColumns,
-		state: {
-			sorting,
-		},
-		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-	})
+			await refreshUser()
+
+			toast.success(`Agora você está em ${family.name}.`)
+		} catch (error) {
+			const message = isApiError(error)
+				? error.message
+				: "Erro ao trocar de família."
+
+			toast.error(message)
+		}
+	}
 
 	useEffect(() => {
+		const loadFamilies = async () => {
+			try {
+				const response = await FamilyService.list()
+
+				setFamilies(response)
+			} catch (error) {
+				const message = isApiError(error)
+					? error.message
+					: "Erro desconhecido ao listar famílias"
+
+				toast.error(message)
+			} finally {
+				setLoading(false)
+			}
+		}
+
 		loadFamilies()
-	}, [loadFamilies, refresh, currentFamilyId])
+	}, [refresh, currentFamilyId, reloadKey])
 
 	return {
-		table,
+		families,
 		loading,
+		currentFamilyId,
+		familyToDelete,
+		setFamilyToDelete,
+		handleEditFamily,
+		handleConfirmDelete,
+		handleUseFamily,
 	}
 }

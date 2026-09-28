@@ -1,23 +1,30 @@
 "use client"
 
-import { Button } from "@/src/components/ui/button"
+import { KeyRound, LucideIcon, Monitor, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
-	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 } from "@/src/components/ui/sheet"
-import { Separator } from "@/src/components/ui/separator"
-import { Field, FieldLabel } from "../ui/field"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
-import { useTheme } from "next-themes"
+import { cn } from "@/src/lib/utils"
 
 interface UserSettingsSheetProps {
 	open: boolean
 	onOpenChange: (open: boolean) => void
 }
+
+const THEME_OPTIONS: { value: string, label: string, icon: LucideIcon }[] = [
+	{ value: "light", label: "Claro", icon: Sun },
+	{ value: "dark", label: "Escuro", icon: Moon },
+	{ value: "system", label: "Sistema", icon: Monitor },
+]
+
+const SectionTitle = ({ children }: { children: string }) => (
+	<h3 className="text-sm font-semibold">{children}</h3>
+)
 
 export const UserSettingsSheet = ({
 	open,
@@ -25,93 +32,71 @@ export const UserSettingsSheet = ({
 }: UserSettingsSheetProps) => {
 	const { theme, setTheme } = useTheme()
 
-	const themeOptions = [
-		{ value: "light", label: "Claro" },
-		{ value: "dark", label: "Escuro" },
-		{ value: "system", label: "Sistema" },
-	]
-
 	return (
 		<Sheet
 			open={open}
 			onOpenChange={onOpenChange}
 		>
-			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
-				<div className="flex h-full flex-col">
-					<SheetHeader>
-						<SheetTitle>Configurações</SheetTitle>
+			{/* data-[side=right]:w-full: sem isso o painel fica com 3/4 da largura no celular. */}
+			<SheetContent className="w-full gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-md">
+				<SheetHeader className="border-b px-6 py-5 pr-12">
+					<SheetTitle className="text-lg font-semibold">Configurações</SheetTitle>
 
-						<SheetDescription>
-							Personalize sua conta e preferências.
-						</SheetDescription>
-					</SheetHeader>
+					<SheetDescription>
+						Personalize sua conta e suas preferências.
+					</SheetDescription>
+				</SheetHeader>
 
-					<div className="flex-1 space-y-6 px-4 py-6">
-						<section className="space-y-4">
-							<h3 className="text-sm font-semibold">
-								Preferências
-							</h3>
+				<div className="flex flex-1 flex-col gap-8 overflow-y-auto px-6 py-6">
+					<section className="flex flex-col gap-3">
+						<div className="flex flex-col gap-1">
+							<SectionTitle>Aparência</SectionTitle>
+							<p className="text-sm text-muted-foreground">
+								&quot;Sistema&quot; acompanha o tema claro ou escuro do seu dispositivo.
+							</p>
+						</div>
 
-							<Field>
-								<FieldLabel htmlFor="theme">
-									Tema
-								</FieldLabel>
+						{/* Opções à vista no lugar de um select, que abria fora do painel no celular. */}
+						<div role="radiogroup" aria-label="Tema" className="grid grid-cols-3 gap-2">
+							{THEME_OPTIONS.map(({ value, label, icon: Icon }) => {
+								const selected = theme === value
 
-								<Select
-									id="theme"
-									items={themeOptions}
-									value={theme}
-									onValueChange={(value) => value !== null && setTheme(value)}
-								>
-									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Selecione um tema" />
-									</SelectTrigger>
+								return (
+									<button
+										key={value}
+										type="button"
+										role="radio"
+										aria-checked={selected}
+										onClick={() => setTheme(value)}
+										className={cn(
+											"flex flex-col items-center gap-2 rounded-xl border px-2 py-4 text-sm font-medium transition-colors",
+											selected
+												? "border-brand bg-income-soft text-foreground ring-1 ring-brand"
+												: "text-muted-foreground hover:bg-muted hover:text-foreground"
+										)}
+									>
+										<Icon className={cn("size-5", selected && "text-income")} />
+										{label}
+									</button>
+								)
+							})}
+						</div>
+					</section>
 
-									<SelectContent>
-										<SelectGroup>
-											<SelectLabel>Aparência</SelectLabel>
+					<section className="flex flex-col gap-3">
+						<SectionTitle>Conta</SectionTitle>
 
-											{themeOptions.map((item) => (
-												<SelectItem
-													key={item.value}
-													value={item.value}
-												>
-													{item.label}
-												</SelectItem>
-											))}
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							</Field>
-						</section>
-
-						<Separator />
-
-						<section className="space-y-3">
-							<h3 className="text-sm font-semibold">
-								Conta
-							</h3>
-
-							<Button
-								variant="outline"
-								className="w-full justify-start"
-							>
-								Alterar senha
-							</Button>
-						</section>
-					</div>
-
-					<SheetFooter>
-						<Separator className="my-2" />
-
-						<Button
-							variant="secondary"
-							onClick={() => onOpenChange(false)}
-							className="w-full"
+						{/* TODO: Implementar a troca de senha; até lá a opção fica visível, mas desabilitada. */}
+						<button
+							type="button"
+							disabled
+							className="flex h-12 items-center gap-3 rounded-lg border px-4 text-left text-sm disabled:cursor-not-allowed disabled:opacity-60"
 						>
-							Fechar
-						</Button>
-					</SheetFooter>
+							<KeyRound className="size-4 text-muted-foreground" />
+							<span className="flex-1">Alterar senha</span>
+							<span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Em breve</span>
+						</button>
+					</section>
 				</div>
 			</SheetContent>
 		</Sheet>

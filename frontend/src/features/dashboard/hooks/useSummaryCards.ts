@@ -1,14 +1,12 @@
-import { formatCurrency } from "@/src/lib/utils"
 import { DashboardSummaryProps } from "@/src/types"
-import { ArrowDownCircle, ArrowUpCircle, Users, Wallet } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ReportsService } from "../services/reports.services"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 
 export const useSummaryCards = (
-	filters: FormDashboardFilterSchemaType
+	filters: FormDashboardFilterSchemaType,
+	refresh = 0,
 ) => {
-
 	const [summary, setSummary] = useState<DashboardSummaryProps>()
 
 	useEffect(() => {
@@ -18,38 +16,18 @@ export const useSummaryCards = (
 		}
 
 		loadSummary()
-	}, [filters])
+	}, [filters, refresh])
 
-	const cards = summary
-		? [
-			{
-				title: "Saldo",
-				description: "Disponível",
-				value: formatCurrency(summary?.balance ?? 0),
-				icon: Wallet,
-			},
-			{
-				title: "Receitas",
-				description: "Este mês",
-				value: formatCurrency(summary?.income ?? 0),
-				icon: ArrowUpCircle,
-			},
-			{
-				title: "Despesas",
-				description: "Este mês",
-				value: formatCurrency(summary?.expense ?? 0),
-				icon: ArrowDownCircle,
-			},
-			{
-				title: "Membros",
-				description: "Família ativa",
-				value: String(summary?.members ?? 0),
-				icon: Users,
-			},
-		]
-		: []
+	// A API envia os valores decimais como texto.
+	const income = Number(summary?.income ?? 0)
+	const expense = Number(summary?.expense ?? 0)
+	const balance = Number(summary?.balance ?? 0)
 
 	return {
-		cards,
+		loaded: Boolean(summary),
+		income,
+		expense,
+		balance,
+		savingsRate: income > 0 ? balance / income : null,
 	}
 }

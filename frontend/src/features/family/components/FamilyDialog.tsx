@@ -1,12 +1,5 @@
-import { Button } from "@/src/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/src/components/ui/dialog"
+import { UsersRound } from "lucide-react"
+import { FormDialog } from "@/src/components/formDialog"
 import { FieldGroup } from "@/src/components/ui/field"
 
 import { FormTextField } from "../../auth/components/FormTextField"
@@ -39,93 +32,36 @@ export const FamilyDialog = ({
 	const isEditing = selectedFamily !== undefined
 
 	return (
-		<Dialog
+		<FormDialog
 			open={open}
-			onOpenChange={(value) => {
-				if (!value) {
-					handleClose()
-				}
-			}}
+			onClose={handleClose}
+			icon={UsersRound}
+			iconClassName="bg-income-soft text-income"
+			title={isEditing ? "Renomear família" : "Nova família"}
+			description={
+				isEditing
+					? "O novo nome aparece para todos os membros."
+					: "Depois de criar a família, você poderá convidar pessoas para dividir as finanças."
+			}
+			formId="form-family"
+			onSubmit={form.handleSubmit(onSubmit)}
+			submitLabel={isEditing ? "Salvar alterações" : "Criar família"}
+			loading={loading}
 		>
-			<DialogContent className="sm:max-w-md">
-				<form
-					id="form-family"
-					className="space-y-6"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
-					<DialogHeader>
-						<DialogTitle>
-							{isEditing
-								? `Editar `
-								: `Criar `
-							}
-							família
-						</DialogTitle>
+			<FieldGroup>
+				<FormTextField
+					control={form.control}
+					name="name"
+					label="Nome da família"
+					placeholder="Ex.: Família Silva"
+				/>
+			</FieldGroup>
 
-						<DialogDescription>
-							Informe um nome para a sua família. Depois de criada,
-							você poderá convidar outros membros para participar e
-							gerenciar as finanças em conjunto.
-						</DialogDescription>
-					</DialogHeader>
-
-					<FieldGroup>
-						<FormTextField
-							control={form.control}
-							name="name"
-							label="Nome da família"
-							placeholder="Ex.: Família Silva"
-						/>
-					</FieldGroup>
-
-					{isEditing && selectedFamily && (
-						<div className="space-y-2 rounded-lg border bg-muted/40 p-4 text-sm">
-							<div className="flex justify-between gap-4">
-								<span className="font-medium text-muted-foreground">
-									Criado em
-								</span>
-
-								<span className="font-medium text-muted-foreground">
-									{selectedFamily.created_at && formatDate(selectedFamily.created_at)}
-								</span>
-							</div>
-
-							<div className="flex justify-between gap-4">
-								<span className="font-medium text-muted-foreground">
-									Última atualização
-								</span>
-
-								<span className="font-medium text-muted-foreground">
-									{selectedFamily.updated_at && formatDate(selectedFamily.updated_at)}
-								</span>
-							</div>
-						</div>
-					)}
-
-					<DialogFooter>
-						<Button
-							type="button"
-							variant="outline"
-							onClick={handleClose}
-						>
-							Cancelar
-						</Button>
-
-						<Button
-							type="submit"
-							form="form-family"
-							disabled={loading}
-						>
-							{loading
-								? "Salvando..."
-								: isEditing
-									? `Salvar alterações`
-									: "Criar família"
-							}
-						</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+			{isEditing && selectedFamily?.created_at && (
+				<p className="text-xs text-muted-foreground">
+					Criada em {formatDate(selectedFamily.created_at)}
+				</p>
+			)}
+		</FormDialog>
 	)
 }

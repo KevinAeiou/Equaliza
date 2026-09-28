@@ -1,55 +1,26 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { getDefaultValues, FormDashboardFilterSchema, FormDashboardFilterSchemaType, PeriodType } from "../schemas/filters.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CategoryProps, SelectOption } from "@/src/types"
-import { FinanceService } from "../../finance/services/financial.service"
-import { getPeriod, isApiError } from "@/src/lib/utils"
-import { toast } from "sonner"
+import { getPeriod } from "@/src/lib/utils"
 
 interface UseDashboardFiltersProps {
+	filters: FormDashboardFilterSchemaType
+	showFilter: boolean
 	setShowFilter: (value: boolean) => void
 	onApply: (filters: FormDashboardFilterSchemaType) => void
 }
 
 export const useDashboardFilters = ({
+	filters,
+	showFilter,
 	setShowFilter,
 	onApply,
 }: UseDashboardFiltersProps) => {
-	const [categories, setCategories] = useState<CategoryProps[]>([])
-
 	const form = useForm<FormDashboardFilterSchemaType>({
 		resolver: zodResolver(FormDashboardFilterSchema),
-		defaultValues: getDefaultValues(),
+		defaultValues: filters,
 	})
-
-	const categoryOptions: SelectOption<number>[] = categories.map((category) => ({
-		label: category.name,
-		value: category.id,
-	}))
-
-	const periodOptions: SelectOption<string>[] = [
-		{
-			label: "Dia",
-			value: PeriodType.DAY,
-		},
-		{
-			label: "Semana",
-			value: PeriodType.WEEK,
-		},
-		{
-			label: "Mês",
-			value: PeriodType.MONTH,
-		},
-		{
-			label: "Ano",
-			value: PeriodType.YEAR,
-		},
-		{
-			label: "Período personalizado",
-			value: PeriodType.PERIOD,
-		},
-	]
 
 	const type = useWatch({
 		control: form.control,
@@ -70,28 +41,14 @@ export const useDashboardFilters = ({
 		setShowFilter(false)
 	}
 
+	// O período também muda fora do painel (setas e etiquetas), então o formulário parte do filtro atual.
 	useEffect(() => {
-		const loadCategories = async () => {
-			setCategories([])
-
-			try {
-				const response = await FinanceService.listCategories()
-
-				setCategories(response)
-			} catch (error) {
-				const message = isApiError(error)
-					? error.message
-					: "Erro desconhecido ao listar categorias"
-
-				toast.error(message)
-			}
-		}
-
-		loadCategories()
-	}, [])
+		if (showFilter) form.reset(filters)
+	}, [form, filters, showFilter])
 
 	useEffect(() => {
 		if (type === PeriodType.PERIOD) return
+		if (!form.getFieldState("type").isDirty) return
 
 		form.setValue("period", getPeriod(type))
 	}, [form, type])
@@ -100,8 +57,6 @@ export const useDashboardFilters = ({
 		form,
 		type,
 		onSubmit,
-		categoryOptions,
 		handleClear,
-		periodOptions,
 	}
 }

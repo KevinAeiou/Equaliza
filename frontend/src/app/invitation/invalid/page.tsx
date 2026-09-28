@@ -1,3 +1,4 @@
+import { AuthShell } from "@/src/features/auth/components/AuthShell"
 import { InvalidInvitationCard } from "@/src/features/auth/components/InvitationInvalidCard"
 
 interface Props {
@@ -12,10 +13,10 @@ export default async function InvalidInvitationPage({
 	const { reason } = await searchParams
 
 	return (
-		<main className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+		<AuthShell>
 			<InvalidInvitationCard
 				message={reason}
 			/>
-		</main>
+		</AuthShell>
 	)
 }

@@ -1,39 +1,33 @@
 "use client"
 
+import { Check, LogOut, Menu, Settings, Settings2, UserRound } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
-import { Menu, Home, Wallet, Users, Mail, LogOut, PencilSparklesIcon, Tags, UserRoundPlus } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 import { Button } from "@/src/components/ui/button"
 import {
 	Sheet,
 	SheetContent,
-	SheetFooter,
-	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/src/components/ui/sheet"
+import { getFamilyMonogram } from "@/src/features/dashboard/utils"
+import { cn } from "@/src/lib/utils"
 
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from "@/src/components/ui/select"
-
-import { Separator } from "@/src/components/ui/separator"
-
-import { InviteDialog } from "@/src/features/invitation/components/InviteDialog"
-
+import { isActiveLink, NAV_LINKS } from "../menuNavegation"
 import { useMenuNavegation } from "../menuNavegation/useMenuNavegation"
 import { useUserNavigation } from "../userNavegation/useUserNavigation"
 import { useSheetNavigation } from "./useSheetNavigation"
 import { ProfileDialog } from "../profileDialog"
-import Image from "next/image"
+import { UserSettingsSheet } from "../userSettingsSheet"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { Field, FieldLabel } from "../ui/field"
+
+const SectionTitle = ({ children }: { children: string }) => (
+	<span className="px-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+		{children}
+	</span>
+)
 
 export const SheetNavigation = () => {
 	const {
@@ -41,16 +35,14 @@ export const SheetNavigation = () => {
 		selectedFamily,
 		handleFamilyChange,
 		isAdmin,
-		showInviteDialog,
-		setShowInviteDialog,
 	} = useMenuNavegation()
 
 	const {
 		user,
 		avatar,
 		handleLogout,
-		setShowProfile,
-		showProfile,
+		showProfile, setShowProfile,
+		showSettings, setShowSettings,
 	} = useUserNavigation()
 
 	const {
@@ -58,238 +50,189 @@ export const SheetNavigation = () => {
 		handleClose,
 	} = useSheetNavigation()
 
+	const pathname = usePathname()
+
+	const rowClassName = "flex h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors"
+
 	return (
 		<>
 			<Sheet
 				open={open}
 				onOpenChange={setOpen}
 			>
-				<SheetTrigger>
-					<Menu />
+				<SheetTrigger
+					render={<Button variant="ghost" size="icon" className="size-11" aria-label="Abrir menu" />}
+				>
+					<Menu className="size-5" />
 				</SheetTrigger>
 
 				<SheetContent
-					side="left"
-					className="w-full rounded-r-xl sm:max-w-md"
+					side="right"
+					className="w-full gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-sm"
 				>
-					<SheetHeader className="border-b pb-5">
-						<div className="flex items-center gap-3">
-							<Image
-								src="/logo-icon.svg"
-								alt="Equaliza"
-								width={42}
-								height={42}
-								className="block dark:hidden transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
+					<div className="flex h-14 items-center border-b px-4 pr-14">
+						<SheetTitle className="sr-only">Menu</SheetTitle>
 
-							/>
+						<Image
+							src="/logo.svg"
+							alt="Equaliza"
+							width={116}
+							height={29}
+							className="block dark:hidden"
+						/>
 
-							<Image
-								src="/logo-icon-white.svg"
-								alt="Equaliza"
-								width={42}
-								height={42}
-								className="hidden dark:block transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
-							/>
-
-							<div>
-								<SheetTitle>Equaliza</SheetTitle>
-
-								<p className="text-sm text-muted-foreground">
-									Organize suas finanças
-								</p>
-							</div>
-						</div>
-					</SheetHeader>
-
-					<div className="flex flex-1 flex-col gap-4 py-6 px-4">
-						<Field>
-							<FieldLabel htmlFor="family">Família</FieldLabel>
-
-							<Select
-								id="family"
-								items={families}
-								value={selectedFamily?.id.toString() ?? ""}
-								onValueChange={handleFamilyChange}
-								disabled={families.length === 0}
-							>
-								<SelectTrigger className="w-full">
-									<SelectValue
-										placeholder={families.length === 0
-											? "Nenhuma família cadastrada"
-											: "Selecione uma família"
-										}
-									/>
-								</SelectTrigger>
-
-								<SelectContent>
-									<SelectGroup>
-										<SelectLabel>Família atual</SelectLabel>
-
-										{families.length === 0 ? (
-											<SelectItem value="empty" disabled>
-												Nenhuma família cadastrada
-											</SelectItem>
-										) : (
-											families.map((item) => (
-												<SelectItem key={item.value} value={item.value}>
-													{item.label}
-												</SelectItem>
-											))
-										)}
-									</SelectGroup>
-								</SelectContent>
-							</Select>
-						</Field>
-
-						<Separator />
-
-						<nav className="flex flex-col gap-2">
-
-							<Button
-								variant="ghost"
-								className="justify-start"
-								onClick={handleClose}
-							>
-								<Link
-									className="flex"
-									href="/"
-								>
-									<Home className="mr-2 h-4 w-4" />
-									Dashboard
-								</Link>
-							</Button>
-
-							<Button
-								variant="ghost"
-								className="justify-start"
-								onClick={handleClose}
-							>
-								<Link
-									className="flex"
-									href="/finance"
-								>
-									<Wallet className="mr-2 h-4 w-4" />
-									Finanças
-								</Link>
-							</Button>
-
-							<Button
-								variant="ghost"
-								className="justify-start"
-								onClick={handleClose}
-							>
-								<Link
-									className="flex"
-									href="/family"
-								>
-									<UserRoundPlus className="mr-2 h-4 w-4" />
-									Famílias
-								</Link>
-							</Button>
-
-							{isAdmin && (
-								<>
-									<Button
-										variant="ghost"
-										className="justify-start"
-										onClick={handleClose}
-									>
-										<Link
-											className="flex"
-											href="/member"
-										>
-											<Users className="mr-2 h-4 w-4" />
-											Membros
-										</Link>
-									</Button>
-
-									<Button
-										variant="ghost"
-										className="justify-start"
-										onClick={handleClose}
-									>
-										<Link
-											className="flex"
-											href="/invitation"
-										>
-											<Mail className="mr-2 h-4 w-4" />
-											Convites
-										</Link>
-									</Button>
-
-									<Button
-										variant="ghost"
-										className="justify-start"
-										onClick={handleClose}
-									>
-										<Link
-											className="flex"
-											href="/category"
-										>
-											<Tags className="mr-2 h-4 w-4" />
-											Categorias
-										</Link>
-									</Button>
-								</>
-							)}
-						</nav>
+						<Image
+							src="/logo-white.svg"
+							alt="Equaliza"
+							width={116}
+							height={29}
+							className="hidden dark:block"
+						/>
 					</div>
 
-					<SheetFooter>
-						<Separator className="my-2" />
+					<div className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-5">
+						<nav aria-label="Navegação principal" className="flex flex-col gap-1">
+							<SectionTitle>Navegação</SectionTitle>
 
-						<Button
-							variant="ghost"
-							className="h-auto w-full justify-start p-3"
-							onClick={() => {
-								setShowProfile(true)
-								handleClose()
-							}}
-						>
-							<div className="flex w-full items-center gap-3">
-								<Avatar>
-									<AvatarImage src={avatar?.image} />
+							{NAV_LINKS.filter((link) => !link.adminOnly || isAdmin).map(({ href, label, icon: Icon }) => {
+								const active = isActiveLink(pathname, href)
 
-									<AvatarFallback>
-										{`${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`}
-									</AvatarFallback>
-								</Avatar>
+								return (
+									<Link
+										key={href}
+										href={href}
+										onClick={handleClose}
+										aria-current={active ? "page" : undefined}
+										className={cn(
+											rowClassName,
+											active ? "bg-muted font-medium text-foreground" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+										)}
+									>
+										<Icon className={cn("size-4", active && "text-income")} />
+										{label}
+									</Link>
+								)
+							})}
+						</nav>
 
-								<div className="min-w-0 flex-1 text-left">
-									<p className="truncate text-sm font-medium">
-										{user.first_name}
-									</p>
+						<div className="flex flex-col gap-1">
+							<SectionTitle>Família</SectionTitle>
 
-									<p className="truncate text-xs text-muted-foreground">
-										{user.role}
-									</p>
-								</div>
+							{families.length === 0 && (
+								<p className="px-3 py-2 text-sm text-muted-foreground">
+									Você ainda não participa de nenhuma família.
+								</p>
+							)}
 
-								<PencilSparklesIcon className="h-4 w-4 text-muted-foreground" />
+							{/* Trocar de família com um toque; a atual fica marcada. */}
+							<div role="radiogroup" aria-label="Família atual" className="flex flex-col gap-1">
+								{families.map((family) => {
+									const current = family.value === selectedFamily?.id.toString()
+
+									return (
+										<button
+											key={family.value}
+											type="button"
+											role="radio"
+											aria-checked={current}
+											onClick={() => !current && handleFamilyChange(family.value)}
+											className={cn(rowClassName, "text-left", current ? "bg-muted font-medium" : "hover:bg-muted/60")}
+										>
+											<span
+												className={cn(
+													"flex size-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold",
+													current ? "bg-brand text-brand-foreground" : "bg-muted text-foreground"
+												)}
+											>
+												{getFamilyMonogram(family.label)}
+											</span>
+
+											<span className="flex-1 truncate">{family.label}</span>
+
+											{current && <Check className="size-4 text-income" />}
+										</button>
+									)
+								})}
 							</div>
-						</Button>
 
+							<Link
+								href="/family"
+								onClick={handleClose}
+								className={cn(rowClassName, "text-muted-foreground hover:bg-muted/60 hover:text-foreground")}
+							>
+								<Settings2 className="size-4" />
+								Gerenciar famílias
+							</Link>
+						</div>
+					</div>
+
+					<div className="flex flex-col gap-3 border-t p-4">
+						<div className="flex items-center gap-3">
+							<Avatar className="size-10">
+								<AvatarImage src={avatar?.image} alt="" className="object-cover" />
+
+								<AvatarFallback>
+									{`${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`}
+								</AvatarFallback>
+							</Avatar>
+
+							<div className="flex min-w-0 flex-1 flex-col">
+								<span className="truncate text-sm font-medium">
+									{[user.first_name, user.last_name].filter(Boolean).join(" ")}
+								</span>
+
+								<span className="truncate text-xs text-muted-foreground">
+									{user.role ? `${user.role} · ${user.email}` : user.email}
+								</span>
+							</div>
+						</div>
+
+						<div className="grid grid-cols-2 gap-2">
+							<Button
+								variant="outline"
+								className="h-10 gap-2"
+								onClick={() => {
+									setShowProfile(true)
+									handleClose()
+								}}
+							>
+								<UserRound className="size-4" />
+								Perfil
+							</Button>
+
+							<Button
+								variant="outline"
+								className="h-10 gap-2"
+								onClick={() => {
+									setShowSettings(true)
+									handleClose()
+								}}
+							>
+								<Settings className="size-4" />
+								Configurações
+							</Button>
+						</div>
 
 						<Button
 							variant="ghost"
-							className="justify-start text-destructive hover:text-destructive"
+							className="h-10 gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
 							onClick={handleLogout}
 						>
-							<LogOut className="mr-2 h-4 w-4" />
+							<LogOut className="size-4" />
 							Sair
 						</Button>
-					</SheetFooter>
+					</div>
 				</SheetContent>
 			</Sheet>
-
-			<InviteDialog
-				open={showInviteDialog}
-				setOpen={setShowInviteDialog}
-			/>
 
 			<ProfileDialog
 				open={showProfile}
 				onOpenChange={setShowProfile}
+			/>
+
+			<UserSettingsSheet
+				open={showSettings}
+				onOpenChange={setShowSettings}
 			/>
 		</>
 	)

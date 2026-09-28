@@ -71,9 +71,11 @@ export const useFinanceCard = ({
 		setOpen(true)
 	}, [setFinanceId, setOpen])
 
-	const tableColumns = useMemo(() => columns(handleDelete, onEdit, type),
-		[handleDelete, onEdit, type]
+	const tableColumns = useMemo(() => columns(handleDelete, onEdit, type, user.id),
+		[handleDelete, onEdit, type, user.id]
 	)
+
+	const total = finances.reduce((sum, finance) => sum + Number(finance.amount), 0)
 
 	const table = useReactTable({
 		data: finances,
@@ -93,5 +95,7 @@ export const useFinanceCard = ({
 	return {
 		table,
 		loading,
+		count: finances.length,
+		total,
 	}
 }

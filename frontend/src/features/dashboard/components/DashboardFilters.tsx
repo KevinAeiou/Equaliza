@@ -1,30 +1,21 @@
 "use client"
 
-import { Button } from "@/src/components/ui/button"
-
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetFooter,
-	SheetHeader,
-	SheetTitle,
-} from "@/src/components/ui/sheet"
+import { ChipGroup, FilterSection, FilterSheet, FormChipsField } from "@/src/components/filters"
 import { useDashboardFilters } from "../hooks/useDashboardFilters"
-import { FormDateRangeField } from "./FormDateRangeField"
-import { FormMultiSelectField } from "./FormMultiSelectField"
-import { PeriodType, FormDashboardFilterSchemaType } from "../schemas/filters.schema"
-import { Separator } from "@/src/components/ui/separator"
-import { FormSelectField } from "../../finance/components/FormSelectField"
-import { FormSinglePeriodField } from "./FormSiglePeriodField"
+import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
+import { PeriodFilterFields } from "./PeriodFilterFields"
 
 interface DashboardFiltersProps {
+	filters: FormDashboardFilterSchemaType
+	categoryGroups: ChipGroup[]
 	showFilter: boolean
 	setShowFilter: (value: boolean) => void
 	onApply: (filters: FormDashboardFilterSchemaType) => void
 }
 
 export const DashboardFilters = ({
+	filters,
+	categoryGroups,
 	showFilter,
 	onApply,
 	setShowFilter,
@@ -33,83 +24,38 @@ export const DashboardFilters = ({
 		form,
 		type,
 		onSubmit,
-		categoryOptions,
 		handleClear,
-		periodOptions,
-	} = useDashboardFilters({ setShowFilter, onApply })
+	} = useDashboardFilters({ filters, showFilter, setShowFilter, onApply })
+
+	const selected = form.watch("categories").length
 
 	return (
-		<Sheet
+		<FilterSheet
 			open={showFilter}
 			onOpenChange={setShowFilter}
+			title="Filtros do dashboard"
+			description="Escolha o período e as categorias que entram nos indicadores."
+			formId="form-filters"
+			onSubmit={form.handleSubmit(onSubmit)}
+			onClear={handleClear}
 		>
-			<SheetContent className="w-full rounded-l-xl sm:max-w-md">
-				<SheetHeader>
-					<SheetTitle>Filtros do Dashboard</SheetTitle>
+			<PeriodFilterFields
+				control={form.control}
+				typeName="type"
+				periodName="period"
+				type={type}
+			/>
 
-					<SheetDescription>
-						Selecione os períodos e categorias desejadas.
-					</SheetDescription>
-				</SheetHeader>
-
-				<form
-					id="form-filters"
-					className="space-y-6"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
-					<div className="flex flex-col gap-4 px-4">
-						<div className="flex gap-2 items-end">
-							<FormSelectField
-								control={form.control}
-								name="type"
-								label="Período"
-								options={periodOptions}
-							/>
-
-							{type === PeriodType.PERIOD ? (
-								<FormDateRangeField
-									control={form.control}
-									name="period"
-								/>
-							) : (
-								<FormSinglePeriodField
-									name="period"
-									control={form.control}
-									type={type}
-								/>
-							)}
-						</div>
-
-						<FormMultiSelectField
-							control={form.control}
-							name="categories"
-							label="Categorias"
-							placeholder="Todos"
-							options={categoryOptions}
-						/>
-					</div>
-				</form>
-
-				<SheetFooter className="gap-4">
-					<Separator className="my-2" />
-
-					<Button
-						type="button"
-						variant="outline"
-						onClick={handleClear}
-					>
-						Limpar filtros
-					</Button>
-
-					<Button
-						type="submit"
-						form="form-filters"
-						className="w-full"
-					>
-						Aplicar filtros
-					</Button>
-				</SheetFooter>
-			</SheetContent>
-		</Sheet>
+			<FilterSection
+				title="Categorias"
+				hint={selected ? `${selected} selecionada${selected > 1 ? "s" : ""}` : undefined}
+			>
+				<FormChipsField
+					control={form.control}
+					name="categories"
+					groups={categoryGroups}
+				/>
+			</FilterSection>
+		</FilterSheet>
 	)
 }

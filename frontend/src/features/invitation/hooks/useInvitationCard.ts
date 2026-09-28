@@ -1,10 +1,8 @@
 import { isApiError } from "@/src/lib/utils"
 import { InviteProps } from "@/src/types"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { InvitationService } from "../services/invitation.service"
-import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
-import { columns } from "../components/columns"
 import { useAuth } from "@/src/components/providers/AuthProvider"
 
 interface UseInvitarionCardProps {
@@ -15,31 +13,11 @@ export const useInvitationCard = ({
 	refresh,
 }: UseInvitarionCardProps) => {
 	const [invites, setInvites] = useState<InviteProps[]>([])
-	const [loading, setLoading] = useState<boolean>(false)
-	const [sorting, setSorting] = useState<SortingState>([])
+	const [loading, setLoading] = useState<boolean>(true)
 
 	const { user } = useAuth()
 
 	const currentFamilyId = user.current_family?.id
-
-	const loadInvitations = useCallback(async () => {
-		setLoading(true)
-
-		try {
-			const response = await InvitationService.list()
-
-			setInvites(response)
-		} catch (error) {
-			setInvites([])
-			const message = isApiError(error)
-				? error.message
-				: "Erro desconhecido ao listar convites"
-
-			toast.error(message)
-		} finally {
-			setLoading(false)
-		}
-	}, [])
 
 	const handleDeleteInvitation = async (invite: InviteProps) => {
 		try {
@@ -49,7 +27,7 @@ export const useInvitationCard = ({
 				current.filter((item) => item.id !== invite.id)
 			)
 
-			toast.success("Convite excluído com sucesso.")
+			toast.success(invite.status === "Pendente" ? "Convite cancelado." : "Convite excluído.")
 		} catch (error) {
 			const message = isApiError(error)
 				? error.message
@@ -60,22 +38,29 @@ export const useInvitationCard = ({
 	}
 
 	useEffect(() => {
-		loadInvitations()
-	}, [loadInvitations, refresh, currentFamilyId])
+		const loadInvitations = async () => {
+			try {
+				const response = await InvitationService.list()
 
-	const table = useReactTable({
-		data: invites,
-		columns: columns(handleDeleteInvitation),
-		state: {
-			sorting,
-		},
-		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-	})
+				setInvites(response)
+			} catch (error) {
+				setInvites([])
+				const message = isApiError(error)
+					? error.message
+					: "Erro desconhecido ao listar convites"
+
+				toast.error(message)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadInvitations()
+	}, [refresh, currentFamilyId])
 
 	return {
 		loading,
-		table,
+		invites,
+		handleDeleteInvitation,
 	}
 }

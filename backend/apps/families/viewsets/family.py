@@ -6,6 +6,7 @@ from rest_framework.exceptions import PermissionDenied
 from apps.families.enums import FamilyRole
 from apps.families.serializers import (
     CreateFamilySerializer,
+    FamilyOverviewSerializer,
     ListFamilySerializer,
     UpdateFamilySerializer,
 )
@@ -31,12 +32,15 @@ class FamilyViewSet(viewsets.ModelViewSet):
         if self.action in ["update", "partial_update"]:
             return UpdateFamilySerializer
 
+        if self.action == "list":
+            return FamilyOverviewSerializer
+
         return ListFamilySerializer
 
     def get_queryset(self):
         return ListFamilyService.execute(
             user=self.request.user,
-        )
+        ).prefetch_related("memberships")
 
     def _check_owner_permission(self, family):
         membership = family.memberships.filter(

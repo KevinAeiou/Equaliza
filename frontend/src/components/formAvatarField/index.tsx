@@ -41,21 +41,22 @@ export const FormAvatarField = <T extends FieldValues,>({
 						{label}
 					</FieldLabel>
 
-					<div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
+					<div className="grid grid-cols-4 gap-3 sm:grid-cols-7">
 						{AVATARS.map((avatar) => (
 							<button
 								key={avatar.id}
 								type="button"
 								onClick={() => field.onChange(avatar.id)}
 								aria-label={avatar.name}
+								aria-pressed={field.value === avatar.id}
 								className={cn(
-									"rounded-full border-2 p-1 transition",
+									"aspect-square rounded-full border-2 p-0.5 transition",
 									field.value === avatar.id
-										? "border-primary"
-										: "border-transparent hover:border-muted-foreground"
+										? "border-brand ring-2 ring-brand/25"
+										: "border-transparent hover:border-muted-foreground/50"
 								)}
 							>
-								<Avatar className="h-auto w-auto">
+								<Avatar className="size-full">
 									<AvatarImage
 										src={avatar.image}
 										alt={avatar.name}

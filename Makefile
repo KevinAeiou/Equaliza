@@ -9,6 +9,10 @@ docker_dev: docker_setup
 	docker compose -f docker-compose.dev.yml up -d
 	docker compose -f docker-compose.dev.yml exec backend python manage.py migrate --fake-initial
 
+# Povoar o banco de desenvolvimento com dados de demonstração (recria a cada execução)
+docker_seed:
+	docker compose -f docker-compose.dev.yml exec backend python manage.py seed_demo
+
 # Subir containers em modo produção
 docker_prod: docker_setup
 	docker compose -f docker-compose.prod.yml build

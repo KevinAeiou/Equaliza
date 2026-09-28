@@ -1,9 +1,8 @@
-import { CardAction, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card"
 import { ReactNode } from "react"
 
 interface FormHeaderFieldProps {
 	title: string
-	description?: string
+	description?: ReactNode
 	children?: ReactNode
 }
 
@@ -14,18 +13,18 @@ export const FormHeaderField = ({
 }: FormHeaderFieldProps) => {
 
 	return (
-		<CardHeader className="space-y-2">
-			<CardTitle className="text-3xl">
+		<div className="flex flex-col gap-2">
+			<h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
 				{title}
-			</CardTitle>
+			</h2>
 
-			<CardDescription>
-				{description}
-			</CardDescription>
+			{description && (
+				<p className="text-sm text-muted-foreground">
+					{description}
+				</p>
+			)}
 
-			<CardAction>
-				{children}
-			</CardAction>
-		</CardHeader>
+			{children}
+		</div>
 	)
 }

@@ -14,12 +14,14 @@ import {
 
 interface AlertDialogDestructiveProps {
 	open: boolean
+	memberName?: string
 	handleOnDelete: () => void
 	handleOnClose: () => void
 }
 
 export const AlertDialogDestructive = ({
 	open,
+	memberName,
 	handleOnDelete,
 	handleOnClose,
 }: AlertDialogDestructiveProps) => {
@@ -34,7 +36,9 @@ export const AlertDialogDestructive = ({
 						<Trash2Icon />
 					</AlertDialogMedia>
 
-					<AlertDialogTitle>Remover membro?</AlertDialogTitle>
+					<AlertDialogTitle>
+						{memberName ? `Remover ${memberName}?` : "Remover membro?"}
+					</AlertDialogTitle>
 
 					<AlertDialogDescription>
 						Esta ação removerá o membro da família e excluirá permanentemente todos os dados vinculados a ele dentro desta família. Essa ação não pode ser desfeita.
