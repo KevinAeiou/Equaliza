@@ -204,6 +204,9 @@ equaliza/
 │       ├── types/
 │       └── utils/
 │
+├── mobile/
+│   └── lib/
+│
 └── docker-compose.yml
 ```
 
@@ -293,6 +296,12 @@ npm run dev
 ```bash
 make docker-dev
 ```
+
+---
+
+## 5. Mobile
+
+Consulte o [README do aplicativo mobile](mobile/README.md).
 
 ---
 
