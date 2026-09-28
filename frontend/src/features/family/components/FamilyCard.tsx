@@ -16,7 +16,7 @@ import {
 } from "@/src/components/ui/dropdown-menu"
 import { cn } from "@/src/lib/utils"
 import { FamilyProps, UserRole } from "@/src/types"
-import { getInitials } from "../../dashboard/utils"
+import { getFamilyMonogram } from "../../dashboard/utils"
 import { useFamilyCard } from "../hooks/useFamilyCard"
 import { DeleteFamilyDialog } from "./DeleteFamilyDialog"
 
@@ -32,8 +32,6 @@ const ROLE_STYLES: Record<string, string> = {
 	[UserRole.MEMBER]: "border text-muted-foreground",
 }
 
-// Tira o prefixo "Família" para que o monograma mostre o sobrenome ("Família Souza" → "S").
-const monogram = (name: string) => getInitials(name.replace(/^fam[ií]lia\s+/i, "")).slice(0, 2) || "F"
 
 export const FamilyCard = ({
 	refresh,
@@ -93,7 +91,7 @@ export const FamilyCard = ({
 											current ? "bg-brand text-brand-foreground" : "bg-muted text-foreground"
 										)}
 									>
-										{monogram(family.name)}
+										{getFamilyMonogram(family.name)}
 									</span>
 
 									<div className="flex min-w-0 flex-1 flex-col gap-1.5">

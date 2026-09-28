@@ -172,3 +172,7 @@ export const getInitials = (name: string) =>
 		.join("")
 
 export const getFirstName = (name: string) => name.split(" ")[0] ?? name
+
+// Monograma de uma família sem o prefixo "Família" ("Família Souza" → "S").
+export const getFamilyMonogram = (name: string) =>
+	getInitials(name.replace(/^fam[ií]lia\s+/i, "")).slice(0, 2) || "F"

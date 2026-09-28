@@ -4,40 +4,56 @@ import Link from "next/link"
 import { UserNavegation } from "@/src/components/userNavegation"
 import { MenuNavegation } from "../menuNavegation"
 import { SheetNavigation } from "../sheetNavigation"
+import { FamilySwitcher } from "./FamilySwitcher"
+
+const Logo = ({ width, height }: { width: number, height: number }) => (
+	<Link
+		href="/dashboard"
+		aria-label="Equaliza, ir para o dashboard"
+		className="flex shrink-0 items-center rounded-lg"
+	>
+		<Image
+			src="/logo.svg"
+			alt="Equaliza"
+			width={width}
+			height={height}
+			className="block dark:hidden"
+			priority
+		/>
+
+		<Image
+			src="/logo-white.svg"
+			alt="Equaliza"
+			width={width}
+			height={height}
+			className="hidden dark:block"
+			priority
+		/>
+	</Link>
+)
 
 export const HeaderApp = () => {
 	return (
-		<header className="flex w-full items-center justify-end gap-2 px-4 py-2">
-			<div className="w-full hidden md:flex items-center justify-between gap-2">
-				<Link
-					href="/"
-					className="group flex items-center rounded-lg p-2 transition-all duration-300 hover:bg-muted/40"
-				>
-					<Image
-						src="/logo.svg"
-						alt="Equaliza"
-						width={180}
-						height={44}
-						className="block dark:hidden transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
-						priority
-					/>
+		<header className="sticky top-0 z-40 w-full border-b bg-background/90 px-4 backdrop-blur sm:px-8">
+			<div className="mx-auto hidden h-16 w-full max-w-7xl items-center gap-6 lg:flex">
+				<div className="flex items-center gap-4">
+					<Logo width={132} height={33} />
 
-					<Image
-						src="/logo-white.svg"
-						alt="Equaliza"
-						width={180}
-						height={44}
-						className="hidden dark:block transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
-						priority
-					/>
-				</Link>
+					<span className="h-6 w-px bg-border" aria-hidden="true" />
 
-				<MenuNavegation />
+					<FamilySwitcher />
+				</div>
+
+				<div className="flex flex-1 justify-center">
+					<MenuNavegation />
+				</div>
 
 				<UserNavegation />
 			</div>
 
-			<div className="flex md:hidden">
+			<div className="flex h-14 items-center justify-between lg:hidden">
+				<Logo width={116} height={29} />
+
 				<SheetNavigation />
 			</div>
 		</header>
