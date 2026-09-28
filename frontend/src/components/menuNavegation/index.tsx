@@ -1,5 +1,6 @@
 "use client"
 
+import { Home, LucideIcon, Mail, Tags, Users, UsersRound, Wallet } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/src/lib/utils"
@@ -8,18 +9,22 @@ import { useMenuNavegation } from "./useMenuNavegation"
 interface NavLink {
 	href: string
 	label: string
+	icon: LucideIcon
 	adminOnly?: boolean
 }
 
 // Categorias, Membros e Convites exigem responsável ou administrador (as rotas também são protegidas).
 export const NAV_LINKS: NavLink[] = [
-	{ href: "/dashboard", label: "Dashboard" },
-	{ href: "/finance", label: "Finanças" },
-	{ href: "/category", label: "Categorias", adminOnly: true },
-	{ href: "/member", label: "Membros", adminOnly: true },
-	{ href: "/invitation", label: "Convites", adminOnly: true },
-	{ href: "/family", label: "Famílias" },
+	{ href: "/dashboard", label: "Dashboard", icon: Home },
+	{ href: "/finance", label: "Finanças", icon: Wallet },
+	{ href: "/category", label: "Categorias", icon: Tags, adminOnly: true },
+	{ href: "/member", label: "Membros", icon: Users, adminOnly: true },
+	{ href: "/invitation", label: "Convites", icon: Mail, adminOnly: true },
+	{ href: "/family", label: "Famílias", icon: UsersRound },
 ]
+
+export const isActiveLink = (pathname: string, href: string) =>
+	pathname === href || pathname.startsWith(`${href}/`)
 
 export const MenuNavegation = () => {
 	const { isAdmin } = useMenuNavegation()
@@ -28,7 +33,7 @@ export const MenuNavegation = () => {
 	return (
 		<nav aria-label="Navegação principal" className="flex items-center gap-1">
 			{NAV_LINKS.filter((link) => !link.adminOnly || isAdmin).map((link) => {
-				const active = pathname === link.href || pathname.startsWith(`${link.href}/`)
+				const active = isActiveLink(pathname, link.href)
 
 				return (
 					<Link
