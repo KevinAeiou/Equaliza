@@ -12,7 +12,9 @@ class ListInvitationSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "email",
+            "created_at",
             "expires_at",
+            "accepted_at",
             "status",
             "link",
         )

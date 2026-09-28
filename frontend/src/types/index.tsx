@@ -70,7 +70,9 @@ export interface InviteValidationProps {
 
 export interface InviteProps {
 	id: number
+	created_at: string
 	expires_at: string,
+	accepted_at: string | null
 	email: string,
 	status: string
 	link: string

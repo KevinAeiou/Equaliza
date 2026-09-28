@@ -1,6 +1,6 @@
 import calendar
 import random
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 from django.conf import settings
@@ -12,6 +12,7 @@ from apps.families.enums import FamilyRole
 from apps.families.models import Family, FamilyMember
 from apps.finance.enums import CategoryType
 from apps.finance.models import Expense, FinancialCategory, Income
+from apps.invitations.models import Invitation
 from apps.users.enuns import Avatar
 from apps.users.models import User
 
@@ -80,9 +81,11 @@ class Command(BaseCommand):
             family = self.create_family(users)
             categories = self.load_categories(family)
             incomes, expenses = self.create_entries(family, users, categories)
+            invitations = self.create_invitations(family, users)
 
         self.stdout.write(self.style.SUCCESS(
-            f"{FAMILY_NAME}: {len(users)} membros, {incomes} receitas e {expenses} despesas."
+            f"{FAMILY_NAME}: {len(users)} membros, {incomes} receitas, {expenses} despesas "
+            f"e {invitations} convites."
         ))
         self.stdout.write(f"Senha de todos os usuários: {PASSWORD}")
 
@@ -203,6 +206,33 @@ class Command(BaseCommand):
         Expense.objects.bulk_create(expenses)
 
         return len(incomes), len(expenses)
+
+    def create_invitations(self, family, users):
+        now = timezone.now()
+        owner = users["ana"]
+
+        # (e-mail, criado há N dias, aceito há N dias ou None). Convites valem 7 dias.
+        invitations = [
+            ("joao.souza@example.com", 1, None),
+            ("vovo.lucia@example.com", 5, None),
+            ("carla@equaliza.dev", 20, 19),
+            ("tio.marcos@example.com", 12, None),
+        ]
+
+        for email, created_days, accepted_days in invitations:
+            created_at = now - timedelta(days=created_days)
+            invitation = Invitation.objects.create(
+                family=family,
+                email=email,
+                expires_at=created_at + timedelta(days=7),
+                accepted_at=now - timedelta(days=accepted_days) if accepted_days else None,
+                created_by=owner,
+                updated_by=owner,
+            )
+            # created_at é preenchido automaticamente; ajusta para refletir a data simulada.
+            Invitation.objects.filter(pk=invitation.pk).update(created_at=created_at)
+
+        return len(invitations)
 
     def amount(self, low, high):
         if low == high:

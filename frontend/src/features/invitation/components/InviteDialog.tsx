@@ -48,10 +48,8 @@ export const InviteDialog = ({
 						<DialogTitle>Convidar novo membro</DialogTitle>
 
 						<DialogDescription>
-							Informe o e-mail da pessoa que deseja adicionar à sua
-							família. Será enviado um convite para que ela crie uma
-							conta e participe da família. Cada convite pode ser
-							utilizado apenas uma vez.
+							Enviaremos um link para a pessoa criar a conta e entrar na
+							família. O convite vale por 7 dias e só pode ser usado uma vez.
 						</DialogDescription>
 					</DialogHeader>
 
