@@ -10,16 +10,36 @@ Aplicativo mobile do **Equaliza**, desenvolvido com **Flutter**.
 mobile/
 ├── android/
 ├── ios/
+├── assets/             # Logos e avatares (os mesmos do frontend web)
 ├── lib/
 │   ├── core/
 │   │   ├── config/     # Variáveis de ambiente (--dart-define)
-│   │   ├── network/    # Cliente HTTP da API
-│   │   └── theme/      # Tema e cores da aplicação
-│   ├── features/       # Telas organizadas por funcionalidade
+│   │   ├── network/    # Cliente HTTP da API (cookies de sessão) e erros
+│   │   ├── session/    # Sessão do usuário (equivalente ao AuthProvider do web)
+│   │   ├── theme/      # Tema claro/escuro e tokens de cor do globals.css
+│   │   ├── utils/      # Formatação (moeda, datas) e períodos
+│   │   └── widgets/    # Componentes compartilhados (cards, formulários, filtros)
+│   ├── features/       # Telas organizadas por funcionalidade, como no web
+│   │   ├── auth/       # Login, cadastro e convite
+│   │   ├── shell/      # Barra superior e menu lateral
+│   │   ├── dashboard/
+│   │   ├── finance/
+│   │   ├── category/
+│   │   ├── member/
+│   │   ├── invitation/
+│   │   ├── family/
+│   │   └── settings/   # Configurações (tema) e perfil
+│   ├── models/         # Modelos das respostas da API
 │   ├── app.dart
 │   └── main.dart
 └── test/
 ```
+
+A autenticação usa os mesmos cookies HttpOnly do web: o app guarda os cookies
+(`access_token` e `refresh_token`) em um cookie jar persistente, e o backend renova o
+access token automaticamente.
+
+Para aceitar um convite, use **Usar convite** na tela de login e cole o link recebido por e-mail.
 
 ---
 
@@ -37,11 +57,35 @@ Execute apontando para o backend local (o emulador Android acessa a máquina por
 flutter run
 ```
 
-Ou para outro backend:
+Em um celular conectado por USB, redirecione a porta do backend e aponte para `localhost`:
 
 ```bash
-flutter run --dart-define=API_URL=https://sua-api.onrender.com
+adb reverse tcp:8000 tcp:8000
+flutter run --dart-define=API_URL=http://localhost:8000
 ```
+
+### ☁️ Backend em produção (Render)
+
+A URL não fica no código. Copie o exemplo e preencha com o endereço do serviço no Render
+(o arquivo `config/production.json` é ignorado pelo Git):
+
+```bash
+cp config/production.example.json config/production.json
+```
+
+```bash
+flutter run --dart-define-from-file=config/production.json
+```
+
+Também é possível passar a URL direto: `--dart-define=API_URL=https://sua-api.onrender.com`.
+
+- Use sempre **HTTPS**: em produção o backend redireciona HTTP e envia os cookies de sessão
+  com a flag `Secure`. Um build de release sem `API_URL` ou com HTTP abre uma tela
+  explicando o erro de configuração.
+- Não é preciso ajustar CORS nem CSRF no backend: o app não é um navegador e a API usa JWT
+  em cookies, não sessão do Django. Basta o domínio do Render estar em `ALLOWED_HOSTS`.
+- No plano gratuito, o Render desliga o serviço quando ocioso; a primeira requisição pode
+  levar até um minuto, e o app avisa isso na tela de carregamento.
 
 ---
 
@@ -68,7 +112,7 @@ version: 1.0.1+2
 ```
 
 ```bash
-flutter build apk --release --dart-define=API_URL=https://sua-api.onrender.com
+flutter build apk --release --dart-define-from-file=config/production.json
 ```
 
 O arquivo é gerado em `build/app/outputs/flutter-apk/app-release.apk`.
@@ -86,7 +130,7 @@ Configure em **Settings → Secrets and variables → Actions**:
 | `KEYSTORE_BASE64` | Secret | Saída de `base64 -w 0 ~/equaliza-upload.jks` |
 | `KEYSTORE_PASSWORD` | Secret | Senha do keystore |
 | `KEY_PASSWORD` | Secret | Senha da chave |
-| `API_URL` | Variable | URL do backend em produção |
+| `API_URL` | Variable | URL HTTPS do backend no Render (ex.: `https://sua-api.onrender.com`) |
 
 Para publicar uma versão:
 
