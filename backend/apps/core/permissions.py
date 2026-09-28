@@ -37,3 +37,13 @@ class IsFamilyAdministrator(BasePermission):
             family=family,
             user=request.user,
         )
+
+
+class IsRecordOwner(BasePermission):
+    message = "Apenas quem registrou esta movimentação pode alterá-la ou removê-la."
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return obj.created_by_id == request.user.id

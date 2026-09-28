@@ -30,7 +30,7 @@ export const RecentTransactions = ({
 			<CardHeader>
 				<CardTitle className="font-semibold">Últimas movimentações</CardTitle>
 
-				<CardDescription>Mais recentes primeiro</CardDescription>
+				<CardDescription>Da família, mais recentes primeiro</CardDescription>
 
 				<CardAction>
 					<Link
@@ -71,7 +71,9 @@ export const RecentTransactions = ({
 								<span className="truncate text-sm font-medium">{item.description}</span>
 
 								<span className="text-xs text-muted-foreground">
-									{item.category} · {format(parseISO(item.date), "d MMM", { locale: ptBR })}
+									{[item.category, format(parseISO(item.date), "d MMM", { locale: ptBR }), item.author]
+										.filter(Boolean)
+										.join(" · ")}
 								</span>
 							</div>
 

@@ -12,6 +12,7 @@ export interface RecentTransaction {
 	date: string
 	amount: number
 	type: FinanceEntryType
+	author?: string
 }
 
 export const useRecentTransactions = (
@@ -45,6 +46,7 @@ export const useRecentTransactions = (
 						date: item.date,
 						amount: Number(item.amount),
 						type,
+						author: item.created_by?.name.split(" ")[0],
 					}))
 			)
 		}

@@ -71,8 +71,8 @@ export const useFinanceCard = ({
 		setOpen(true)
 	}, [setFinanceId, setOpen])
 
-	const tableColumns = useMemo(() => columns(handleDelete, onEdit, type),
-		[handleDelete, onEdit, type]
+	const tableColumns = useMemo(() => columns(handleDelete, onEdit, user.id),
+		[handleDelete, onEdit, user.id]
 	)
 
 	const table = useReactTable({

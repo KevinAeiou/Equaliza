@@ -91,11 +91,17 @@ export interface CategoryProps {
 	type: FinanceEntryType
 }
 
+export interface FinanceAuthorProps {
+	id: number
+	name: string
+}
+
 export interface ExpenseProps {
 	id: number
 	amount: number
 	date: string
 	category: CategoryProps
+	created_by: FinanceAuthorProps | null
 	created_at?: string
 	updated_at?: string
 	description?: string
@@ -106,6 +112,7 @@ export interface IncomeProps {
 	amount: number
 	date: string
 	category: CategoryProps
+	created_by: FinanceAuthorProps | null
 	created_at?: string
 	updated_at?: string
 	description?: string

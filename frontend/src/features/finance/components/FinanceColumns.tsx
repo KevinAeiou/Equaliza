@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Tag } from "lucide-react"
+import { ArrowUpDown, Lock, MoreHorizontal, Tag } from "lucide-react"
 
 import { Button } from "@/src/components/ui/button"
 
@@ -16,14 +16,13 @@ import {
 } from "@/src/components/ui/dropdown-menu"
 
 import { Finance } from "../hooks/useFinanceCard"
-import { FinanceEntryType as FinanceEntryType } from "@/src/types"
 import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export const columns = (
 	onDelete: (finance: Finance) => void,
 	onEdit: (finance: Finance) => void,
-	type: FinanceEntryType,
+	currentUserId: number,
 ): ColumnDef<Finance>[] => [
 		{
 			accessorKey: "category",
@@ -84,10 +83,32 @@ export const columns = (
 		},
 
 		{
+			id: "author",
+			header: "Registrado por",
+			cell: ({ row }) => {
+				const author = row.original.created_by
+
+				if (!author) return <span className="text-muted-foreground">-</span>
+
+				return author.id === currentUserId
+					? <span className="font-medium">Você</span>
+					: <span>{author.name}</span>
+			},
+		},
+
+		{
 			id: "actions",
-			cell: ({ row }) => (
+			// Só quem registrou pode alterar ou remover; o backend também bloqueia.
+			cell: ({ row }) => row.original.created_by?.id !== currentUserId ? (
+				<span
+					className="flex size-4 text-muted-foreground"
+					title="Apenas quem registrou pode editar ou excluir"
+				>
+					<Lock className="size-3.5" aria-label="Apenas quem registrou pode editar ou excluir" />
+				</span>
+			) : (
 				<DropdownMenu>
-					<DropdownMenuTrigger>
+					<DropdownMenuTrigger aria-label="Ações">
 						<MoreHorizontal className="size-4" />
 					</DropdownMenuTrigger>
 

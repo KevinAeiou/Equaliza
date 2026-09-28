@@ -16,7 +16,7 @@ from apps.finance.services import (
     UpdateIncomeService,
 )
 from apps.finance.filters import IncomeFilter
-from apps.core.permissions import IsFamilyMember
+from apps.core.permissions import IsFamilyMember, IsRecordOwner
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
@@ -25,6 +25,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsAuthenticated,
         IsFamilyMember,
+        IsRecordOwner,
     ]
 
     lookup_field = "pk"
