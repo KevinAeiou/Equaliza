@@ -4,7 +4,8 @@ import { ReportsService } from "../services/reports.services"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 
 export const useSummaryCards = (
-	filters: FormDashboardFilterSchemaType
+	filters: FormDashboardFilterSchemaType,
+	refresh = 0,
 ) => {
 	const [summary, setSummary] = useState<DashboardSummaryProps>()
 
@@ -15,7 +16,7 @@ export const useSummaryCards = (
 		}
 
 		loadSummary()
-	}, [filters])
+	}, [filters, refresh])
 
 	// A API envia os valores decimais como texto.
 	const income = Number(summary?.income ?? 0)

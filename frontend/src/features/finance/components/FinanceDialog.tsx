@@ -44,7 +44,7 @@ export const FinanceDialog = ({
 	} = useFinanceDialog({ type, financeId, setOpen, setFinanceId, onSuccess })
 
 	const isEditing = financeId !== undefined
-	const tipo = type === "EXPENSE" ? "despesa" : "renda"
+	const tipo = type === "EXPENSE" ? "despesa" : "receita"
 
 	return (
 		<Dialog

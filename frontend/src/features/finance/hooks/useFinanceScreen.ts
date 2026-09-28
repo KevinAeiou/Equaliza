@@ -1,6 +1,7 @@
 import { FinanceEntryType } from "@/src/types"
 import { useState } from "react"
 import { FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
+import { useDashboardCategories } from "../../dashboard/hooks/useDashboardCategories"
 
 
 export const useFinanceScreen = () => {
@@ -12,6 +13,9 @@ export const useFinanceScreen = () => {
 	const [filters, setFilters] = useState<FormFinanceFilterSchemaType>(
 		getDefaultValues()
 	)
+
+	// Nomes das categorias para as etiquetas de filtros ativos.
+	const { categoryOptions } = useDashboardCategories()
 
 	const handleTypeChange = (value: FinanceEntryType) => {
 		setType(value)
@@ -30,5 +34,6 @@ export const useFinanceScreen = () => {
 		showFilter, setShowFilter,
 		filters, setFilters,
 		handleTypeChange,
+		categoryOptions,
 	}
 }
