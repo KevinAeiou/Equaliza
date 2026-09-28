@@ -16,7 +16,7 @@ from apps.finance.services import (
     UpdateExpenseService,
 )
 from apps.finance.filters import ExpenseFilter
-from apps.core.permissions import IsFamilyMember
+from apps.core.permissions import IsFamilyMember, IsRecordOwner
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
@@ -25,6 +25,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsAuthenticated,
         IsFamilyMember,
+        IsRecordOwner,
     ]
 
     lookup_field = "pk"

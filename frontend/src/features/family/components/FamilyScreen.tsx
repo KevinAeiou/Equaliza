@@ -13,17 +13,18 @@ export const FamilyScreen = () => {
 	} = useFamilyScreen()
 
 	return (
-		<section className="flex h-full flex-col gap-2">
-			<HeaderScreen
-				title="Famílias"
-				subtitle="Gerencie suas famílias registradas."
-			></HeaderScreen>
+		<section className="mx-auto flex h-full w-full max-w-7xl flex-col gap-4 sm:gap-6">
+			<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+				<HeaderScreen
+					title="Famílias"
+					subtitle="Veja as famílias de que você participa e escolha qual está usando."
+				/>
 
-			<div className="flex justify-end w-full">
 				<Button
 					onClick={() => setOpen(true)}
+					className="h-10 gap-2"
 				>
-					<Plus className="mr-2 h-4 w-4" />
+					<Plus className="size-4" />
 					Nova família
 				</Button>
 			</div>

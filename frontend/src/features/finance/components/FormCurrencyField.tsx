@@ -1,5 +1,6 @@
 import { Field, FieldError, FieldLabel } from "@/src/components/ui/field"
 import { Input } from "@/src/components/ui/input"
+import { cn } from "@/src/lib/utils"
 import {
 	Control,
 	Controller,
@@ -14,6 +15,7 @@ interface FormCurrencyFieldProps<T extends FieldValues> {
 	placeholder?: string
 	disabled?: boolean
 	max?: number
+	size?: "default" | "lg"
 }
 
 const formatter = new Intl.NumberFormat("pt-BR", {
@@ -30,6 +32,7 @@ export const FormCurrencyField = <T extends FieldValues>({
 	placeholder = "R$ 0,00",
 	disabled = false,
 	max = 1_100_000,
+	size = "default",
 }: FormCurrencyFieldProps<T>) => {
 	const maxInCents = Math.round(max * 100)
 
@@ -54,7 +57,10 @@ export const FormCurrencyField = <T extends FieldValues>({
 							disabled={disabled}
 							inputMode="numeric"
 							autoComplete="off"
-							className="text-right tabular-nums"
+							className={cn(
+								"text-right tabular-nums",
+								size === "lg" && "h-14 text-2xl font-semibold md:text-2xl"
+							)}
 							aria-invalid={fieldState.invalid}
 							onBlur={field.onBlur}
 							ref={field.ref}

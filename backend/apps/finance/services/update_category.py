@@ -1,4 +1,6 @@
-from django.core.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
+
+from apps.finance.models import FinancialCategory
 
 
 class UpdateFinancialCategoryService:
@@ -8,10 +10,20 @@ class UpdateFinancialCategoryService:
     )
 
     @staticmethod
-    def execute(*, category, data):
+    def execute(*, category: FinancialCategory, data):
         if category.family is None:
             raise ValidationError(
                 "Categorias padrão do sistema não podem ser alteradas."
+            )
+
+        if "type" in data and data["type"] != category.type and category.is_used:
+            raise ValidationError(
+                {
+                    "type": (
+                        "Não é possível alterar o tipo de uma categoria "
+                        "que já possui lançamentos vinculados."
+                    )
+                }
             )
 
         for field in UpdateFinancialCategoryService.UPDATABLE_FIELDS:
@@ -25,7 +37,6 @@ class UpdateFinancialCategoryService:
                     for field in UpdateFinancialCategoryService.UPDATABLE_FIELDS
                     if field in data
                 ],
-                "updated_by",
             )
         )
 

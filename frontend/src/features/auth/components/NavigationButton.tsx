@@ -4,15 +4,18 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/src/components/ui/button"
+import { cn } from "@/src/lib/utils"
 
 interface NavigationButtonProps {
 	href: string
 	children: React.ReactNode
+	className?: string
 }
 
 export function NavigationButton({
 	href,
 	children,
+	className,
 }: NavigationButtonProps) {
 	const router = useRouter()
 
@@ -32,6 +35,7 @@ export function NavigationButton({
 	return (
 		<Button
 			variant="link"
+			className={cn("h-auto p-0 font-medium text-income", className)}
 			onClick={handleClick}
 			disabled={loading}
 		>

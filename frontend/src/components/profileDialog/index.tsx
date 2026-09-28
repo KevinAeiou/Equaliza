@@ -1,14 +1,7 @@
 "use client"
 
-import { Button } from "@/src/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/src/components/ui/dialog"
+import { UserRound } from "lucide-react"
+import { FormDialog } from "@/src/components/formDialog"
 import { FormAvatarField } from "../formAvatarField"
 import { useProfileDialog } from "./useProfileDialog"
 import { FormTextField } from "@/src/features/auth/components/FormTextField"
@@ -28,60 +21,41 @@ export const ProfileDialog = ({
 	} = useProfileDialog({ open, onOpenChange })
 
 	return (
-		<Dialog
+		<FormDialog
 			open={open}
-			onOpenChange={onOpenChange}
+			onClose={() => onOpenChange(false)}
+			icon={UserRound}
+			title="Editar perfil"
+			description="Seu nome e avatar aparecem para os membros das suas famílias."
+			formId="form-profile"
+			onSubmit={form.handleSubmit(onSubmit)}
+			submitLabel="Salvar alterações"
+			loading={form.formState.isSubmitting}
+			size="lg"
 		>
-			<DialogContent className="sm:max-w-lg">
-				<DialogHeader>
-					<DialogTitle>Editar perfil</DialogTitle>
+			<FormAvatarField
+				control={form.control}
+				name="avatar"
+				label="Avatar"
+			/>
 
-					<DialogDescription>
-						Altere seu nome e escolha um avatar.
-					</DialogDescription>
-				</DialogHeader>
+			<div className="grid gap-4 sm:grid-cols-2">
+				<FormTextField
+					control={form.control}
+					name="first_name"
+					label="Nome"
+					placeholder="Seu nome"
+					autoComplete="given-name"
+				/>
 
-				<form
-					onSubmit={form.handleSubmit(onSubmit)}
-					className="space-y-6"
-				>
-					<FormAvatarField
-						control={form.control}
-						name="avatar"
-						label="Avatar"
-					/>
-
-					<div className="flex gap-2">
-						<FormTextField
-							control={form.control}
-							name="first_name"
-							label="Nome"
-							placeholder="Informe seu nome"
-						/>
-
-						<FormTextField
-							control={form.control}
-							name="last_name"
-							label="Sobrenome"
-							placeholder="Informe seu sobrenome"
-						/>
-					</div>
-
-					<DialogFooter>
-						<Button
-							type="button"
-							variant="outline"
-							onClick={() => onOpenChange(false)}
-						>
-							Cancelar
-						</Button>
-
-						<Button type="submit">
-							Salvar alterações
-						</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+				<FormTextField
+					control={form.control}
+					name="last_name"
+					label="Sobrenome"
+					placeholder="Seu sobrenome"
+					autoComplete="family-name"
+				/>
+			</div>
+		</FormDialog>
 	)
 }

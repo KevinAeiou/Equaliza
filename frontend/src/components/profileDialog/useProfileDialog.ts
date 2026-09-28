@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { isApiError } from "@/src/lib/utils"
 
 interface UseProfileDialogProps {
 	open: boolean
@@ -30,11 +31,15 @@ export const useProfileDialog = ({
 	}, [form, user.avatar.id, user.first_name, user.last_name])
 
 	const onSubmit = async (data: ProfileFormSchemaType) => {
-		await updateProfile(data)
+		try {
+			await updateProfile(data)
 
-		toast.success("Perfil atualizado.")
+			toast.success("Perfil atualizado.")
 
-		onOpenChange(false)
+			onOpenChange(false)
+		} catch (error) {
+			toast.error(isApiError(error) ? error.message : "Erro ao atualizar o perfil.")
+		}
 	}
 
 	useEffect(() => {

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react"
-import { ReportsService } from "../services/reports.services"
 import { DashboardChartsProps } from "@/src/types"
+import { ReportsService } from "../services/reports.services"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 
-
-export const useExpenseIncomeChart = (
+export const useDashboardCharts = (
 	filters: FormDashboardFilterSchemaType
 ) => {
-
 	const [chartData, setChartData] = useState<DashboardChartsProps>()
 
 	useEffect(() => {

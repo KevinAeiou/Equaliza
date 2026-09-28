@@ -2,15 +2,17 @@ import { AuthService } from "@/src/features/auth/services/auth.service"
 import { useAuth } from "../providers/AuthProvider"
 import { useInvitationScreen } from "../../features/invitation/hooks/useInvitationScreen"
 import { useFamilyScreen } from "@/src/features/family/hooks/useFamilyScreen"
+import { toast } from "sonner"
+import { isApiError } from "@/src/lib/utils"
 
 export const useMenuNavegation = () => {
+
 	const {
 		open: showInviteDialog, setOpen: setShowInviteDialog,
 	} = useInvitationScreen()
 	const {
 		open: showFamilyDialog, setOpen: setShowFamilyDialog,
 	} = useFamilyScreen()
-
 	const { user, refreshUser } = useAuth()
 
 	const hasRole = (...roles: string[]) => {
@@ -21,7 +23,7 @@ export const useMenuNavegation = () => {
 
 	const selectedFamily = user?.current_family
 
-	const canInvite = hasRole("Responsável", "Administrador")
+	const isAdmin = hasRole("Responsável", "Administrador")
 
 	const families = user?.families.map((family) => ({
 		label: family.name,
@@ -29,6 +31,8 @@ export const useMenuNavegation = () => {
 	})) ?? []
 
 	const handleFamilyChange = async (value: string | null) => {
+		if (!value) return
+
 		const family = user?.families.find(
 			(family) => family.id.toString() === value
 		)
@@ -40,7 +44,9 @@ export const useMenuNavegation = () => {
 
 			await refreshUser()
 		} catch (error) {
-			console.error(error)
+			if (!isApiError(error)) return
+
+			toast.error(error.message)
 		}
 	}
 
@@ -48,7 +54,7 @@ export const useMenuNavegation = () => {
 		families,
 		selectedFamily,
 		handleFamilyChange,
-		canInvite,
+		isAdmin,
 		showInviteDialog, setShowInviteDialog,
 		showFamilyDialog, setShowFamilyDialog,
 	}

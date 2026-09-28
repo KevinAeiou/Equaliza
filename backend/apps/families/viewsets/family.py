@@ -1,9 +1,12 @@
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
+from apps.families.enums import FamilyRole
 from apps.families.serializers import (
     CreateFamilySerializer,
+    FamilyOverviewSerializer,
     ListFamilySerializer,
     UpdateFamilySerializer,
 )
@@ -29,12 +32,25 @@ class FamilyViewSet(viewsets.ModelViewSet):
         if self.action in ["update", "partial_update"]:
             return UpdateFamilySerializer
 
+        if self.action == "list":
+            return FamilyOverviewSerializer
+
         return ListFamilySerializer
 
     def get_queryset(self):
         return ListFamilyService.execute(
             user=self.request.user,
-        )
+        ).prefetch_related("memberships")
+
+    def _check_owner_permission(self, family):
+        membership = family.memberships.filter(
+            user=self.request.user,
+        ).first()
+
+        if membership is None or membership.role != FamilyRole.OWNER:
+            raise PermissionDenied(
+                "Apenas o responsável da família pode realizar esta ação."
+            )
 
     def retrieve(self, request, *args, **kwargs):
         family = self.get_object()
@@ -59,6 +75,7 @@ class FamilyViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         family = self.get_object()
+        self._check_owner_permission(family)
 
         serializer = self.get_serializer(
             family,
@@ -79,6 +96,7 @@ class FamilyViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         family = self.get_object()
+        self._check_owner_permission(family)
 
         serializer = self.get_serializer(
             family,
@@ -100,6 +118,7 @@ class FamilyViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         family = self.get_object()
+        self._check_owner_permission(family)
 
         DeleteFamilyService.execute(
             family=family,

@@ -14,18 +14,18 @@ export const InvitationScreen = () => {
 	} = useInvitationScreen()
 
 	return (
-		<section className="flex h-full flex-col gap-2">
-			<HeaderScreen
-				title="Convites"
-				subtitle="Gerencie os convites enviados para sua família."
-			></HeaderScreen>
+		<section className="mx-auto flex h-full w-full max-w-7xl flex-col gap-4 sm:gap-6">
+			<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+				<HeaderScreen
+					title="Convites"
+					subtitle="Convide pessoas para a família e acompanhe cada convite."
+				/>
 
-			<div className="flex justify-end w-full">
 				<Button
 					onClick={() => setOpen(true)}
-					className="gap-2 w-full sm:w-auto"
+					className="h-10 gap-2"
 				>
-					<Plus className="mr-2 h-4 w-4" />
+					<Plus className="size-4" />
 					Novo convite
 				</Button>
 			</div>

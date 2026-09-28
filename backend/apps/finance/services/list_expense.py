@@ -7,7 +7,6 @@ class ListExpenseService:
     def execute(user):
         return (
             Expense.objects.for_family(user.current_family)
-            .filter(created_by=user)
             .select_related(
                 "category",
                 "created_by",
