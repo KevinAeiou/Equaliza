@@ -21,7 +21,7 @@ interface FormChipsFieldProps<TField extends FieldValues> {
 const chipClassName = (selected: boolean) => cn(
 	"flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors",
 	selected
-		? "border-foreground bg-foreground text-background"
+		? "border-primary bg-primary text-primary-foreground"
 		: "bg-background hover:bg-muted"
 )
 

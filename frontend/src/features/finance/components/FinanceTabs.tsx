@@ -48,7 +48,7 @@ export const FinanceTabs = ({
 							onClick={() => setType(value)}
 							className={cn(
 								"flex items-center gap-3 rounded-xl border bg-card p-3 text-left transition-colors sm:p-4",
-								selected ? "border-foreground ring-1 ring-foreground" : "hover:bg-muted/60"
+								selected ? "border-primary ring-1 ring-primary" : "hover:bg-muted/60"
 							)}
 						>
 							<span className={cn("hidden size-9 shrink-0 items-center justify-center rounded-lg sm:flex", iconClassName)}>
