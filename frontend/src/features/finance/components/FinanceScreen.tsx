@@ -1,10 +1,12 @@
 import { Button } from "@/src/components/ui/button"
-import { Plus, SlidersHorizontal } from "lucide-react"
+import { Plus } from "lucide-react"
+import { FilterButton } from "@/src/components/filters"
 import { FinanceTabs } from "./FinanceTabs"
 import { useFinanceScreen } from "../hooks/useFinanceScreen"
 import { FinanceDialog } from "./FinanceDialog"
 import { HeaderScreen } from "@/src/components/headerScreen"
 import { FinanceFilters } from "./FinanceFilters"
+import { countFinanceFilters } from "../hooks/useFinanceFilters"
 
 export const FinanceScreen = () => {
 	const {
@@ -23,14 +25,11 @@ export const FinanceScreen = () => {
 				title="Finanças"
 				subtitle="Gerencie despesas e receitas da família."
 			>
-				<Button
-					variant="outline"
-					className="gap-2 w-full sm:w-auto"
+				<FilterButton
+					activeCount={countFinanceFilters(filters)}
 					onClick={() => setShowFilter((prev) => !prev)}
-				>
-					<SlidersHorizontal size={16} />
-					Filtros
-				</Button>
+					className="w-full sm:w-auto"
+				/>
 			</HeaderScreen>
 
 			<div className="flex justify-end w-full">
@@ -63,6 +62,7 @@ export const FinanceScreen = () => {
 
 			<FinanceFilters
 				type={type}
+				filters={filters}
 				showFilter={showFilter}
 				setShowFilter={setShowFilter}
 				onApply={setFilters}

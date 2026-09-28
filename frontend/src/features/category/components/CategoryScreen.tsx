@@ -1,10 +1,12 @@
 import { HeaderScreen } from "@/src/components/headerScreen"
 import { Button } from "@/src/components/ui/button"
-import { Plus, SlidersHorizontal } from "lucide-react"
+import { Plus } from "lucide-react"
+import { FilterButton } from "@/src/components/filters"
 import { useCategoryScreen } from "../hooks/useCategoryScreen"
 import { CategoryCard } from "./CategoryCard"
 import { CategoryDialog } from "./CategoryDialog"
 import { CategoryFilters } from "./CategoryFilters"
+import { countCategoryFilters } from "../hooks/useCategoryFilters"
 
 
 export const CategoryScreen = () => {
@@ -22,14 +24,11 @@ export const CategoryScreen = () => {
 				title="Categorias"
 				subtitle="Acompanhe o resumo financeiro da sua família."
 			>
-				<Button
-					variant="outline"
-					className="gap-2 w-full sm:w-auto"
+				<FilterButton
+					activeCount={countCategoryFilters(filters)}
 					onClick={() => setShowFilter((prev) => !prev)}
-				>
-					<SlidersHorizontal size={16} />
-					Filtros
-				</Button>
+					className="w-full sm:w-auto"
+				/>
 			</HeaderScreen>
 
 			<div className="flex justify-end w-full">
@@ -57,6 +56,7 @@ export const CategoryScreen = () => {
 			/>
 
 			<CategoryFilters
+				filters={filters}
 				showFilter={showFilter}
 				setShowFilter={setShowFilter}
 				onApply={setFilters}

@@ -1,8 +1,7 @@
 "use client"
 
-import { SlidersHorizontal } from "lucide-react"
 import { useState } from "react"
-import { Button } from "@/src/components/ui/button"
+import { FilterButton } from "@/src/components/filters"
 import { HeaderScreen } from "@/src/components/headerScreen"
 import { useDashboardCategories } from "../hooks/useDashboardCategories"
 import { useDashboardCharts } from "../hooks/useDashboardCharts"
@@ -23,11 +22,9 @@ export const DashboardScreen = () => {
 		getDefaultValues()
 	)
 
-	const { categoryOptions } = useDashboardCategories()
+	const { categoryOptions, categoryGroups } = useDashboardCategories()
 	const { chartData } = useDashboardCharts(filters)
 	const { trend } = useDashboardTrend(filters)
-
-	const activeFilters = filters.categories.length
 
 	return (
 		<section className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-6">
@@ -43,21 +40,11 @@ export const DashboardScreen = () => {
 						onChange={setFilters}
 					/>
 
-					<Button
-						variant="outline"
-						className="h-10 gap-2"
+					<FilterButton
+						activeCount={filters.categories.length}
 						onClick={() => setShowFilters((prev) => !prev)}
-						aria-label={activeFilters ? `Filtros, ${activeFilters} ativos` : "Filtros"}
-					>
-						<SlidersHorizontal size={16} />
-						<span className="hidden sm:inline">Filtros</span>
-
-						{activeFilters > 0 && (
-							<span className="rounded-full bg-brand px-1.5 text-xs font-semibold text-brand-foreground">
-								{activeFilters}
-							</span>
-						)}
-					</Button>
+						compact
+					/>
 				</div>
 			</div>
 
@@ -96,7 +83,7 @@ export const DashboardScreen = () => {
 
 			<DashboardFilters
 				filters={filters}
-				categoryOptions={categoryOptions}
+				categoryGroups={categoryGroups}
 				showFilter={showFilters}
 				setShowFilter={setShowFilters}
 				onApply={setFilters}

@@ -10,15 +10,32 @@ import { toast } from "sonner"
 import { FinanceService } from "../services/financial.service"
 import { FormFinanceFilterSchema, FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
 import { PeriodType } from "../../dashboard/schemas/filters.schema"
+import { isSameDay } from "date-fns"
 
 interface UseFinanceFiltersProps {
 	type: FinanceEntryType
+	filters: FormFinanceFilterSchemaType
+	showFilter: boolean
 	setShowFilter: (value: boolean) => void
 	onApply: (filters: FormFinanceFilterSchemaType) => void
 }
 
+// O período conta como filtro ativo quando difere do padrão (mês atual).
+export const countFinanceFilters = (filters: FormFinanceFilterSchemaType) => {
+	const defaults = getDefaultValues()
+
+	const customPeriod =
+		filters.type !== defaults.type ||
+		!isSameDay(filters.period.from, defaults.period.from) ||
+		!isSameDay(filters.period.to, defaults.period.to)
+
+	return filters.categories.length + Number(customPeriod)
+}
+
 export const useFinanceFilters = ({
 	type,
+	filters,
+	showFilter,
 	setShowFilter,
 	onApply,
 }: UseFinanceFiltersProps) => {
@@ -26,7 +43,7 @@ export const useFinanceFilters = ({
 
 	const form = useForm<FormFinanceFilterSchemaType>({
 		resolver: zodResolver(FormFinanceFilterSchema),
-		defaultValues: getDefaultValues(),
+		defaultValues: filters,
 	})
 
 	const periodType = useWatch({
@@ -40,29 +57,6 @@ export const useFinanceFilters = ({
 			value: category.id,
 		})
 	)
-
-	const periodOptions: SelectOption<string>[] = [
-		{
-			label: "Dia",
-			value: PeriodType.DAY,
-		},
-		{
-			label: "Semana",
-			value: PeriodType.WEEK,
-		},
-		{
-			label: "Mês",
-			value: PeriodType.MONTH,
-		},
-		{
-			label: "Ano",
-			value: PeriodType.YEAR,
-		},
-		{
-			label: "Período personalizado",
-			value: PeriodType.PERIOD,
-		},
-	]
 
 	const onSubmit = (values: FormFinanceFilterSchemaType) => {
 		onApply(values)
@@ -100,8 +94,14 @@ export const useFinanceFilters = ({
 		loadCategories()
 	}, [type])
 
+	// O painel sempre abre mostrando o filtro em uso, e não o que ficou marcado e não foi aplicado.
+	useEffect(() => {
+		if (showFilter) form.reset(filters)
+	}, [form, filters, showFilter])
+
 	useEffect(() => {
 		if (periodType === PeriodType.PERIOD) return
+		if (!form.getFieldState("type").isDirty) return
 
 		form.setValue("period", getPeriod(periodType))
 	}, [form, periodType])
@@ -119,7 +119,6 @@ export const useFinanceFilters = ({
 		periodType,
 		onSubmit,
 		categoryOptions,
-		periodOptions,
 		handleClear,
 	}
 }

@@ -2,7 +2,6 @@ import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { getDefaultValues, FormDashboardFilterSchema, FormDashboardFilterSchemaType, PeriodType } from "../schemas/filters.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { SelectOption } from "@/src/types"
 import { getPeriod } from "@/src/lib/utils"
 
 interface UseDashboardFiltersProps {
@@ -22,29 +21,6 @@ export const useDashboardFilters = ({
 		resolver: zodResolver(FormDashboardFilterSchema),
 		defaultValues: filters,
 	})
-
-	const periodOptions: SelectOption<string>[] = [
-		{
-			label: "Dia",
-			value: PeriodType.DAY,
-		},
-		{
-			label: "Semana",
-			value: PeriodType.WEEK,
-		},
-		{
-			label: "Mês",
-			value: PeriodType.MONTH,
-		},
-		{
-			label: "Ano",
-			value: PeriodType.YEAR,
-		},
-		{
-			label: "Período personalizado",
-			value: PeriodType.PERIOD,
-		},
-	]
 
 	const type = useWatch({
 		control: form.control,
@@ -82,6 +58,5 @@ export const useDashboardFilters = ({
 		type,
 		onSubmit,
 		handleClear,
-		periodOptions,
 	}
 }
