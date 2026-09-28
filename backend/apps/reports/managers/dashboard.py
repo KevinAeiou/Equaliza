@@ -153,8 +153,8 @@ class DashboardManager:
 
         member_contributions = []
 
-        for member in family.memberships.select_related("created_by"):
-            user = member.created_by
+        for member in family.memberships.select_related("user"):
+            user = member.user
 
             income = income_by_member.get(user.id, Decimal("0.00"))
             paid = paid_by_member.get(user.id, Decimal("0.00"))
