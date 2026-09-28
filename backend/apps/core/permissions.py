@@ -1,16 +1,17 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from apps.families.models import FamilyMember
 
 
 class IsFamilyMember(BasePermission):
-    message = "Apenas usuários pertencentes a pelo menos uma família podem criar despesas/receitas."
+    message = "Você precisa fazer parte de uma família para registrar receitas e despesas."
 
     def has_permission(self, request, view):
         family = request.user.current_family
 
+        # Sem família, as consultas apenas retornam vazio; alterações não teriam onde ser gravadas.
         if family is None:
-            return True
+            return request.method in SAFE_METHODS
 
         return FamilyMember.objects.is_member(
             family=family,
@@ -24,8 +25,13 @@ class IsFamilyAdministrator(BasePermission):
     def has_permission(self, request, view):
         family = request.user.current_family
 
+        # Sem família, uma categoria seria criada sem dono e ficaria visível para todas as famílias.
         if family is None:
-            return True
+            if request.method in SAFE_METHODS:
+                return True
+
+            self.message = "Você precisa fazer parte de uma família para realizar esta ação."
+            return False
 
         return FamilyMember.objects.is_administrator(
             family=family,
