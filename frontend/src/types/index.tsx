@@ -219,6 +219,7 @@ export interface MemberProps {
 	name: string
 	email: string
 	role: string
+	avatar: string
 	joined_at: string
 	is_active: boolean
 }

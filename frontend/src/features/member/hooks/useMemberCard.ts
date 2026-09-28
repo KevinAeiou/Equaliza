@@ -1,16 +1,13 @@
 import { isApiError } from "@/src/lib/utils"
-import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { MemberService } from "../services/member.service"
-import { columns } from "../components/columns"
 import { MemberProps } from "@/src/types"
 
 
 export const useMemberCard = () => {
 	const [members, setMembers] = useState<MemberProps[]>([])
-	const [loading, setLoading] = useState<boolean>(false)
-	const [sorting, setSorting] = useState<SortingState>([])
+	const [loading, setLoading] = useState<boolean>(true)
 	const [open, setOpen] = useState(false)
 	const [selectedMember, setSelectedMember] = useState<MemberProps | null>(null)
 
@@ -24,13 +21,13 @@ export const useMemberCard = () => {
 				current.filter((item) => item.id !== selectedMember.id)
 			)
 
-			toast.success("Membro excluído com sucesso.")
+			toast.success("Membro removido da família.")
 
 			handleOnClose()
 		} catch (error) {
 			const message = isApiError(error)
 				? error.message
-				: "Erro ao excluir membro."
+				: "Erro ao remover membro."
 
 			toast.error(message)
 		}
@@ -48,15 +45,13 @@ export const useMemberCard = () => {
 				)
 			)
 
-			toast.success(`Status alterado com sucesso!`)
+			toast.success(member.is_active ? "Membro desativado." : "Membro reativado.")
 		} catch (error) {
 			const message = isApiError(error)
 				? error.message
 				: "Erro desconhecido ao alterar o status do membro"
 
 			toast.error(message)
-		} finally {
-			setLoading(false)
 		}
 	}
 
@@ -70,24 +65,8 @@ export const useMemberCard = () => {
 		setSelectedMember(null)
 	}
 
-	const table = useReactTable({
-		data: members,
-		columns: columns(
-			handleOpenDelete,
-			handleToggleStatus,
-		),
-		state: {
-			sorting,
-		},
-		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-	})
-
 	useEffect(() => {
 		const loadMembers = async () => {
-			setLoading(true)
-
 			try {
 				const response = await MemberService.list()
 
@@ -107,9 +86,12 @@ export const useMemberCard = () => {
 	}, [])
 
 	return {
-		table,
+		members,
 		loading,
 		open,
+		selectedMember,
+		handleOpenDelete,
+		handleToggleStatus,
 		handleOnDelete,
 		handleOnClose,
 	}
