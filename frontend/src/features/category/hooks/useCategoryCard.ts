@@ -1,9 +1,7 @@
 import { isApiError } from "@/src/lib/utils"
-import { CategoryProps } from "@/src/types"
-import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { CategoryProps, UserRole } from "@/src/types"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { columns } from "../components/Columns"
 import { CategoryService } from "../services/category.service"
 import { FormCategoryFilterSchemaType } from "../schemas/filter.schema"
 import { useAuth } from "@/src/components/providers/AuthProvider"
@@ -22,42 +20,28 @@ export const useCategoryCard = ({
 	setSelectedCategory,
 	filters,
 }: UseCategoryCardProps) => {
-	const [families, setFamilies] = useState<CategoryProps[]>([])
-	const [loading, setLoading] = useState<boolean>(false)
-	const [sorting, setSorting] = useState<SortingState>([])
+	const [categories, setCategories] = useState<CategoryProps[]>([])
+	const [loading, setLoading] = useState<boolean>(true)
 
 	const { user } = useAuth()
 
 	const currentFamilyId = user.current_family?.id
 
-	const loadCategories = useCallback(async () => {
-		setLoading(true)
+	// O backend só permite que responsáveis e administradores alterem categorias.
+	const canManage = [UserRole.OWNER, UserRole.ADMIN].includes(user.role)
 
-		try {
-			const response = await CategoryService.list(filters)
+	const [reloadKey, setReloadKey] = useState<number>(0)
 
-			setFamilies(response)
-		} catch (error) {
-			const message = isApiError(error)
-				? error.message
-				: "Erro desconhecido ao listar categorias"
-
-			toast.error(message)
-		} finally {
-			setLoading(false)
-		}
-	}, [filters])
-
-	const handleEditCategory = useCallback(async (family: CategoryProps) => {
-		setSelectedCategory(family)
+	const handleEditCategory = useCallback((category: CategoryProps) => {
+		setSelectedCategory(category)
 		setOpen(true)
 	}, [setOpen, setSelectedCategory])
 
-	const handleDeleteCategory = useCallback(async (family: CategoryProps) => {
+	const handleDeleteCategory = useCallback(async (category: CategoryProps) => {
 		try {
-			await CategoryService.delete(family.id)
+			await CategoryService.delete(category.id)
 
-			await loadCategories()
+			setReloadKey((key) => key + 1)
 
 			toast.success(`Categoria excluída com sucesso.`)
 		} catch (error) {
@@ -67,29 +51,34 @@ export const useCategoryCard = ({
 
 			toast.error(message)
 		}
-	}, [loadCategories])
+	}, [])
 
-	const tableColumns = useMemo(() => columns(handleEditCategory, handleDeleteCategory),
-		[handleDeleteCategory, handleEditCategory]
-	)
-
-	const table = useReactTable({
-		data: families,
-		columns: tableColumns,
-		state: {
-			sorting,
-		},
-		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-	})
-
+	// "loading" só indica a primeira carga; recargas mantêm a lista atual até chegar a nova.
 	useEffect(() => {
+		const loadCategories = async () => {
+			try {
+				const response = await CategoryService.list(filters)
+
+				setCategories(response)
+			} catch (error) {
+				const message = isApiError(error)
+					? error.message
+					: "Erro desconhecido ao listar categorias"
+
+				toast.error(message)
+			} finally {
+				setLoading(false)
+			}
+		}
+
 		loadCategories()
-	}, [loadCategories, refresh, currentFamilyId])
+	}, [filters, refresh, currentFamilyId, reloadKey])
 
 	return {
-		table,
+		categories,
 		loading,
+		canManage,
+		handleEditCategory,
+		handleDeleteCategory,
 	}
 }

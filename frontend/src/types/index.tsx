@@ -89,6 +89,8 @@ export interface CategoryProps {
 	id: number
 	name: string
 	type: FinanceEntryType
+	is_default?: boolean
+	usage_count?: number | null
 }
 
 export interface FinanceAuthorProps {
