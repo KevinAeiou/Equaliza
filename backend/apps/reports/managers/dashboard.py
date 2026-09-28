@@ -91,6 +91,7 @@ class DashboardManager:
                 key,
                 {
                     "month": key.strftime("%b"),
+                    "period": key.strftime("%Y-%m"),
                     "income": 0,
                     "expense": 0,
                 },
@@ -105,6 +106,7 @@ class DashboardManager:
                 key,
                 {
                     "month": key.strftime("%b"),
+                    "period": key.strftime("%Y-%m"),
                     "income": 0,
                     "expense": 0,
                 },

@@ -15,16 +15,21 @@ import { FormDateRangeField } from "./FormDateRangeField"
 import { FormMultiSelectField } from "./FormMultiSelectField"
 import { PeriodType, FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 import { Separator } from "@/src/components/ui/separator"
+import { SelectOption } from "@/src/types"
 import { FormSelectField } from "../../finance/components/FormSelectField"
 import { FormSinglePeriodField } from "./FormSiglePeriodField"
 
 interface DashboardFiltersProps {
+	filters: FormDashboardFilterSchemaType
+	categoryOptions: SelectOption<number>[]
 	showFilter: boolean
 	setShowFilter: (value: boolean) => void
 	onApply: (filters: FormDashboardFilterSchemaType) => void
 }
 
 export const DashboardFilters = ({
+	filters,
+	categoryOptions,
 	showFilter,
 	onApply,
 	setShowFilter,
@@ -33,10 +38,9 @@ export const DashboardFilters = ({
 		form,
 		type,
 		onSubmit,
-		categoryOptions,
 		handleClear,
 		periodOptions,
-	} = useDashboardFilters({ setShowFilter, onApply })
+	} = useDashboardFilters({ filters, showFilter, setShowFilter, onApply })
 
 	return (
 		<Sheet
