@@ -17,7 +17,7 @@ export const HeaderApp = () => {
 						src="/logo.svg"
 						alt="Equaliza"
 						width={180}
-						height={48}
+						height={44}
 						className="block dark:hidden transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
 						priority
 					/>
@@ -26,7 +26,7 @@ export const HeaderApp = () => {
 						src="/logo-white.svg"
 						alt="Equaliza"
 						width={180}
-						height={48}
+						height={44}
 						className="hidden dark:block transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-sm"
 						priority
 					/>
