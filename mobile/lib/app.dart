@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -55,20 +57,85 @@ class _AuthGate extends StatelessWidget {
   }
 }
 
-class _Splash extends StatelessWidget {
+class _Splash extends StatefulWidget {
   const _Splash();
+
+  @override
+  State<_Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<_Splash> {
+  bool _slow = false;
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(const Duration(seconds: 4), () => setState(() => _slow = true));
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: context.colors.background,
-        body: const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppLogo(height: 40),
-              SizedBox(height: 24),
-              SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
-            ],
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AppLogo(height: 40),
+                const SizedBox(height: 24),
+                const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                // O plano gratuito do Render desliga o backend quando ocioso; a primeira
+                // requisição pode levar até um minuto.
+                AnimatedOpacity(
+                  opacity: _slow ? 1 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: Text(
+                      'Conectando ao servidor. Na primeira abertura do dia isso pode levar até um minuto.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: context.colors.mutedForeground),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+/// Exibida quando o build foi gerado sem uma URL de API válida para produção.
+class ConfigErrorApp extends StatelessWidget {
+  const ConfigErrorApp({super.key, required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Equaliza',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        home: Builder(
+          builder: (context) => Scaffold(
+            backgroundColor: context.colors.background,
+            body: SafeArea(
+              child: ErrorView(
+                variant: ErrorVariant.error,
+                code: 'Configuração inválida',
+                title: 'O app não está configurado',
+                description: message,
+              ),
+            ),
           ),
         ),
       );
