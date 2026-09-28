@@ -1,6 +1,6 @@
 import { api } from "@/src/infra/api"
 import { configureError } from "@/src/lib/utils"
-import { FamilyPayload, FamilyProps } from "@/src/types"
+import { FamilyPayload, FamilyProps, FamilyOverviewProps } from "@/src/types"
 
 export const FamilyAPI = () => ({
 	create: async (payload: FamilyPayload): Promise<FamilyProps> => {
@@ -17,10 +17,10 @@ export const FamilyAPI = () => ({
 		}
 	},
 
-	list: async (): Promise<FamilyProps[]> => {
+	list: async (): Promise<FamilyOverviewProps[]> => {
 		try {
 
-			const response = await api<FamilyProps[]>({
+			const response = await api<FamilyOverviewProps[]>({
 				url: `families/`,
 				method: `GET`,
 			})

@@ -46,6 +46,12 @@ export interface FamilyProps {
 	updated_at: string
 }
 
+export interface FamilyOverviewProps extends FamilyProps {
+	role: UserRole | null
+	is_active_member: boolean
+	members_count: number
+}
+
 export interface AvatarProps {
 	id: string
 	url: string

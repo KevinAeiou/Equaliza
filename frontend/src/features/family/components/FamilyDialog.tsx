@@ -55,11 +55,7 @@ export const FamilyDialog = ({
 				>
 					<DialogHeader>
 						<DialogTitle>
-							{isEditing
-								? `Editar `
-								: `Criar `
-							}
-							família
+							{isEditing ? "Renomear família" : "Criar família"}
 						</DialogTitle>
 
 						<DialogDescription>
