@@ -1,13 +1,6 @@
+import { ArrowDownRight, ArrowUpRight } from "lucide-react"
 import { FinanceEntryType } from "@/src/types"
-import { Button } from "@/src/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/src/components/ui/dialog"
+import { FormDialog } from "@/src/components/formDialog"
 import { FieldGroup } from "@/src/components/ui/field"
 import { useFinanceDialog } from "../hooks/useFinanceDialog"
 import { FormCurrencyField } from "./FormCurrencyField"
@@ -44,115 +37,68 @@ export const FinanceDialog = ({
 	} = useFinanceDialog({ type, financeId, setOpen, setFinanceId, onSuccess })
 
 	const isEditing = financeId !== undefined
-	const tipo = type === "EXPENSE" ? "despesa" : "receita"
+	const expense = type === "EXPENSE"
+	const tipo = expense ? "despesa" : "receita"
 
 	return (
-		<Dialog
+		<FormDialog
 			open={open}
-			onOpenChange={(value) => {
-				if (!value) {
-					handleClose()
-				}
-			}}
+			onClose={handleClose}
+			icon={expense ? ArrowDownRight : ArrowUpRight}
+			iconClassName={expense ? "bg-expense-soft text-expense-strong" : "bg-income-soft text-income"}
+			title={isEditing ? `Editar ${tipo}` : `Nova ${tipo}`}
+			description={
+				expense
+					? "Registre um gasto da família. Ele entra na divisão entre os membros."
+					: "Registre um valor recebido. Ele define a cota de cada membro nas despesas."
+			}
+			formId="form-finance"
+			onSubmit={form.handleSubmit(onSubmit)}
+			submitLabel={isEditing ? "Salvar alterações" : `Registrar ${tipo}`}
+			loading={loading}
+			size="lg"
 		>
-			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-				<form
-					id="form-finance"
-					className="space-y-6"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
-					<DialogHeader>
-						<DialogTitle>
-							{isEditing
-								? `Editar ${tipo}`
-								: `Nova ${tipo}`}
-						</DialogTitle>
+			<FieldGroup>
+				<FormCurrencyField
+					control={form.control}
+					name="amount"
+					label="Valor"
+					size="lg"
+				/>
 
-						<DialogDescription>
-							Preencha as informações da movimentação
-							financeira.
-						</DialogDescription>
-					</DialogHeader>
+				<div className="grid gap-4 sm:grid-cols-2">
+					<FormDateField
+						control={form.control}
+						name="date"
+						label="Data"
+					/>
 
-					<FieldGroup>
-						<FormCurrencyField
-							control={form.control}
-							name="amount"
-							label="Valor"
-						/>
+					<FormSelectField
+						control={form.control}
+						name="category"
+						label="Categoria"
+						placeholder="Selecione"
+						options={categoryOptions}
+					/>
+				</div>
 
-						<FormDateField
-							control={form.control}
-							name="date"
-							label="Data"
-						/>
+				<FormTextAreaField
+					control={form.control}
+					name="description"
+					label="Observação (opcional)"
+					placeholder={expense ? "Ex.: Compras do mês no mercado" : "Ex.: Salário de setembro"}
+					maxLength={FINANCE_DESCRIPTION_MAX_LENGTH}
+				/>
+			</FieldGroup>
 
-						<FormSelectField
-							control={form.control}
-							name="category"
-							label="Categoria"
-							placeholder="Selecione uma categoria"
-							options={categoryOptions}
-						/>
-
-						<FormTextAreaField
-							control={form.control}
-							name="description"
-							label="Observação"
-							placeholder="Digite uma descrição..."
-							maxLength={FINANCE_DESCRIPTION_MAX_LENGTH}
-						/>
-
-					</FieldGroup>
-
-					{isEditing && finance && (
-						<div className="space-y-2 rounded-lg border bg-muted/40 p-4 text-sm">
-							<div className="flex justify-between gap-4">
-								<span className="font-medium text-muted-foreground">
-									Criado em
-								</span>
-
-								<span className="font-medium text-muted-foreground">
-									{finance.created_at && formatDate(finance.created_at)}
-								</span>
-							</div>
-
-							<div className="flex justify-between gap-4">
-								<span className="font-medium text-muted-foreground">
-									Última atualização
-								</span>
-
-								<span className="font-medium text-muted-foreground">
-									{finance.updated_at && formatDate(finance.updated_at)}
-								</span>
-							</div>
-						</div>
+			{isEditing && finance && (
+				<p className="text-xs text-muted-foreground">
+					Criada em {finance.created_at && formatDate(finance.created_at)}
+					{finance.updated_at && finance.updated_at !== finance.created_at && (
+						<> · atualizada em {formatDate(finance.updated_at)}</>
 					)}
-
-					<DialogFooter>
-						<Button
-							type="button"
-							variant="outline"
-							onClick={() => handleClose()}
-						>
-							Cancelar
-						</Button>
-
-						<Button
-							type="submit"
-							form="form-finance"
-							disabled={loading}
-						>
-							{loading
-								? "Salvando..."
-								: isEditing
-									? "Salvar alterações"
-									: "Cadastrar"
-							}
-						</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+				</p>
+			)}
+		</FormDialog>
 	)
 }

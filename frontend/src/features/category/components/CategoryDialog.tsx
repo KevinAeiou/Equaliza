@@ -1,20 +1,12 @@
-import { Button } from "@/src/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/src/components/ui/dialog"
-import { FieldGroup } from "@/src/components/ui/field"
+import { Tag } from "lucide-react"
+import { FormDialog } from "@/src/components/formDialog"
+import { FormSegmentedField } from "@/src/components/filters"
+import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/field"
 
 import { FormTextField } from "../../auth/components/FormTextField"
 
-
 import { CategoryProps } from "@/src/types"
 import { useCategoryDialog } from "../hooks/useCategoryDialog"
-import { FormSelectField } from "../../finance/components/FormSelectField"
 
 interface CategoryDialogProps {
 	open: boolean
@@ -23,6 +15,11 @@ interface CategoryDialogProps {
 	selectedCategory?: CategoryProps
 	setSelectedCategory?: (category?: CategoryProps) => void
 }
+
+const TYPE_OPTIONS = [
+	{ label: "Despesa", value: "EXPENSE" },
+	{ label: "Receita", value: "INCOME" },
+]
 
 export const CategoryDialog = ({
 	open,
@@ -44,83 +41,47 @@ export const CategoryDialog = ({
 	})
 
 	const isEditing = selectedCategory !== undefined
+	// O backend não permite mudar o tipo de uma categoria que já tem lançamentos.
+	const typeLocked = isEditing && (selectedCategory?.usage_count ?? 0) > 0
 
 	return (
-		<Dialog
+		<FormDialog
 			open={open}
-			onOpenChange={(value) => {
-				if (!value) {
-					handleClose()
-				}
-			}}
+			onClose={handleClose}
+			icon={Tag}
+			title={isEditing ? "Editar categoria" : "Nova categoria"}
+			description="Categorias organizam as receitas e despesas da família."
+			formId="form-category"
+			onSubmit={form.handleSubmit(onSubmit)}
+			submitLabel={isEditing ? "Salvar alterações" : "Criar categoria"}
+			loading={loading}
 		>
-			<DialogContent className="sm:max-w-md">
-				<form
-					id="form-category"
-					className="space-y-6"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
-					<DialogHeader>
-						<DialogTitle>
-							{isEditing
-								? "Editar categoria"
-								: "Criar categoria"}
-						</DialogTitle>
+			<FieldGroup>
+				<FormTextField
+					control={form.control}
+					name="name"
+					label="Nome"
+					placeholder="Ex.: Pets"
+				/>
 
-						<DialogDescription>
-							Cadastre categorias para organizar receitas e despesas da
-							sua família.
-						</DialogDescription>
-					</DialogHeader>
+				<Field>
+					<FieldLabel>Tipo</FieldLabel>
 
-					<FieldGroup>
-						<FormTextField
-							control={form.control}
-							name="name"
-							label="Nome"
-							placeholder="Ex.: Alimentação"
-						/>
+					<FormSegmentedField
+						control={form.control}
+						name="type"
+						label="Tipo da categoria"
+						options={TYPE_OPTIONS}
+						disabled={typeLocked}
+					/>
 
-						<FormSelectField
-							control={form.control}
-							name="type"
-							label="Tipo"
-							options={[
-								{
-									label: "Despesa",
-									value: "EXPENSE",
-								},
-								{
-									label: "Receita",
-									value: "INCOME",
-								},
-							]}
-						/>
-					</FieldGroup>
-
-					<DialogFooter>
-						<Button
-							type="button"
-							variant="outline"
-							onClick={handleClose}
-						>
-							Cancelar
-						</Button>
-
-						<Button
-							type="submit"
-							form="form-category"
-							disabled={loading}
-						>
-							{loading
-								? "Salvando..."
-								: isEditing
-									? "Salvar alterações"
-									: "Criar categoria"}
-						</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+					{typeLocked && (
+						<p className="text-xs text-muted-foreground">
+							O tipo não pode ser alterado porque a categoria já tem lançamentos.
+						</p>
+					)}
+				</Field>
+			</FieldGroup>
+		</FormDialog>
 	)
 }

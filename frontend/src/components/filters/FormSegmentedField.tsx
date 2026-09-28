@@ -9,6 +9,7 @@ interface FormSegmentedFieldProps<TField extends FieldValues> {
 	name: FieldPath<TField>
 	label: string
 	options: SelectOption<string>[]
+	disabled?: boolean
 }
 
 // Escolha única com todas as opções à vista, no lugar de um select para poucas opções.
@@ -17,6 +18,7 @@ export const FormSegmentedField = <TField extends FieldValues>({
 	name,
 	label,
 	options,
+	disabled = false,
 }: FormSegmentedFieldProps<TField>) => (
 	<Controller
 		control={control}
@@ -36,9 +38,10 @@ export const FormSegmentedField = <TField extends FieldValues>({
 							type="button"
 							role="radio"
 							aria-checked={selected}
+							disabled={disabled}
 							onClick={() => field.onChange(option.value)}
 							className={cn(
-								"h-9 min-w-0 flex-1 rounded-md px-2 text-sm font-medium whitespace-nowrap transition-colors",
+								"h-9 min-w-0 flex-1 rounded-md px-2 text-sm font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-60",
 								selected
 									? "bg-background text-foreground shadow-sm"
 									: "text-muted-foreground hover:text-foreground"
