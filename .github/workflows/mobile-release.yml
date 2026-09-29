@@ -10,13 +10,15 @@ permissions:
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    # Secrets e a variável API_URL ficam no environment "Production" do GitHub.
+    environment: Production
     defaults:
       run:
         working-directory: mobile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -58,6 +60,11 @@ jobs:
             echo "::error::Variável API_URL não configurada."
             exit 1
           fi
+          # O backend em produção redireciona HTTP para HTTPS e só aceita os cookies de sessão por HTTPS.
+          case "$API_URL" in
+            https://*) ;;
+            *) echo "::error::API_URL precisa usar HTTPS (ex.: https://sua-api.onrender.com)."; exit 1 ;;
+          esac
           flutter build apk --release --dart-define=API_URL=$API_URL
           mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/equaliza.apk
 
