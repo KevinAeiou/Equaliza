@@ -17,7 +17,7 @@ final Dio api = Dio(
     connectTimeout: const Duration(seconds: 60),
     receiveTimeout: const Duration(seconds: 60),
     headers: {'Accept': 'application/json'},
-    // `categories=1&categories=2`, como o `qs` com arrayFormat "repeat" do web.
+  // `categories=1&categories=2`, como o `qs` com arrayFormat "repeat" do web.
     listFormat: ListFormat.multi,
   ),
 );
