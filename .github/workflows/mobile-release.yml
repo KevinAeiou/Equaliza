@@ -1,0 +1,76 @@
+name: Mobile Release
+
+on:
+  push:
+    tags: ["mobile-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    # Secrets e a variável API_URL ficam no environment "Production" do GitHub.
+    environment: Production
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Sem a chave, o Gradle assinaria com a chave de debug e o APK não
+      # atualizaria as instalações existentes, então o build é interrompido.
+      - name: Configurar assinatura
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Secret KEYSTORE_BASE64 não configurado."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload.jks
+          cat > android/key.properties <<PROPS
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=upload
+          storeFile=upload.jks
+          PROPS
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      - name: Gerar APK
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "::error::Variável API_URL não configurada."
+            exit 1
+          fi
+          # O backend em produção redireciona HTTP para HTTPS e só aceita os cookies de sessão por HTTPS.
+          case "$API_URL" in
+            https://*) ;;
+            *) echo "::error::API_URL precisa usar HTTPS (ex.: https://sua-api.onrender.com)."; exit 1 ;;
+          esac
+          flutter build apk --release --dart-define=API_URL=$API_URL
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/equaliza.apk
+
+      - name: Publicar release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Equaliza Mobile ${{ github.ref_name }}
+          files: mobile/build/app/outputs/flutter-apk/equaliza.apk
+          generate_release_notes: true
