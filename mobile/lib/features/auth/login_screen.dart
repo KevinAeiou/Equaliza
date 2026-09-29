@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/network/api_exception.dart';
 import '../../core/session/app_scope.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/form_fields.dart';
 import 'auth_shell.dart';
 import 'invitation_code_sheet.dart';
@@ -47,10 +49,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) => AuthShell(
+        footer: AuthSwitchLink(
+          question: 'Ainda não tem uma conta?',
+          action: 'Criar conta',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+          ),
+        ),
         children: [
           const AuthHeader(
-            title: 'Entrar',
-            description: 'Informe seu e-mail e senha para acessar sua conta.',
+            title: 'Bem-vindo de volta',
+            description: 'Entre com seu e-mail e senha para acessar sua conta.',
           ),
           Form(
             key: _formKey,
@@ -62,16 +71,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'E-mail',
                     controller: _email,
                     placeholder: 'voce@exemplo.com',
+                    icon: LucideIcons.mail,
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: const [AutofillHints.email],
                     validator: validateEmail,
                     errorText: _error,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
                   PasswordField(
                     label: 'Senha',
                     controller: _password,
                     placeholder: 'Sua senha',
+                    icon: LucideIcons.lock,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _submit(),
                     validator: (value) => (value ?? '').isEmpty ? 'A senha é obrigatória.' : null,
@@ -79,27 +90,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: _loading ? null : _submit,
-                    child: Text(_loading ? 'Entrando...' : 'Entrar'),
+                    child: _loading
+                        ? const Text('Entrando...')
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Entrar'),
+                              SizedBox(width: 8),
+                              Icon(LucideIcons.arrowRight, size: 18, color: Colors.white),
+                            ],
+                          ),
                   ),
                 ],
               ),
             ),
           ),
-          Column(
-            children: [
-              AuthSwitchLink(
-                question: 'Ainda não tem uma conta?',
-                action: 'Criar conta',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                ),
-              ),
-              AuthSwitchLink(
-                question: 'Recebeu um convite?',
-                action: 'Usar convite',
-                onTap: () => openInvitationCode(context),
-              ),
-            ],
+          const AuthDivider(),
+          OutlinedButton.icon(
+            onPressed: () => openInvitationCode(context),
+            icon: Icon(LucideIcons.ticket, size: 18, color: context.colors.income),
+            label: const Text('Tenho um código de convite'),
           ),
         ],
       );

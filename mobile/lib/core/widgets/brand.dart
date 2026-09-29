@@ -4,15 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_colors.dart';
 import '../utils/formatters.dart';
 
-/// Logo completo; a versão branca é usada no tema escuro.
+/// Logo completo; a versão branca é usada no tema escuro ou sobre a cor da marca ([white]).
 class AppLogo extends StatelessWidget {
-  const AppLogo({super.key, this.height = 29});
+  const AppLogo({super.key, this.height = 29, this.white = false});
 
   final double height;
+  final bool white;
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final dark = white || Theme.of(context).brightness == Brightness.dark;
 
     return SvgPicture.asset(
       dark ? 'assets/images/logo-white.svg' : 'assets/images/logo.svg',
@@ -24,15 +25,16 @@ class AppLogo extends StatelessWidget {
 
 /// Símbolo da marca desenhado em código; no 404 a balança aparece desequilibrada.
 class BrandGlyph extends StatelessWidget {
-  const BrandGlyph({super.key, this.tilted = false, this.size = 64});
+  const BrandGlyph({super.key, this.tilted = false, this.size = 64, this.color});
 
   final bool tilted;
   final double size;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => CustomPaint(
         size: Size(size, size * 41 / 50),
-        painter: _GlyphPainter(context.colors.brand, tilted),
+        painter: _GlyphPainter(color ?? context.colors.brand, tilted),
       );
 }
 

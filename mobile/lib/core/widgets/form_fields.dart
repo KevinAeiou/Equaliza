@@ -5,17 +5,30 @@ import '../theme/app_colors.dart';
 
 /// Rótulo acima do campo, como o `FieldLabel` do web.
 class LabeledField extends StatelessWidget {
-  const LabeledField({super.key, required this.label, required this.child, this.hint});
+  const LabeledField({super.key, required this.label, required this.child, this.hint, this.optional = false});
 
   final String label;
   final Widget child;
   final String? hint;
+  final bool optional;
 
   @override
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          Text.rich(
+            TextSpan(
+              text: label,
+              children: [
+                if (optional)
+                  TextSpan(
+                    text: ' (opcional)',
+                    style: TextStyle(fontWeight: FontWeight.w400, color: context.colors.mutedForeground),
+                  ),
+              ],
+            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 8),
           child,
           if (hint != null) ...[
@@ -40,6 +53,9 @@ class AppTextField extends StatelessWidget {
     this.errorText,
     this.onSubmitted,
     this.textCapitalization = TextCapitalization.none,
+    this.icon,
+    this.hint,
+    this.optional = false,
   });
 
   final String label;
@@ -53,6 +69,9 @@ class AppTextField extends StatelessWidget {
   final String? errorText;
   final ValueChanged<String>? onSubmitted;
   final TextCapitalization textCapitalization;
+  final IconData? icon;
+  final String? hint;
+  final bool optional;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +79,8 @@ class AppTextField extends StatelessWidget {
 
     return LabeledField(
       label: label,
+      hint: hint,
+      optional: optional,
       child: TextFormField(
         controller: controller,
         enabled: enabled,
@@ -74,11 +95,16 @@ class AppTextField extends StatelessWidget {
           hintText: placeholder,
           errorText: errorText,
           fillColor: enabled ? null : colors.muted,
+          prefixIcon: _fieldIcon(context, icon),
         ),
       ),
     );
   }
 }
+
+/// Ícone à esquerda do campo, no mesmo tom do placeholder.
+Widget? _fieldIcon(BuildContext context, IconData? icon) =>
+    icon == null ? null : Icon(icon, size: 18, color: context.colors.mutedForeground);
 
 class PasswordField extends StatefulWidget {
   const PasswordField({
@@ -90,6 +116,8 @@ class PasswordField extends StatefulWidget {
     this.textInputAction,
     this.onSubmitted,
     this.autofillHints = const [AutofillHints.password],
+    this.icon,
+    this.footer,
   });
 
   final String label;
@@ -99,6 +127,10 @@ class PasswordField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
   final Iterable<String> autofillHints;
+  final IconData? icon;
+
+  /// Conteúdo abaixo do campo, como a regra de tamanho mínimo da senha.
+  final Widget? footer;
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -108,30 +140,40 @@ class _PasswordFieldState extends State<PasswordField> {
   bool _visible = false;
 
   @override
-  Widget build(BuildContext context) => LabeledField(
-        label: widget.label,
-        child: TextFormField(
-          controller: widget.controller,
-          obscureText: !_visible,
-          validator: widget.validator,
-          autofillHints: widget.autofillHints,
-          textInputAction: widget.textInputAction ?? TextInputAction.next,
-          onFieldSubmitted: widget.onSubmitted,
-          style: const TextStyle(fontSize: 16),
-          decoration: InputDecoration(
-            hintText: widget.placeholder,
-            suffixIcon: IconButton(
-              tooltip: _visible ? 'Ocultar senha' : 'Mostrar senha',
-              icon: Icon(
-                _visible ? LucideIcons.eyeOff : LucideIcons.eye,
-                size: 16,
-                color: context.colors.mutedForeground,
-              ),
-              onPressed: () => setState(() => _visible = !_visible),
-            ),
+  Widget build(BuildContext context) {
+    final field = TextFormField(
+      controller: widget.controller,
+      obscureText: !_visible,
+      validator: widget.validator,
+      autofillHints: widget.autofillHints,
+      textInputAction: widget.textInputAction ?? TextInputAction.next,
+      onFieldSubmitted: widget.onSubmitted,
+      style: const TextStyle(fontSize: 16),
+      decoration: InputDecoration(
+        hintText: widget.placeholder,
+        prefixIcon: _fieldIcon(context, widget.icon),
+        suffixIcon: IconButton(
+          tooltip: _visible ? 'Ocultar senha' : 'Mostrar senha',
+          icon: Icon(
+            _visible ? LucideIcons.eyeOff : LucideIcons.eye,
+            size: 16,
+            color: context.colors.mutedForeground,
           ),
+          onPressed: () => setState(() => _visible = !_visible),
         ),
-      );
+      ),
+    );
+
+    return LabeledField(
+      label: widget.label,
+      child: widget.footer == null
+          ? field
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [field, const SizedBox(height: 8), widget.footer!],
+            ),
+    );
+  }
 }
 
 /// Botão com aparência de campo, que abre um seletor (data, categoria, mês).

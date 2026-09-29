@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/session/app_scope.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/brand.dart';
 import '../../core/widgets/form_fields.dart';
 import '../../models/member.dart';
 import 'auth_shell.dart';
@@ -75,116 +76,122 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final colors = context.colors;
 
     return AuthShell(
+      footer: AuthSwitchLink(
+        question: 'Já tem uma conta?',
+        action: 'Entrar',
+        onTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+      ),
       children: [
         AuthHeader(
-          title: _invitationMode ? 'Aceitar convite' : 'Criar conta',
+          title: _invitationMode ? 'Aceitar convite' : 'Crie sua conta',
           description: _invitationMode
               ? 'Crie sua conta para começar a organizar as finanças junto com a família.'
               : 'Crie sua conta e sua família para começar a organizar as finanças.',
         ),
-        if (_invitationMode)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: colors.incomeSoft, borderRadius: BorderRadius.circular(14)),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Icon(LucideIcons.mailCheck, size: 16, color: colors.income),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      text: 'Você recebeu um convite para participar da ',
-                      children: [
-                        TextSpan(
-                          text: widget.invitation!.familyName,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const TextSpan(text: '.'),
-                      ],
-                    ),
-                    style: const TextStyle(fontSize: 14, height: 1.43),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        if (_invitationMode) _InvitationCard(familyName: widget.invitation!.familyName),
         Form(
           key: _formKey,
           child: AutofillGroup(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AppTextField(
-                  label: 'Nome',
-                  controller: _firstName,
-                  placeholder: 'Seu nome',
-                  autofillHints: const [AutofillHints.givenName],
-                  textCapitalization: TextCapitalization.words,
-                  errorText: _errors['first_name'],
-                  validator: (value) => requiredMin(value, 3, 'Informe seu primeiro nome'),
-                ),
-                const SizedBox(height: 20),
-                AppTextField(
-                  label: 'Sobrenome',
-                  controller: _lastName,
-                  placeholder: 'Seu sobrenome',
-                  autofillHints: const [AutofillHints.familyName],
-                  textCapitalization: TextCapitalization.words,
-                  errorText: _errors['last_name'],
-                  validator: (value) => requiredMin(value, 3, 'Informe seu sobrenome'),
+                AuthSection(
+                  title: 'Seus dados',
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: AppTextField(
+                            label: 'Nome',
+                            controller: _firstName,
+                            placeholder: 'Seu nome',
+                            autofillHints: const [AutofillHints.givenName],
+                            textCapitalization: TextCapitalization.words,
+                            errorText: _errors['first_name'],
+                            validator: (value) => requiredMin(value, 3, 'Informe seu primeiro nome'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: AppTextField(
+                            label: 'Sobrenome',
+                            controller: _lastName,
+                            placeholder: 'Seu sobrenome',
+                            autofillHints: const [AutofillHints.familyName],
+                            textCapitalization: TextCapitalization.words,
+                            errorText: _errors['last_name'],
+                            validator: (value) => requiredMin(value, 3, 'Informe seu sobrenome'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    AppTextField(
+                      label: 'E-mail',
+                      controller: _email,
+                      enabled: !_invitationMode,
+                      placeholder: 'voce@exemplo.com',
+                      icon: _invitationMode ? LucideIcons.mailCheck : LucideIcons.mail,
+                      hint: _invitationMode ? 'Definido pelo convite.' : null,
+                      keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
+                      errorText: _errors['email'],
+                      validator: validateEmail,
+                    ),
+                  ],
                 ),
                 if (!_invitationMode) ...[
-                  const SizedBox(height: 20),
-                  AppTextField(
-                    label: 'Nome da família',
-                    controller: _familyName,
-                    placeholder: 'Ex.: Família Silva',
-                    textCapitalization: TextCapitalization.words,
-                    errorText: _errors['family_name'],
-                    validator: (value) => (value ?? '').trim().isEmpty
-                        ? null
-                        : requiredMin(value, 3, 'Informe o nome da família'),
+                  const SizedBox(height: 28),
+                  AuthSection(
+                    title: 'Sua família',
+                    children: [
+                      AppTextField(
+                        label: 'Nome da família',
+                        optional: true,
+                        controller: _familyName,
+                        placeholder: 'Ex.: Família Silva',
+                        icon: LucideIcons.house,
+                        hint: 'Depois você poderá convidar outras pessoas para a família.',
+                        textCapitalization: TextCapitalization.words,
+                        errorText: _errors['family_name'],
+                        validator: (value) => (value ?? '').trim().isEmpty
+                            ? null
+                            : requiredMin(value, 3, 'Informe o nome da família'),
+                      ),
+                    ],
                   ),
                 ],
-                const SizedBox(height: 20),
-                AppTextField(
-                  label: 'E-mail',
-                  controller: _email,
-                  enabled: !_invitationMode,
-                  placeholder: 'voce@exemplo.com',
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  errorText: _errors['email'],
-                  validator: validateEmail,
-                ),
-                const SizedBox(height: 20),
-                PasswordField(
-                  label: 'Senha',
-                  controller: _password,
-                  placeholder: 'Crie uma senha',
-                  autofillHints: const [AutofillHints.newPassword],
-                  validator: (value) =>
-                      (value ?? '').length < 8 ? 'A senha deve possuir no mínimo 8 caracteres' : null,
-                ),
-                const SizedBox(height: 20),
-                PasswordField(
-                  label: 'Confirmar senha',
-                  controller: _confirmation,
-                  placeholder: 'Repita a senha',
-                  autofillHints: const [AutofillHints.newPassword],
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _submit(),
-                  validator: (value) => value != _password.text ? 'As senhas não coincidem' : null,
+                const SizedBox(height: 28),
+                AuthSection(
+                  title: 'Acesso',
+                  children: [
+                    PasswordField(
+                      label: 'Senha',
+                      controller: _password,
+                      placeholder: 'Crie uma senha',
+                      icon: LucideIcons.lock,
+                      autofillHints: const [AutofillHints.newPassword],
+                      footer: PasswordRule(controller: _password),
+                      validator: (value) =>
+                          (value ?? '').length < 8 ? 'A senha deve possuir no mínimo 8 caracteres' : null,
+                    ),
+                    PasswordField(
+                      label: 'Confirmar senha',
+                      controller: _confirmation,
+                      placeholder: 'Repita a senha',
+                      icon: LucideIcons.lock,
+                      autofillHints: const [AutofillHints.newPassword],
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _submit(),
+                      validator: (value) => value != _password.text ? 'As senhas não coincidem' : null,
+                    ),
+                  ],
                 ),
                 if (_errors['password'] != null) ...[
                   const SizedBox(height: 6),
                   Text(_errors['password']!, style: TextStyle(fontSize: 12, color: colors.destructive)),
                 ],
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
                 FilledButton(
                   onPressed: _loading ? null : _submit,
                   child: Text(
@@ -199,12 +206,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
-        AuthSwitchLink(
-          question: 'Já tem uma conta?',
-          action: 'Entrar',
-          onTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
-        ),
       ],
+    );
+  }
+}
+
+/// Destaque da família que enviou o convite.
+class _InvitationCard extends StatelessWidget {
+  const _InvitationCard({required this.familyName});
+
+  final String familyName;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: colors.incomeSoft,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.income.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          FamilyMonogram(name: familyName, current: true, size: 44),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Você foi convidado para participar da',
+                  style: TextStyle(fontSize: 13, color: colors.mutedForeground),
+                ),
+                const SizedBox(height: 2),
+                Text(familyName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
