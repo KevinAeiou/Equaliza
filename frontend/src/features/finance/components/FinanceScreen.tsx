@@ -1,4 +1,5 @@
-import { Plus } from "lucide-react"
+import Link from "next/link"
+import { ChevronRight, Plus, Repeat } from "lucide-react"
 import { Button } from "@/src/components/ui/button"
 import { FilterButton } from "@/src/components/filters"
 import { HeaderScreen } from "@/src/components/headerScreen"
@@ -57,6 +58,24 @@ export const FinanceScreen = () => {
 				categoryOptions={categoryOptions}
 				onChange={setFilters}
 			/>
+
+			<Link
+				href="/finance/recurring"
+				className="flex items-center gap-3 rounded-xl border bg-card p-3 transition-colors hover:bg-muted/60 sm:max-w-xl"
+			>
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-income-soft text-income">
+					<Repeat className="size-4" />
+				</span>
+
+				<span className="flex min-w-0 flex-1 flex-col">
+					<span className="text-sm font-medium">Recorrentes</span>
+					<span className="text-xs text-muted-foreground">
+						Lançamentos que se repetem automaticamente
+					</span>
+				</span>
+
+				<ChevronRight className="size-4 text-muted-foreground" />
+			</Link>
 
 			<FinanceTabs
 				refresh={refresh}

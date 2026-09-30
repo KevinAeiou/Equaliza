@@ -14,6 +14,7 @@ import '../../models/dashboard.dart';
 import '../../models/finance.dart';
 import '../category/category_service.dart';
 import '../dashboard/dashboard_service.dart';
+import '../recurring/recurring_screen.dart';
 import 'finance_form_sheet.dart';
 import 'finance_service.dart';
 
@@ -181,6 +182,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
             ),
           ],
           const SizedBox(height: 16),
+          const _RecurringLink(),
+          const SizedBox(height: 16),
           Row(
             children: [
               for (final (index, type) in EntryType.values.indexed) ...[
@@ -209,6 +212,52 @@ class _FinanceScreenState extends State<FinanceScreen> {
             onDelete: _delete,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RecurringLink extends StatelessWidget {
+  const _RecurringLink();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Semantics(
+      button: true,
+      child: Material(
+        color: colors.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: colors.border),
+        ),
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RecurringScreen())),
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                IconBadge(icon: LucideIcons.repeat, background: colors.incomeSoft, foreground: colors.income),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Recorrentes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Lançamentos que se repetem automaticamente',
+                        style: TextStyle(fontSize: 12, color: colors.mutedForeground),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(LucideIcons.chevronRight, size: 16, color: colors.mutedForeground),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
