@@ -145,6 +145,42 @@ export interface SelectOption<T extends string | number = string> {
 	value: T
 }
 
+export type RecurrenceFrequency = "WEEKLY" | "MONTHLY" | "YEARLY"
+
+export interface RecurringProps {
+	id: number
+	type: FinanceEntryType
+	amount: number
+	description?: string
+	category: CategoryProps
+	frequency: RecurrenceFrequency
+	start_date: string
+	end_date: string | null
+	next_date: string
+	is_active: boolean
+	created_by: FinanceAuthorProps | null
+	created_at?: string
+	updated_at?: string
+}
+
+export interface RecurringCreatePayload {
+	type: FinanceEntryType
+	amount: number
+	description?: string
+	category: number
+	frequency: RecurrenceFrequency
+	start_date: string
+	end_date: string | null
+}
+
+export interface RecurringUpdatePayload {
+	amount: number
+	description?: string
+	category: number
+	end_date: string | null
+	is_active?: boolean
+}
+
 export interface FinancialPayload {
 	amount: number
 	category?: number
