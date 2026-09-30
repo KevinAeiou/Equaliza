@@ -27,4 +27,5 @@ class FinancialCategory(models.Model):
         return (
             self.expenses.exists()  # pyright: ignore[reportAttributeAccessIssue]
             or self.incomes.exists()  # pyright: ignore[reportAttributeAccessIssue]
+            or self.recurring_transactions.exists()  # pyright: ignore[reportAttributeAccessIssue]
         )

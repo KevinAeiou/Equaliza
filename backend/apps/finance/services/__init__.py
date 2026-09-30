@@ -10,6 +10,11 @@ from .delete_category import DeleteFinancialCategoryService
 from .update_category import UpdateFinancialCategoryService
 from .update_expense import UpdateExpenseService
 from .update_income import UpdateIncomeService
+from .create_recurring_transaction import CreateRecurringTransactionService
+from .delete_recurring_transaction import DeleteRecurringTransactionService
+from .generate_recurring_transaction import GenerateRecurringTransactionsService
+from .list_recurring_transaction import ListRecurringTransactionService
+from .update_recurring_transaction import UpdateRecurringTransactionService
 
 __all__ = [
 	"CreateExpenseService",
@@ -24,4 +29,9 @@ __all__ = [
 	"UpdateFinancialCategoryService",
 	"UpdateExpenseService",
 	"UpdateIncomeService",
+	"CreateRecurringTransactionService",
+	"DeleteRecurringTransactionService",
+	"GenerateRecurringTransactionsService",
+	"ListRecurringTransactionService",
+	"UpdateRecurringTransactionService",
 ]
