@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/recurring.dart';
+
 const _locale = 'pt_BR';
 
 final _currency = NumberFormat.currency(locale: _locale, symbol: 'R\$', decimalDigits: 2);
@@ -46,6 +48,14 @@ String formatShortDate(DateTime date) => DateFormat('dd/MM/yyyy', _locale).forma
 
 /// "28/09/2026 14:30".
 String formatDateTime(DateTime date) => DateFormat('dd/MM/yyyy HH:mm', _locale).format(date);
+
+/// "Mensal, dia 10", "Semanal, segunda", "Anual, 18 nov".
+String describeSchedule(RecurrenceFrequency frequency, DateTime start) => switch (frequency) {
+      RecurrenceFrequency.weekly =>
+        'Semanal, ${DateFormat('EEEE', _locale).format(start).replaceAll('-feira', '')}',
+      RecurrenceFrequency.monthly => 'Mensal, dia ${start.day}',
+      RecurrenceFrequency.yearly => 'Anual, ${formatDayMonth(start)}',
+    };
 
 String capitalize(String value) =>
     value.isEmpty ? value : value[0].toUpperCase() + value.substring(1);
