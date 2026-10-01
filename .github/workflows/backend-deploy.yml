@@ -18,4 +18,9 @@ jobs:
             echo "::error::O secret RENDER_DEPLOY_HOOK_URL não está configurado (Settings > Secrets and variables > Actions)."
             exit 1
           fi
-          curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL?ref=$GITHUB_SHA"
+          # A URL do hook do Render já traz "?key=...", então o ref entra com "&".
+          case "$RENDER_DEPLOY_HOOK_URL" in
+            *\?*) separator="&" ;;
+            *) separator="?" ;;
+          esac
+          curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}${separator}ref=${GITHUB_SHA}"
