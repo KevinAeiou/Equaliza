@@ -15,7 +15,7 @@ class InvitationEmailService:
                 f"Olá!\n\n"
                 f"Você recebeu um convite para participar da família "
                 f"'{invitation.family.name}'.\n\n"
-                f"Utilize o link abaixo para criar sua conta:\n\n"
+                f"Utilize o link abaixo para entrar na família (ou criar sua conta, caso ainda não tenha uma):\n\n"
                 f"{link}\n\n"
                 f"Este convite expira em {invitation.expires_at:%d/%m/%Y às %H:%M}."
             ),

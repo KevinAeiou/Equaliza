@@ -1,6 +1,6 @@
 import { api } from "@/src/infra/api"
 import { configureError } from "@/src/lib/utils"
-import { ApiResponse, InviteProps, InviteValidationProps } from "@/src/types"
+import { ApiResponse, FamilyProps, InviteProps, InviteValidationProps } from "@/src/types"
 
 export const InvitationAPI = () => ({
 	create: async (email: string) => {
@@ -31,6 +31,19 @@ export const InvitationAPI = () => ({
 
 		} catch (error: unknown) {
 			throw configureError(error, `validar convite`)
+		}
+	},
+
+	accept: async (token: string): Promise<FamilyProps> => {
+		try {
+			const response = await api<ApiResponse<{ family: FamilyProps }>>({
+				url: `invitations/${token}/accept/`,
+				method: "POST",
+			})
+
+			return response.data.data.family
+		} catch (error: unknown) {
+			throw configureError(error, "aceitar convite")
 		}
 	},
 

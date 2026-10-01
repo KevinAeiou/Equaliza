@@ -4,12 +4,15 @@ from django.utils import timezone
 
 from apps.invitations.models import Invitation
 from apps.invitations.services.email import InvitationEmailService
+from apps.invitations.services.validate import ValidateInvitationService
 
 
 class CreateInvitationService:
 
     @staticmethod
     def execute(user, email):
+
+        ValidateInvitationService.execute(user, email)
 
         invitation = Invitation.objects.create(
             family=user.current_family,

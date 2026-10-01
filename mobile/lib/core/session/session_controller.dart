@@ -59,6 +59,14 @@ class SessionController extends ChangeNotifier {
     await refreshUser();
   }
 
+  /// Entra na família do convite; ela passa a ser a família atual.
+  Future<String> acceptInvitation(String token) async {
+    final familyName = await AuthService.acceptInvitation(token);
+    await refreshUser();
+
+    return familyName;
+  }
+
   Future<User> refreshUser() async {
     _user = await AuthService.me();
     _status = SessionStatus.authenticated;
