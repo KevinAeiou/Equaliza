@@ -1,7 +1,7 @@
 from .validate import ValidateInvitationService
 from .create import CreateInvitationService
 from .validate_token import ValidateInvitationTokenService
-from .accept import AcceptInvitationService
+from .accept import AcceptInvitationService, JoinFamilyByInvitationService
 from .list import ListInvitationService
 from .delete import DeleteInvitationService
 

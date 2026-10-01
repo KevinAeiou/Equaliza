@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from apps.invitations.viewsets import InvitationViewSet
 from apps.invitations.views import (
+    AcceptInvitationView,
     ValidateInvitationView,
 )
 
@@ -15,6 +16,11 @@ router.register(
 )
 
 urlpatterns = [
+    path(
+        "<uuid:token>/accept/",
+        AcceptInvitationView.as_view(),
+        name="accept-invitation",
+    ),
     path(
         "",
         include(router.urls),

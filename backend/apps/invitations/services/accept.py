@@ -1,7 +1,9 @@
+from django.db import transaction
 from django.utils import timezone
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
-from apps.families.models import FamilyMember
 from apps.families.enums import FamilyRole
+from apps.families.models import FamilyMember
 
 
 class AcceptInvitationService:
@@ -30,3 +32,28 @@ class AcceptInvitationService:
                 "updated_by",
             ]
         )
+
+
+class JoinFamilyByInvitationService:
+    """Faz um usuário já cadastrado entrar na família de um convite."""
+
+    @staticmethod
+    @transaction.atomic
+    def execute(*, token, user):
+        from apps.invitations.models import Invitation
+
+        Invitation.objects.select_for_update().filter(token=token).first()
+        invitation = Invitation.objects.get_valid(token)
+
+        if invitation.email and invitation.email.lower() != user.email.lower():
+            raise PermissionDenied("Este convite foi enviado para outro e-mail.")
+
+        if FamilyMember.objects.filter(
+            family=invitation.family,
+            user=user,
+        ).exists():
+            raise ValidationError({"token": "Você já faz parte desta família."})
+
+        AcceptInvitationService.execute(invitation=invitation, user=user)
+
+        return invitation.family
