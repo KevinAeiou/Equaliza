@@ -10,6 +10,7 @@ import '../../core/widgets/brand.dart';
 import '../../core/widgets/error_view.dart';
 import '../../core/widgets/overlays.dart';
 import '../../models/user.dart';
+import '../auth/invitation_code_sheet.dart';
 import 'family_form_sheet.dart';
 import 'family_service.dart';
 
@@ -107,6 +108,15 @@ class _FamilyScreenState extends State<FamilyScreen> {
             onPressed: () => _openForm(),
             icon: const Icon(LucideIcons.plus, size: 16),
             label: const Text('Nova família'),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () async {
+              await openInvitationCode(context);
+              if (mounted) await _reload();
+            },
+            icon: Icon(LucideIcons.ticket, size: 16, color: context.colors.income),
+            label: const Text('Tenho um código de convite'),
           ),
           const SizedBox(height: 16),
           if (_families == null)

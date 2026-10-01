@@ -5,12 +5,16 @@ import '../../core/network/api_exception.dart';
 import '../../core/session/app_scope.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/form_fields.dart';
+import '../../models/member.dart';
 import 'auth_shell.dart';
 import 'invitation_code_sheet.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.invitation});
+
+  /// Convite a aceitar logo após o login, quando a pessoa chegou por um link.
+  final InvitationPreview? invitation;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -38,8 +42,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _loading = true);
 
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final session = AppScope.read(context).session;
+    final invitation = widget.invitation;
+
     try {
-      await AppScope.read(context).session.login(_email.text.trim(), _password.text);
+      await session.login(_email.text.trim(), _password.text);
+
+      if (invitation != null) {
+        // A sessão já é a autenticada: volta à raiz, que mostra o app, e avisa o resultado.
+        navigator.popUntil((route) => route.isFirst);
+
+        String message;
+        try {
+          message = 'Você entrou na família ${await session.acceptInvitation(invitation.token)}!';
+        } on ApiException catch (error) {
+          message = error.message;
+        }
+
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(message)));
+      }
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
     } finally {
@@ -53,13 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
           question: 'Ainda não tem uma conta?',
           action: 'Criar conta',
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+            MaterialPageRoute(builder: (_) => RegisterScreen(invitation: widget.invitation)),
           ),
         ),
         children: [
-          const AuthHeader(
+          AuthHeader(
             title: 'Bem-vindo de volta',
-            description: 'Entre com seu e-mail e senha para acessar sua conta.',
+            description: widget.invitation == null
+                ? 'Entre com seu e-mail e senha para acessar sua conta.'
+                : 'Entre com sua conta para aceitar o convite da família ${widget.invitation!.familyName}.',
           ),
           Form(
             key: _formKey,
@@ -105,12 +132,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          const AuthDivider(),
-          OutlinedButton.icon(
-            onPressed: () => openInvitationCode(context),
-            icon: Icon(LucideIcons.ticket, size: 18, color: context.colors.income),
-            label: const Text('Tenho um código de convite'),
-          ),
+          if (widget.invitation == null) ...[
+            const AuthDivider(),
+            OutlinedButton.icon(
+              onPressed: () => openInvitationCode(context),
+              icon: Icon(LucideIcons.ticket, size: 18, color: context.colors.income),
+              label: const Text('Tenho um código de convite'),
+            ),
+          ],
         ],
       );
 }

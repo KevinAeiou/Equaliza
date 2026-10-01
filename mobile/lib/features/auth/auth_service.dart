@@ -60,10 +60,19 @@ abstract final class AuthService {
         await api.patch('current/', data: {'family_id': familyId});
       });
 
-  /// Aceita o link completo do convite (`.../register?token=...`) ou só o código.
+  /// Aceita o link completo do convite (`.../invitation/accept?token=...`) ou só o código.
   static String? extractToken(String input) => RegExp(
         r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
       ).firstMatch(input)?.group(0);
+
+  /// Faz o usuário já autenticado entrar na família do convite; devolve o nome da família.
+  static Future<String> acceptInvitation(String token) => guard('aceitar convite', () async {
+        final response = await api.post('invitations/$token/accept/');
+        final data = (response.data as Map<String, dynamic>)['data'] as Map<String, dynamic>;
+        final family = data['family'] as Map<String, dynamic>? ?? {};
+
+        return family['name'] as String? ?? '';
+      });
 
   static Future<InvitationPreview> validateInvitation(String token) =>
       guard('validar convite', () async {
