@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Os secrets dos hooks ficam no environment "Production" do GitHub.
+    environment: Production
     steps:
       - name: Disparar deploy no Render
         env:
