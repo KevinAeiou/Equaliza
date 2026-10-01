@@ -7,6 +7,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Os secrets dos hooks ficam no environment "Production" do GitHub.
+    environment: Production
     steps:
       - name: Disparar deploy no Vercel
-        run: curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            echo "::error::O secret VERCEL_DEPLOY_HOOK_URL não está configurado (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"
