@@ -61,4 +61,4 @@ class Invitation(BaseModel):
 
     @property
     def invitation_link(self) -> str:
-        return f"{settings.FRONTEND_URL}/register?token={self.token}"
+        return f"{settings.FRONTEND_URL}/invitation/accept?token={self.token}"

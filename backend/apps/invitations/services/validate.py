@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 
-from apps.users.models import User
+from apps.families.models import FamilyMember
 from apps.invitations.models import Invitation
 
 
@@ -15,10 +15,11 @@ class ValidateInvitationService:
                 {"email": "Você não pode enviar um convite para si mesmo."}
             )
 
-        if User.objects.filter(email__iexact=email).exists():
-            raise ValidationError(
-                {"email": "Já existe um usuário cadastrado com este e-mail."}
-            )
+        if FamilyMember.objects.filter(
+            family=family,
+            user__email__iexact=email,
+        ).exists():
+            raise ValidationError({"email": "Este usuário já faz parte da família."})
 
         if Invitation.objects.pending_for_email(
             family,

@@ -2,7 +2,7 @@
 
 import { FormLoginSchemaType } from "@/src/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FormLoginSchema } from "../schemas/login.shema"
@@ -11,6 +11,7 @@ import { useAuth } from "../../../components/providers/AuthProvider"
 
 export const useFormLogin = () => {
 	const router = useRouter()
+	const searchParams = useSearchParams()
 
 	const [loading, setLoading] = useState<boolean>(false)
 
@@ -30,7 +31,9 @@ export const useFormLogin = () => {
 		try {
 			await login(data)
 			form.reset()
-			router.replace(`/`)
+			// Só aceita caminhos internos, para evitar redirecionamento aberto.
+			const next = searchParams.get("next")
+			router.replace(next && next.startsWith("/") && !next.startsWith("//") ? next : `/`)
 		} catch (error: unknown) {
 			if (isApiError(error)) {
 				form.setError("password", {
