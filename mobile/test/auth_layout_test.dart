@@ -1,6 +1,9 @@
 import 'package:equaliza/core/theme/app_theme.dart';
+import 'package:equaliza/features/auth/auth_service.dart';
+import 'package:equaliza/features/auth/forgot_password_screen.dart';
 import 'package:equaliza/features/auth/login_screen.dart';
 import 'package:equaliza/features/auth/register_screen.dart';
+import 'package:equaliza/features/auth/reset_password_screen.dart';
 import 'package:equaliza/models/member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +15,8 @@ void main() {
   final screens = <String, Widget Function()>{
     'login': () => const LoginScreen(),
     'cadastro': () => const RegisterScreen(),
+    'recuperar senha': () => const ForgotPasswordScreen(),
+    'nova senha': () => const ResetPasswordScreen(uid: 'Mg', token: 'abc-123'),
     'convite': () => const RegisterScreen(
           invitation: InvitationPreview(token: 't', email: 'voce@exemplo.com', familyName: 'Família Silva'),
         ),
@@ -46,4 +51,13 @@ void main() {
       });
     }
   }
+
+  test('extractResetLink lê uid e token do link do e-mail', () {
+    final link = AuthService.extractResetLink('https://equaliza.app/reset-password?uid=Mg&token=cx4-9f8a');
+
+    expect(link?.uid, 'Mg');
+    expect(link?.token, 'cx4-9f8a');
+    expect(AuthService.extractResetLink('https://equaliza.app/reset-password'), isNull);
+    expect(AuthService.extractResetLink('texto qualquer'), isNull);
+  });
 }

@@ -20,7 +20,7 @@ mobile/
 │   │   ├── utils/      # Formatação (moeda, datas) e períodos
 │   │   └── widgets/    # Componentes compartilhados (cards, formulários, filtros)
 │   ├── features/       # Telas organizadas por funcionalidade, como no web
-│   │   ├── auth/       # Login, cadastro e convite
+│   │   ├── auth/       # Login, cadastro, convite e recuperação de senha
 │   │   ├── shell/      # Barra superior e menu lateral
 │   │   ├── dashboard/
 │   │   ├── finance/
@@ -40,6 +40,8 @@ A autenticação usa os mesmos cookies HttpOnly do web: o app guarda os cookies
 access token automaticamente.
 
 Para aceitar um convite, use **Usar convite** na tela de login e cole o link recebido por e-mail.
+
+Para recuperar a senha, use **Esqueci minha senha** na tela de login; depois de receber o e-mail, toque em **Já recebi o e-mail** e cole o link para definir a nova senha.
 
 ---
 

@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/form_fields.dart';
 import '../../models/member.dart';
 import 'auth_shell.dart';
+import 'forgot_password_screen.dart';
 import 'invitation_code_sheet.dart';
 import 'register_screen.dart';
 
@@ -114,7 +115,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSubmitted: (_) => _submit(),
                     validator: (value) => (value ?? '').isEmpty ? 'A senha é obrigatória.' : null,
                   ),
-                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                      ),
+                      child: const Text('Esqueci minha senha'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _loading ? null : _submit,
                     child: _loading
