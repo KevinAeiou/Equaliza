@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../models/finance.dart';
+
 /// Seções do app, na mesma ordem do menu do web.
 enum AppSection {
   dashboard('Dashboard', LucideIcons.house),
@@ -19,12 +21,15 @@ enum AppSection {
   final bool adminOnly;
 }
 
+/// Troca de seção; [entryType] escolhe a aba ao abrir Finanças.
+typedef NavigateCallback = void Function(AppSection section, {EntryType? entryType});
+
 /// Permite que as telas troquem de seção (ex.: "Ver todas" no dashboard).
 class ShellScope extends InheritedWidget {
   const ShellScope({super.key, required this.current, required this.navigate, required super.child});
 
   final AppSection current;
-  final ValueChanged<AppSection> navigate;
+  final NavigateCallback navigate;
 
   static ShellScope of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<ShellScope>()!;
 

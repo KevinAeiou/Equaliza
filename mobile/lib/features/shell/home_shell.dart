@@ -10,6 +10,7 @@ import '../category/category_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../family/family_screen.dart';
 import '../finance/finance_screen.dart';
+import '../../models/finance.dart';
 import '../invitation/invitation_screen.dart';
 import '../member/member_screen.dart';
 import 'app_menu.dart';
@@ -29,8 +30,12 @@ class _HomeShellState extends State<HomeShell> {
       ? AppSection.family
       : AppSection.dashboard;
 
-  void _navigate(AppSection section) {
+  EntryType _financeType = EntryType.expense;
+
+  void _navigate(AppSection section, {EntryType? entryType}) {
     _scaffoldKey.currentState?.closeEndDrawer();
+
+    if (section == AppSection.finance && entryType != null) _financeType = entryType;
 
     if (section != _section) setState(() => _section = section);
   }
@@ -59,11 +64,11 @@ class _HomeShellState extends State<HomeShell> {
     }
 
     // A chave da família recarrega a tela quando a família atual muda.
-    final key = ValueKey('${_section.name}-${user.currentFamily?.id}');
+    final key = ValueKey('${_section.name}-${user.currentFamily?.id}-${_section == AppSection.finance ? _financeType.name : ''}');
 
     return switch (_section) {
       AppSection.dashboard => DashboardScreen(key: key),
-      AppSection.finance => FinanceScreen(key: key),
+      AppSection.finance => FinanceScreen(key: key, initialType: _financeType),
       AppSection.category => CategoryScreen(key: key),
       AppSection.member => MemberScreen(key: key),
       AppSection.invitation => InvitationScreen(key: key),

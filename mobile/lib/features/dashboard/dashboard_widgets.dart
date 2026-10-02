@@ -59,6 +59,7 @@ class SummaryCards extends StatelessWidget {
             Expanded(
               child: _SmallSummary(
                 title: 'Receitas',
+                onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.income),
                 value: data?.income,
                 icon: LucideIcons.arrowUpRight,
                 iconBackground: colors.incomeSoft,
@@ -69,6 +70,7 @@ class SummaryCards extends StatelessWidget {
             Expanded(
               child: _SmallSummary(
                 title: 'Despesas',
+                onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.expense),
                 value: data?.expense,
                 icon: LucideIcons.arrowDownRight,
                 iconBackground: colors.expenseSoft,
@@ -184,24 +186,34 @@ class _SmallSummary extends StatelessWidget {
     required this.icon,
     required this.iconBackground,
     required this.iconColor,
+    required this.onTap,
   });
 
   final String title;
+  final VoidCallback onTap;
   final double? value;
   final IconData icon;
   final Color iconBackground;
   final Color iconColor;
 
   @override
-  Widget build(BuildContext context) => AppCard(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _CardHeading(title: title, icon: icon, iconBackground: iconBackground, iconColor: iconColor),
-            const SizedBox(height: 12),
-            value == null ? const Skeleton(height: 28) : _Value(formatCurrency(value!)),
-          ],
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: 'Ver $title',
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: AppCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _CardHeading(title: title, icon: icon, iconBackground: iconBackground, iconColor: iconColor),
+                const SizedBox(height: 12),
+                value == null ? const Skeleton(height: 28) : _Value(formatCurrency(value!)),
+              ],
+            ),
+          ),
         ),
       );
 }

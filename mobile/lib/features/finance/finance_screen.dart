@@ -21,14 +21,16 @@ import 'finance_service.dart';
 const _tabular = [FontFeature.tabularFigures()];
 
 class FinanceScreen extends StatefulWidget {
-  const FinanceScreen({super.key});
+  const FinanceScreen({super.key, this.initialType = EntryType.expense});
+
+  final EntryType initialType;
 
   @override
   State<FinanceScreen> createState() => _FinanceScreenState();
 }
 
 class _FinanceScreenState extends State<FinanceScreen> {
-  EntryType _type = EntryType.expense;
+  late EntryType _type = widget.initialType;
   PeriodFilters _filters = PeriodFilters.initial();
   List<Category> _categories = [];
   List<FinanceEntry>? _entries;
