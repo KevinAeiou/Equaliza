@@ -29,8 +29,8 @@ export const FinanceTabs = ({
 	const { loaded, income, expense } = useSummaryCards(summaryFilters, refresh)
 
 	const tabs = [
-		{ value: "EXPENSE" as const, label: "Despesas", total: expense, icon: ArrowDownRight, iconClassName: "bg-expense-soft text-expense-strong" },
 		{ value: "INCOME" as const, label: "Receitas", total: income, icon: ArrowUpRight, iconClassName: "bg-income-soft text-income" },
+		{ value: "EXPENSE" as const, label: "Despesas", total: expense, icon: ArrowDownRight, iconClassName: "bg-expense-soft text-expense-strong" },
 	]
 
 	return (
