@@ -38,6 +38,14 @@ export class AuthService {
 
 	}
 
+	static async requestPasswordReset(email: string) {
+		await authenticationApi.requestPasswordReset(email)
+	}
+
+	static async confirmPasswordReset(uid: string, token: string, password: string) {
+		await authenticationApi.confirmPasswordReset(uid, token, password)
+	}
+
 	static async validateInvitation(token: string) {
 		const response = await invitationApi.validate(token)
 		return {

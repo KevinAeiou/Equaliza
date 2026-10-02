@@ -43,6 +43,30 @@ abstract final class AuthService {
         });
       });
 
+  static Future<void> requestPasswordReset(String email) => guard('solicitar recuperação de senha', () async {
+        await api.post('password-reset/', data: {'email': email});
+      });
+
+  static Future<void> confirmPasswordReset({
+    required String uid,
+    required String token,
+    required String password,
+  }) =>
+      guard('redefinir senha', () async {
+        await api.post('password-reset/confirm/', data: {'uid': uid, 'token': token, 'password': password});
+      });
+
+  /// Lê `uid` e `token` do link do e-mail (`.../reset-password?uid=...&token=...`).
+  static ({String uid, String token})? extractResetLink(String input) {
+    final params = Uri.tryParse(input.trim())?.queryParameters ?? const {};
+    final uid = params['uid'];
+    final token = params['token'];
+
+    if (uid == null || uid.isEmpty || token == null || token.isEmpty) return null;
+
+    return (uid: uid, token: token);
+  }
+
   static Future<void> updateProfile({
     required String firstName,
     required String lastName,
