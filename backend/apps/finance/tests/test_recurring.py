@@ -73,6 +73,19 @@ class RecurringTransactionTests(APITestCase):
         self.assertFalse(response.data["is_active"])
         self.assertEqual(Expense.objects.first().created_by_id, self.user.id)
 
+    def test_listing_generates_due_entries_without_cron(self):
+        RecurringTransaction.objects.create(
+            family=self.family, type=CategoryType.EXPENSE, amount="100.00",
+            category=self.expense_category, frequency=RecurrenceFrequency.MONTHLY,
+            start_date=date(2020, 1, 5), next_date=date(2020, 1, 5), end_date=date(2020, 1, 5),
+            created_by=self.user, updated_by=self.user,
+        )
+
+        response = self.client.get("/api/finances/expenses/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Expense.objects.count(), 1)
+
     def test_income_recurrence_creates_incomes(self):
         self.client.post(
             URL,

@@ -1,4 +1,5 @@
 import { FinanceEntryType } from "@/src/types"
+import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
 import { useDashboardCategories } from "../../dashboard/hooks/useDashboardCategories"
@@ -7,7 +8,10 @@ import { useDashboardCategories } from "../../dashboard/hooks/useDashboardCatego
 export const useFinanceScreen = () => {
 	const [open, setOpen] = useState<boolean>(false)
 	const [financeId, setFinanceId] = useState<number | undefined>(undefined)
-	const [type, setType] = useState<FinanceEntryType>("EXPENSE")
+	const searchParams = useSearchParams()
+	const [type, setType] = useState<FinanceEntryType>(
+		searchParams.get("type") === "INCOME" ? "INCOME" : "EXPENSE"
+	)
 	const [refresh, setRefresh] = useState<number>(0)
 	const [showFilter, setShowFilter] = useState<boolean>(false)
 	const [filters, setFilters] = useState<FormFinanceFilterSchemaType>(

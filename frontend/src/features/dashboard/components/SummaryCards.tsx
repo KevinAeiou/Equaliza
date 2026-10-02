@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowDownRight, ArrowUpRight, LucideIcon, PiggyBank, Wallet } from "lucide-react"
+import Link from "next/link"
 import { ReactNode } from "react"
 import { Card } from "@/src/components/ui/card"
 import { cn, formatCurrency } from "@/src/lib/utils"
@@ -22,6 +23,7 @@ interface SummaryCardProps {
 	footer: ReactNode
 	loaded: boolean
 	className?: string
+	href?: string
 }
 
 const SummaryCard = ({
@@ -32,8 +34,10 @@ const SummaryCard = ({
 	footer,
 	loaded,
 	className,
-}: SummaryCardProps) => (
-	<Card className={cn("gap-3 px-5 py-5", className)}>
+	href,
+}: SummaryCardProps) => {
+	const card = (
+	<Card className={cn("gap-3 px-5 py-5", href ? "h-full transition-colors hover:bg-muted/50" : className)}>
 		<div className="flex items-center justify-between gap-2">
 			<span className="text-sm font-medium text-muted-foreground">
 				{title}
@@ -56,7 +60,16 @@ const SummaryCard = ({
 			{footer}
 		</div>
 	</Card>
-)
+	)
+
+	if (!href) return card
+
+	return (
+		<Link href={href} className={cn("block rounded-xl focus-visible:outline-2 focus-visible:outline-ring", className)}>
+			{card}
+		</Link>
+	)
+}
 
 export const SummaryCards = ({
 	filters,
@@ -103,6 +116,7 @@ export const SummaryCards = ({
 
 			<SummaryCard
 				title="Receitas"
+				href="/finance?type=INCOME"
 				value={formatCurrency(income)}
 				icon={ArrowUpRight}
 				iconClassName="bg-income-soft text-income"
@@ -120,6 +134,7 @@ export const SummaryCards = ({
 
 			<SummaryCard
 				title="Despesas"
+				href="/finance?type=EXPENSE"
 				value={formatCurrency(expense)}
 				icon={ArrowDownRight}
 				iconClassName="bg-expense-soft text-expense-strong"

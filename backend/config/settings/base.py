@@ -157,3 +157,9 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
+
+
+# Agendador interno que registra as finanças recorrentes vencidas.
+RECURRING_SCHEDULER_ENABLED = env.bool("RECURRING_SCHEDULER_ENABLED", default=False)
+RECURRING_SCHEDULER_INTERVAL = env.int("RECURRING_SCHEDULER_INTERVAL", default=3600)
+RECURRING_SCHEDULER_INITIAL_DELAY = env.int("RECURRING_SCHEDULER_INITIAL_DELAY", default=30)
