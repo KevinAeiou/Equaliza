@@ -188,7 +188,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
           const SizedBox(height: 16),
           Row(
             children: [
-              for (final (index, type) in EntryType.values.indexed) ...[
+              for (final (index, type) in [EntryType.income, EntryType.expense].indexed) ...[
                 if (index > 0) const SizedBox(width: 12),
                 Expanded(
                   child: _TypeTab(
