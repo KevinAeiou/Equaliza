@@ -15,14 +15,19 @@ class GenerateRecurringTransactionsService:
     }
 
     @staticmethod
-    def execute(today=None, recurring_transactions=None):
+    @transaction.atomic
+    def execute(today=None, recurring_transactions=None, family=None):
         today = today or timezone.localdate()
 
         if recurring_transactions is None:
             recurring_transactions = RecurringTransaction.objects.due(today)
 
+        if family is not None:
+            recurring_transactions = recurring_transactions.filter(family=family)
+
         created = 0
 
+        # select_for_update exige transação aberta; sem ela o comando falhava.
         for recurring in recurring_transactions.select_for_update():
             created += GenerateRecurringTransactionsService._generate(recurring, today)
 
