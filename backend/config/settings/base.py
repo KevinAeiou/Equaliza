@@ -35,6 +35,9 @@ FRONTEND_URL = env.str(
     default="http://localhost:3000",
 )
 
+# Validade do link de recuperação de senha (segundos).
+PASSWORD_RESET_TIMEOUT = env.int("PASSWORD_RESET_TIMEOUT", default=3600)
+
 EMAIL_BACKEND = env.str(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",

@@ -70,6 +70,30 @@ export const AuthenticationAPI = () => ({
 		}
 	},
 
+	requestPasswordReset: async (email: string) => {
+		try {
+			await api({
+				url: `password-reset/`,
+				method: `POST`,
+				data: { email },
+			})
+		} catch (error: unknown) {
+			throw configureError(error, `solicitar recuperação de senha`)
+		}
+	},
+
+	confirmPasswordReset: async (uid: string, token: string, password: string) => {
+		try {
+			await api({
+				url: `password-reset/confirm/`,
+				method: `POST`,
+				data: { uid, token, password },
+			})
+		} catch (error: unknown) {
+			throw configureError(error, `redefinir senha`)
+		}
+	},
+
 	updateProfile: async (data: ProfileFormSchemaType) => {
 		try {
 			await api({

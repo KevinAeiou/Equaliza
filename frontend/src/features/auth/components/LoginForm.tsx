@@ -43,6 +43,12 @@ export function LoginForm() {
 						placeholder="Sua senha"
 						label="Senha"
 					/>
+
+					<div className="-mt-2 flex justify-end">
+						<NavigationButton href="/forgot-password" className="text-sm">
+							Esqueci minha senha
+						</NavigationButton>
+					</div>
 				</FieldGroup>
 
 				<Button
