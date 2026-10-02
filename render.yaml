@@ -1,0 +1,27 @@
+# Blueprint do Render apenas para o cron job. O web service do backend continua
+# sendo deployado pelo deploy hook (.github/workflows/backend-deploy.yml).
+services:
+  - type: cron
+    name: equaliza-generate-recurring
+    runtime: docker
+    repo: https://github.com/KevinAeiou/Equaliza
+    branch: main
+    dockerfilePath: ./backend/Dockerfile.prod
+    dockerContext: ./backend
+    # Diário às 04:00 UTC (00:00 em Manaus, o TIME_ZONE do projeto).
+    schedule: "0 4 * * *"
+    # Sobrescreve o CMD da imagem, que roda migrate e sobe o gunicorn.
+    dockerCommand: python manage.py generate_recurring
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      # Mesmos valores do web service do backend (Environment > copiar).
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+      # O cron é um processo curto; o agendador interno não deve rodar nele.
+      - key: RECURRING_SCHEDULER_ENABLED
+        value: "False"
