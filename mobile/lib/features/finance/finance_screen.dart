@@ -372,63 +372,70 @@ class _EntryList extends StatelessWidget {
           ],
           for (final entry in items ?? const <FinanceEntry>[]) ...[
             const RowDivider(),
-            Padding(
-              padding: const EdgeInsets.only(left: 12, top: 10, bottom: 10),
-              child: Row(
-                children: [
-                  EntryIcon(type: type),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                // Tocar no item equivale a Ações → Editar; só quem registrou pode editar.
+                onTap: entry.createdBy?.id == currentUserId ? () => onEdit(entry) : null,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, top: 10, bottom: 10),
+                  child: Row(
+                    children: [
+                      EntryIcon(type: type),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(
-                              child: Text(
-                                entry.title,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    entry.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${income ? '+' : '−'}${formatCurrency(entry.amount)}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFeatures: _tabular,
+                                    color: income ? colors.income : null,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(height: 2),
                             Text(
-                              '${income ? '+' : '−'}${formatCurrency(entry.amount)}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                fontFeatures: _tabular,
-                                color: income ? colors.income : null,
-                              ),
+                              [
+                                entry.hasDescription ? entry.category.name : 'Sem observação',
+                                formatDayMonthYear(entry.date),
+                                if (entry.createdBy != null)
+                                  entry.createdBy!.id == currentUserId ? 'Você' : getFirstName(entry.createdBy!.name),
+                              ].join(' · '),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, color: colors.mutedForeground),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          [
-                            entry.hasDescription ? entry.category.name : 'Sem observação',
-                            formatDayMonthYear(entry.date),
-                            if (entry.createdBy != null)
-                              entry.createdBy!.id == currentUserId ? 'Você' : getFirstName(entry.createdBy!.name),
-                          ].join(' · '),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: colors.mutedForeground),
-                        ),
-                      ],
-                    ),
+                      ),
+                      // Só quem registrou pode alterar ou remover; o backend também bloqueia.
+                      if (entry.createdBy?.id == currentUserId)
+                        ActionMenuButton(
+                          tooltip: 'Ações de ${entry.title}',
+                          items: [
+                            ActionItem('Editar', () => onEdit(entry)),
+                            ActionItem('Excluir', () => onDelete(entry), destructive: true),
+                          ],
+                        )
+                      else
+                        const LockIndicator(reason: 'Apenas quem registrou pode editar ou excluir'),
+                    ],
                   ),
-                  // Só quem registrou pode alterar ou remover; o backend também bloqueia.
-                  if (entry.createdBy?.id == currentUserId)
-                    ActionMenuButton(
-                      tooltip: 'Ações de ${entry.title}',
-                      items: [
-                        ActionItem('Editar', () => onEdit(entry)),
-                        ActionItem('Excluir', () => onDelete(entry), destructive: true),
-                      ],
-                    )
-                  else
-                    const LockIndicator(reason: 'Apenas quem registrou pode editar ou excluir'),
-                ],
+                ),
               ),
             ),
           ],
