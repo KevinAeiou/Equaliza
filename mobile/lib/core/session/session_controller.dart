@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 
 import '../../features/auth/auth_service.dart';
 import '../../models/user.dart';
+import '../security/biometric_service.dart';
 import '../network/api_client.dart' as client;
+import '../network/api_exception.dart';
 
 enum SessionStatus { loading, authenticated, unauthenticated }
 
@@ -37,6 +39,26 @@ class SessionController extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     await AuthService.login(email, password);
     await refreshUser();
+  }
+
+  /// Entra com as credenciais guardadas, depois de confirmar a biometria.
+  /// Devolve `false` se a biometria foi recusada ou não há credenciais salvas.
+  Future<bool> loginWithBiometrics() async {
+    final credentials = await BiometricService.read();
+
+    if (credentials == null) return false;
+    if (!await BiometricService.authenticate('Confirme sua identidade para entrar no Equaliza')) return false;
+
+    try {
+      await login(credentials.email, credentials.password);
+    } on ApiException catch (error) {
+      // Senha alterada ou conta removida: as credenciais guardadas não servem mais.
+      if (error.status == 400 || error.status == 401) await BiometricService.clear();
+
+      rethrow;
+    }
+
+    return true;
   }
 
   Future<void> register({

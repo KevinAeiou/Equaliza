@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/network/api_exception.dart';
+import '../../core/security/biometric_service.dart';
 import '../../core/session/app_scope.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/form_fields.dart';
@@ -27,7 +28,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
 
   bool _loading = false;
+  bool _biometricReady = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _prepareBiometrics();
+  }
+
+  /// Se a biometria já foi ativada, mostra o botão e abre o prompt automaticamente.
+  Future<void> _prepareBiometrics() async {
+    final ready = await BiometricService.isAvailable() && await BiometricService.isEnabled();
+
+    if (!mounted || !ready) return;
+
+    setState(() => _biometricReady = true);
+    _submitBiometric();
+  }
 
   @override
   void dispose() {
@@ -41,6 +59,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!_formKey.currentState!.validate()) return;
 
+    final email = _email.text.trim();
+    final password = _password.text;
+    final navigatorContext = Navigator.of(context).context;
+
+    await _run(() async {
+      await AppScope.read(context).session.login(email, password);
+
+      return true;
+    }, onSuccess: () => _offerBiometrics(navigatorContext, email, password));
+  }
+
+  Future<void> _submitBiometric() async {
+    setState(() => _error = null);
+
+    await _run(() => AppScope.read(context).session.loginWithBiometrics());
+
+    // Credenciais recusadas pelo servidor foram apagadas: volta ao login por senha.
+    if (mounted && _error != null && !await BiometricService.isEnabled()) {
+      setState(() => _biometricReady = false);
+    }
+  }
+
+  /// Executa um login e, se der certo, aceita o convite pendente (quando há).
+  /// [attempt] devolve `false` quando o usuário cancelou, sem erro.
+  Future<void> _run(Future<bool> Function() attempt, {Future<void> Function()? onSuccess}) async {
     setState(() => _loading = true);
 
     final navigator = Navigator.of(context);
@@ -49,7 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final invitation = widget.invitation;
 
     try {
-      await session.login(_email.text.trim(), _password.text);
+      if (!await attempt()) return;
+
+      await onSuccess?.call();
 
       if (invitation != null) {
         // A sessão já é a autenticada: volta à raiz, que mostra o app, e avisa o resultado.
@@ -70,6 +115,33 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) setState(() => _error = error.message);
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  /// Depois do primeiro login por senha, oferece ativar a biometria para as próximas vezes.
+  ///
+  /// Usa o contexto do Navigator porque esta tela já saiu da árvore quando a sessão autentica.
+  Future<void> _offerBiometrics(BuildContext navigatorContext, String email, String password) async {
+    if (await BiometricService.isEnabled() || !await BiometricService.isAvailable()) return;
+    if (!navigatorContext.mounted) return;
+
+    final accepted = await showDialog<bool>(
+      context: navigatorContext,
+      builder: (context) => AlertDialog(
+        title: const Text('Entrar com biometria?'),
+        content: const Text(
+          'Da próxima vez, use sua digital ou seu rosto em vez de digitar a senha. '
+          'Você pode desativar isso depois, em Configurações.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Agora não')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Ativar')),
+        ],
+      ),
+    );
+
+    if (accepted == true && await BiometricService.authenticate('Confirme para ativar o login por biometria')) {
+      await BiometricService.save(email, password);
     }
   }
 
@@ -138,6 +210,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                   ),
+                  if (_biometricReady) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _loading ? null : _submitBiometric,
+                      icon: const Icon(LucideIcons.fingerprintPattern, size: 18),
+                      label: const Text('Entrar com biometria'),
+                    ),
+                  ],
                 ],
               ),
             ),

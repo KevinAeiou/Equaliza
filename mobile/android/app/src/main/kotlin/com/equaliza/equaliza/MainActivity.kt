@@ -1,5 +1,6 @@
 package com.equaliza.equaliza
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// O `local_auth` exige uma FragmentActivity para exibir o prompt biométrico.
+class MainActivity : FlutterFragmentActivity()
