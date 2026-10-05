@@ -49,9 +49,12 @@ class _FamilyScreenState extends State<FamilyScreen> {
   }
 
   Future<void> _openForm([FamilyOverview? family]) async {
-    final saved = await showFormSheet<bool>(context, (_) => FamilyFormSheet(family: family));
+    final result = await showFormSheet<FamilyResult>(context, (_) => FamilyFormSheet(family: family));
 
-    if (saved == true && mounted) await _reload();
+    if (!mounted) return;
+
+    if (result == FamilyResult.saved) await _reload();
+    if (result == FamilyResult.delete && family != null) await _delete(family);
   }
 
   Future<void> _use(FamilyOverview family) async {
@@ -135,8 +138,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
               _FamilyCard(
                 family: family,
                 current: family.id == currentId,
-                onRename: () => _openForm(family),
-                onDelete: () => _delete(family),
+                onEdit: () => _openForm(family),
                 onUse: () => _use(family),
               ),
             ],
@@ -150,15 +152,13 @@ class _FamilyCard extends StatelessWidget {
   const _FamilyCard({
     required this.family,
     required this.current,
-    required this.onRename,
-    required this.onDelete,
+    required this.onEdit,
     required this.onUse,
   });
 
   final FamilyOverview family;
   final bool current;
-  final VoidCallback onRename;
-  final VoidCallback onDelete;
+  final VoidCallback onEdit;
   final VoidCallback onUse;
 
   @override
@@ -167,6 +167,8 @@ class _FamilyCard extends StatelessWidget {
 
     return AppCard(
       highlighted: current,
+      // Tocar no card abre a edição (renomear e excluir); só o responsável pode.
+      onTap: family.role == UserRole.owner ? onEdit : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -208,17 +210,6 @@ class _FamilyCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (family.role == UserRole.owner)
-                Transform.translate(
-                  offset: const Offset(12, -8),
-                  child: ActionMenuButton(
-                    tooltip: 'Ações de ${family.name}',
-                    items: [
-                      ActionItem('Renomear', onRename),
-                      ActionItem('Excluir família', onDelete, destructive: true),
-                    ],
-                  ),
-                ),
             ],
           ),
           const SizedBox(height: 20),

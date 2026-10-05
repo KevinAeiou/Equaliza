@@ -274,3 +274,88 @@ Future<bool> showConfirmDialog(
 
   return result ?? false;
 }
+
+/// Ação de um [showActionSheet].
+class SheetAction {
+  const SheetAction(this.label, this.icon, this.onSelected, {this.destructive = false});
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onSelected;
+  final bool destructive;
+}
+
+/// Abre um painel inferior com as ações de um item que não tem formulário de edição.
+/// O painel fecha antes de a ação rodar, para que diálogos de confirmação apareçam sobre a tela.
+Future<void> showActionSheet(
+  BuildContext context, {
+  required IconData icon,
+  required Color iconBackground,
+  required Color iconColor,
+  required String title,
+  required String description,
+  required List<SheetAction> actions,
+}) async {
+  final selected = await showModalBottomSheet<SheetAction>(
+    context: context,
+    useSafeArea: true,
+    builder: (context) {
+      final colors = context.colors;
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(color: iconBackground, borderRadius: BorderRadius.circular(14)),
+                  child: Icon(icon, size: 20, color: iconColor),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(fontSize: 18, height: 1.55, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(fontSize: 14, height: 1.43, color: colors.mutedForeground),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            for (final action in actions) ...[
+              OutlinedButton.icon(
+                onPressed: () => Navigator.pop(context, action),
+                style: action.destructive
+                    ? OutlinedButton.styleFrom(
+                        foregroundColor: colors.destructive,
+                        side: BorderSide(color: colors.destructive.withValues(alpha: 0.4)),
+                      )
+                    : null,
+                icon: Icon(action.icon, size: 16),
+                label: Text(action.label),
+              ),
+              if (action != actions.last) const SizedBox(height: 8),
+            ],
+          ],
+        ),
+      );
+    },
+  );
+
+  selected?.onSelected();
+}

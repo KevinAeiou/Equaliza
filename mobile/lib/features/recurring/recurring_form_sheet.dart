@@ -211,7 +211,7 @@ class _RecurringFormSheetState extends State<RecurringFormSheet> {
       children: [
         if (!_editing)
           SegmentedControl(
-            options: [for (final type in EntryType.values) SegmentOption(type, capitalize(type.singular))],
+            options: [for (final type in EntryType.values.reversed) SegmentOption(type, capitalize(type.singular))],
             value: _type,
             onChanged: _setType,
           ),

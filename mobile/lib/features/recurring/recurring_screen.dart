@@ -142,7 +142,6 @@ class _RecurringScreenState extends State<RecurringScreen> {
                     items: _items,
                     currentUserId: AppScope.of(context).session.user.id,
                     onEdit: _openForm,
-                    onDelete: _delete,
                     onToggle: _toggle,
                   ),
                 ],
@@ -157,14 +156,12 @@ class _RecurringList extends StatelessWidget {
     required this.items,
     required this.currentUserId,
     required this.onEdit,
-    required this.onDelete,
     required this.onToggle,
   });
 
   final List<Recurring>? items;
   final int currentUserId;
   final ValueChanged<Recurring> onEdit;
-  final ValueChanged<Recurring> onDelete;
   final void Function(Recurring item, bool isActive) onToggle;
 
   @override
@@ -199,7 +196,6 @@ class _RecurringList extends StatelessWidget {
               item: item,
               isOwner: item.createdBy?.id == currentUserId,
               onEdit: () => onEdit(item),
-              onDelete: () => onDelete(item),
               onToggle: (value) => onToggle(item, value),
             ),
           ],
@@ -225,14 +221,12 @@ class _RecurringRow extends StatelessWidget {
     required this.item,
     required this.isOwner,
     required this.onEdit,
-    required this.onDelete,
     required this.onToggle,
   });
 
   final Recurring item;
   final bool isOwner;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
   final ValueChanged<bool> onToggle;
 
   @override
@@ -243,74 +237,75 @@ class _RecurringRow extends StatelessWidget {
 
     return Opacity(
       opacity: item.isActive ? 1 : 0.6,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 12, top: 10, bottom: 10),
-        child: Row(
-          children: [
-            IconBadge(
-              icon: LucideIcons.repeat,
-              background: income ? colors.incomeSoft : colors.expenseSoft,
-              foreground: income ? colors.income : colors.expenseStrong,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          // Tocar na linha abre a edição (onde também fica o Excluir); só quem registrou pode editar.
+          onTap: isOwner ? onEdit : null,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, top: 10, bottom: 10),
+            child: Row(
+              children: [
+                IconBadge(
+                  icon: LucideIcons.repeat,
+                  background: income ? colors.incomeSoft : colors.expenseSoft,
+                  foreground: income ? colors.income : colors.expenseStrong,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${income ? '+' : '−'}${formatCurrency(item.amount)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: _tabular,
+                              color: income ? colors.income : null,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 2),
                       Text(
-                        '${income ? '+' : '−'}${formatCurrency(item.amount)}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: _tabular,
-                          color: income ? colors.income : null,
-                        ),
+                        '${item.category.name} · ${describeSchedule(item.frequency, item.startDate)}',
+                        overflow: TextOverflow.ellipsis,
+                        style: subtitle,
+                      ),
+                      Text(
+                        item.isActive
+                            ? 'Próxima: ${formatDayMonthYear(item.nextDate)}'
+                                '${item.endDate == null ? '' : ' · até ${formatDayMonthYear(item.endDate!)}'}'
+                            : 'Pausada · sem novos lançamentos',
+                        overflow: TextOverflow.ellipsis,
+                        style: subtitle,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${item.category.name} · ${describeSchedule(item.frequency, item.startDate)}',
-                    overflow: TextOverflow.ellipsis,
-                    style: subtitle,
+                ),
+                // Só quem registrou pode alterar ou remover; o backend também bloqueia.
+                if (isOwner) ...[
+                  Semantics(
+                    label: '${item.isActive ? 'Pausar' : 'Ativar'} ${item.title}',
+                    child: Switch(value: item.isActive, onChanged: onToggle),
                   ),
-                  Text(
-                    item.isActive
-                        ? 'Próxima: ${formatDayMonthYear(item.nextDate)}'
-                            '${item.endDate == null ? '' : ' · até ${formatDayMonthYear(item.endDate!)}'}'
-                        : 'Pausada · sem novos lançamentos',
-                    overflow: TextOverflow.ellipsis,
-                    style: subtitle,
-                  ),
-                ],
-              ),
+                  const SizedBox(width: 12),
+                ] else
+                  const LockIndicator(reason: 'Apenas quem registrou pode editar ou excluir'),
+              ],
             ),
-            // Só quem registrou pode alterar ou remover; o backend também bloqueia.
-            if (isOwner) ...[
-              Semantics(
-                label: '${item.isActive ? 'Pausar' : 'Ativar'} ${item.title}',
-                child: Switch(value: item.isActive, onChanged: onToggle),
-              ),
-              ActionMenuButton(
-                tooltip: 'Ações de ${item.title}',
-                items: [
-                  ActionItem('Editar', onEdit),
-                  ActionItem('Excluir', onDelete, destructive: true),
-                ],
-              ),
-            ] else
-              const LockIndicator(reason: 'Apenas quem registrou pode editar ou excluir'),
-          ],
+          ),
         ),
       ),
     );

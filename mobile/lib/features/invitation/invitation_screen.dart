@@ -207,44 +207,57 @@ class _InviteRow extends StatelessWidget {
       _ => (LucideIcons.mail, colors.muted, colors.foreground),
     };
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 4, 12),
-      child: Row(
-        children: [
-          IconBadge(icon: icon, background: background, foreground: foreground),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  invite.email.isEmpty ? 'Convite sem e-mail' : invite.email,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 2),
-                Text(_describe(), style: TextStyle(fontSize: 12, height: 1.33, color: colors.mutedForeground)),
-              ],
-            ),
-          ),
-          if (invite.pending)
-            SizedBox(
-              width: 44,
-              height: 44,
-              child: OutlinedButton(
-                onPressed: onCopy,
-                style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
-                child: const Icon(LucideIcons.copy, size: 14, semanticLabel: 'Copiar link do convite'),
-              ),
-            ),
-          ActionMenuButton(
-            tooltip: 'Ações do convite para ${invite.email}',
-            items: [
-              if (invite.pending) ActionItem('Copiar link do convite', onCopy),
-              ActionItem(invite.pending ? 'Cancelar convite' : 'Excluir do histórico', onDelete, destructive: true),
-            ],
+    return InkWell(
+      // Tocar na linha abre as ações do convite.
+      onTap: () => showActionSheet(
+        context,
+        icon: icon,
+        iconBackground: background,
+        iconColor: foreground,
+        title: invite.email.isEmpty ? 'Convite sem e-mail' : invite.email,
+        description: _describe(),
+        actions: [
+          if (invite.pending) SheetAction('Copiar link do convite', LucideIcons.copy, onCopy),
+          SheetAction(
+            invite.pending ? 'Cancelar convite' : 'Excluir do histórico',
+            LucideIcons.trash2,
+            onDelete,
+            destructive: true,
           ),
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: Row(
+          children: [
+            IconBadge(icon: icon, background: background, foreground: foreground),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    invite.email.isEmpty ? 'Convite sem e-mail' : invite.email,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(_describe(), style: TextStyle(fontSize: 12, height: 1.33, color: colors.mutedForeground)),
+                ],
+              ),
+            ),
+            if (invite.pending)
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: OutlinedButton(
+                  onPressed: onCopy,
+                  style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
+                  child: const Icon(LucideIcons.copy, size: 14, semanticLabel: 'Copiar link do convite'),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
