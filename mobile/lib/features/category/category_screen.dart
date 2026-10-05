@@ -67,9 +67,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Future<void> _openForm([Category? category]) async {
-    final saved = await showFormSheet<bool>(context, (_) => CategoryFormSheet(category: category));
+    final result = await showFormSheet<CategoryResult>(context, (_) => CategoryFormSheet(category: category));
 
-    if (saved == true) _load();
+    if (!mounted) return;
+
+    if (result == CategoryResult.saved) _load();
+    if (result == CategoryResult.delete && category != null) _delete(category);
   }
 
   Future<void> _delete(Category category) async {
@@ -152,7 +155,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
               categories: _categories?.where((category) => category.type == type).toList(),
               canManage: canManage,
               onEdit: _openForm,
-              onDelete: _delete,
             ),
           ],
         ],
@@ -167,14 +169,12 @@ class _CategorySection extends StatelessWidget {
     required this.categories,
     required this.canManage,
     required this.onEdit,
-    required this.onDelete,
   });
 
   final EntryType type;
   final List<Category>? categories;
   final bool canManage;
   final ValueChanged<Category> onEdit;
-  final ValueChanged<Category> onDelete;
 
   static String? _usage(int? count) {
     if (count == null) return null;
@@ -224,55 +224,52 @@ class _CategorySection extends StatelessWidget {
             ),
           for (final (index, category) in (items ?? const <Category>[]).indexed) ...[
             if (index > 0) const RowDivider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  IconBadge(icon: LucideIcons.tag, background: colors.muted, foreground: colors.mutedForeground),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          category.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                // Tocar na linha abre a edição (onde também fica o Excluir).
+                onTap: category.isDefault || !canManage ? null : () => onEdit(category),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      IconBadge(icon: LucideIcons.tag, background: colors.muted, foreground: colors.mutedForeground),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category.name,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              category.isDefault ? 'Padrão do sistema' : 'Criada pela família',
+                              style: TextStyle(fontSize: 12, color: colors.mutedForeground),
+                            ),
+                          ],
                         ),
+                      ),
+                      if (_usage(category.usageCount) != null)
                         Text(
-                          category.isDefault ? 'Padrão do sistema' : 'Criada pela família',
+                          _usage(category.usageCount)!,
                           style: TextStyle(fontSize: 12, color: colors.mutedForeground),
                         ),
-                      ],
-                    ),
-                  ),
-                  if (_usage(category.usageCount) != null)
-                    Text(
-                      _usage(category.usageCount)!,
-                      style: TextStyle(fontSize: 12, color: colors.mutedForeground),
-                    ),
-                  Transform.translate(
-                    offset: const Offset(12, 0),
-                    child: category.isDefault || !canManage
-                        ? LockIndicator(
+                      if (category.isDefault || !canManage)
+                        Transform.translate(
+                          offset: const Offset(12, 0),
+                          child: LockIndicator(
                             reason: category.isDefault
                                 ? 'Categorias padrão do sistema não podem ser alteradas'
                                 : 'Apenas responsáveis e administradores podem alterar categorias',
-                          )
-                        : ActionMenuButton(
-                            tooltip: 'Ações de ${category.name}',
-                            items: [
-                              ActionItem('Editar', () => onEdit(category)),
-                              ActionItem(
-                                category.inUse ? 'Em uso, não pode ser excluída' : 'Excluir',
-                                () => onDelete(category),
-                                destructive: true,
-                                enabled: !category.inUse,
-                              ),
-                            ],
                           ),
+                        )
+                      else
+                        const SizedBox(width: 32),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
