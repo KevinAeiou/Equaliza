@@ -103,7 +103,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
     final role = AppScope.of(context).session.user.role;
     final canManage = role == UserRole.owner || role == UserRole.admin;
-    final sections = EntryType.values.where((type) => _filters.type == null || _filters.type == type);
+    final sections = EntryType.values.reversed.where((type) => _filters.type == null || _filters.type == type);
 
     return RefreshIndicator(
       onRefresh: _load,
@@ -313,8 +313,8 @@ class _CategoryFilterPanelState extends State<_CategoryFilterPanel> {
                 SegmentedControl<EntryType?>(
                   options: const [
                     SegmentOption(null, 'Todos'),
-                    SegmentOption(EntryType.expense, 'Despesas'),
                     SegmentOption(EntryType.income, 'Receitas'),
+                    SegmentOption(EntryType.expense, 'Despesas'),
                   ],
                   value: _type,
                   onChanged: (type) => setState(() => _type = type),
