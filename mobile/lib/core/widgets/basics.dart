@@ -13,6 +13,7 @@ class AppCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(20),
     this.highlighted = false,
     this.color,
+    this.onTap,
   });
 
   final Widget child;
@@ -20,9 +21,30 @@ class AppCard extends StatelessWidget {
   final bool highlighted;
   final Color? color;
 
+  /// Torna o card inteiro tocável, com o efeito de toque dentro das bordas.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final radius = BorderRadius.circular(14);
+
+    if (onTap != null) {
+      return SizedBox(
+        width: double.infinity,
+        child: Material(
+          color: color ?? colors.card,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: color != null
+                ? BorderSide.none
+                : BorderSide(color: highlighted ? colors.brand : colors.border, width: highlighted ? 2 : 1),
+          ),
+          child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
+        ),
+      );
+    }
 
     return Container(
       width: double.infinity,
@@ -225,50 +247,6 @@ class LockIndicator extends StatelessWidget {
           child: Icon(LucideIcons.lock, size: 14, color: context.colors.mutedForeground, semanticLabel: reason),
         ),
       );
-}
-
-class ActionItem {
-  const ActionItem(this.label, this.onSelected, {this.destructive = false, this.enabled = true});
-
-  final String label;
-  final VoidCallback onSelected;
-  final bool destructive;
-  final bool enabled;
-}
-
-/// Botão "…" com o menu de ações do item.
-class ActionMenuButton extends StatelessWidget {
-  const ActionMenuButton({super.key, required this.items, required this.tooltip});
-
-  final List<ActionItem> items;
-  final String tooltip;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return PopupMenuButton<int>(
-      tooltip: tooltip,
-      icon: const Icon(LucideIcons.ellipsis, size: 16),
-      position: PopupMenuPosition.under,
-      onSelected: (index) => items[index].onSelected(),
-      itemBuilder: (context) => [
-        for (final (index, item) in items.indexed)
-          PopupMenuItem(
-            value: index,
-            enabled: item.enabled,
-            height: 44,
-            child: Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 14,
-                color: item.destructive && item.enabled ? colors.destructive : null,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
 }
 
 /// Card vazio com título e explicação.

@@ -9,7 +9,9 @@ import '../../core/widgets/overlays.dart';
 import '../../models/finance.dart';
 import 'category_service.dart';
 
-/// Cadastro e edição de categoria. Retorna `true` quando salva.
+enum CategoryResult { saved, delete }
+
+/// Cadastro e edição de categoria. Retorna [CategoryResult], ou nulo se cancelado.
 class CategoryFormSheet extends StatefulWidget {
   const CategoryFormSheet({super.key, this.category});
 
@@ -50,7 +52,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     try {
       await CategoryService.save(id: widget.category?.id, name: _name.text.trim(), type: _type);
 
-      navigator.pop(true);
+      navigator.pop(CategoryResult.saved);
       messenger.showSnackBar(SnackBar(content: Text(_editing ? 'Categoria atualizada.' : 'Categoria criada.')));
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -94,13 +96,35 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
           child: SegmentedControl(
             enabled: !_typeLocked,
             options: const [
-              SegmentOption(EntryType.expense, 'Despesa'),
               SegmentOption(EntryType.income, 'Receita'),
+              SegmentOption(EntryType.expense, 'Despesa'),
             ],
             value: _type,
             onChanged: (type) => setState(() => _type = type),
           ),
         ),
+        if (_editing)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _loading || widget.category!.inUse ? null : () => Navigator.pop(context, CategoryResult.delete),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colors.destructive,
+                  side: BorderSide(color: colors.destructive.withValues(alpha: 0.4)),
+                ),
+                icon: const Icon(LucideIcons.trash2, size: 16),
+                label: const Text('Excluir categoria'),
+              ),
+              if (widget.category!.inUse) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Em uso: só é possível excluir categorias sem lançamentos.',
+                  style: TextStyle(fontSize: 12, color: colors.mutedForeground),
+                ),
+              ],
+            ],
+          ),
       ],
     );
   }

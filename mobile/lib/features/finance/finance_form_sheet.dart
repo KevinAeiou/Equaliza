@@ -12,7 +12,9 @@ import 'finance_service.dart';
 
 const descriptionMaxLength = 1000;
 
-/// Cadastro e edição de receita ou despesa. Retorna `true` quando salva.
+enum FinanceResult { saved, delete }
+
+/// Cadastro e edição de receita ou despesa. Retorna [FinanceResult], ou nulo se cancelado.
 class FinanceFormSheet extends StatefulWidget {
   const FinanceFormSheet({super.key, required this.type, required this.categories, this.entry});
 
@@ -125,7 +127,7 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
         description: _description.text.trim(),
       );
 
-      navigator.pop(true);
+      navigator.pop(FinanceResult.saved);
       messenger.showSnackBar(
         SnackBar(
           content: Text(
@@ -225,6 +227,16 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
                 'atualizada em ${formatDateTime(entry.updatedAt!)}',
             ].join(' · '),
             style: TextStyle(fontSize: 12, color: colors.mutedForeground),
+          ),
+        if (_editing)
+          OutlinedButton.icon(
+            onPressed: _loading ? null : () => Navigator.pop(context, FinanceResult.delete),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.destructive,
+              side: BorderSide(color: colors.destructive.withValues(alpha: 0.4)),
+            ),
+            icon: const Icon(LucideIcons.trash2, size: 16),
+            label: Text('Excluir ${widget.type.singular}'),
           ),
       ],
     );
