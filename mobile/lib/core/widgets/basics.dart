@@ -249,50 +249,6 @@ class LockIndicator extends StatelessWidget {
       );
 }
 
-class ActionItem {
-  const ActionItem(this.label, this.onSelected, {this.destructive = false, this.enabled = true});
-
-  final String label;
-  final VoidCallback onSelected;
-  final bool destructive;
-  final bool enabled;
-}
-
-/// Botão "…" com o menu de ações do item.
-class ActionMenuButton extends StatelessWidget {
-  const ActionMenuButton({super.key, required this.items, required this.tooltip});
-
-  final List<ActionItem> items;
-  final String tooltip;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return PopupMenuButton<int>(
-      tooltip: tooltip,
-      icon: const Icon(LucideIcons.ellipsis, size: 16),
-      position: PopupMenuPosition.under,
-      onSelected: (index) => items[index].onSelected(),
-      itemBuilder: (context) => [
-        for (final (index, item) in items.indexed)
-          PopupMenuItem(
-            value: index,
-            enabled: item.enabled,
-            height: 44,
-            child: Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 14,
-                color: item.destructive && item.enabled ? colors.destructive : null,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 /// Card vazio com título e explicação.
 class EmptyCard extends StatelessWidget {
   const EmptyCard({super.key, required this.title, this.description, this.action});
