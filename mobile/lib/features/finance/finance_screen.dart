@@ -113,12 +113,15 @@ class _FinanceScreenState extends State<FinanceScreen> {
   }
 
   Future<void> _openForm([FinanceEntry? entry]) async {
-    final saved = await showFormSheet<bool>(
+    final result = await showFormSheet<FinanceResult>(
       context,
       (_) => FinanceFormSheet(type: _type, categories: _typeCategories, entry: entry),
     );
 
-    if (saved == true) _load();
+    if (!mounted) return;
+
+    if (result == FinanceResult.saved) _load();
+    if (result == FinanceResult.delete && entry != null) _delete(entry);
   }
 
   Future<void> _delete(FinanceEntry entry) async {
@@ -211,7 +214,6 @@ class _FinanceScreenState extends State<FinanceScreen> {
             entries: _entries,
             currentUserId: AppScope.of(context).session.user.id,
             onEdit: _openForm,
-            onDelete: _delete,
           ),
         ],
       ),
@@ -323,14 +325,12 @@ class _EntryList extends StatelessWidget {
     required this.entries,
     required this.currentUserId,
     required this.onEdit,
-    required this.onDelete,
   });
 
   final EntryType type;
   final List<FinanceEntry>? entries;
   final int currentUserId;
   final ValueChanged<FinanceEntry> onEdit;
-  final ValueChanged<FinanceEntry> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +346,7 @@ class _EntryList extends StatelessWidget {
         children: [
           Container(
             height: 40,
-            padding: const EdgeInsets.only(left: 12, right: 56),
+            padding: const EdgeInsets.only(left: 12, right: 44),
             child: Row(
               children: [
                 Expanded(child: Text('Movimentação', style: TextStyle(fontSize: 14, color: colors.mutedForeground))),
@@ -422,15 +422,9 @@ class _EntryList extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // Só quem registrou pode alterar ou remover; o backend também bloqueia.
+                      // Só quem registrou pode alterar ou remover (no formulário); o backend também bloqueia.
                       if (entry.createdBy?.id == currentUserId)
-                        ActionMenuButton(
-                          tooltip: 'Ações de ${entry.title}',
-                          items: [
-                            ActionItem('Editar', () => onEdit(entry)),
-                            ActionItem('Excluir', () => onDelete(entry), destructive: true),
-                          ],
-                        )
+                        const SizedBox(width: 44)
                       else
                         const LockIndicator(reason: 'Apenas quem registrou pode editar ou excluir'),
                     ],
