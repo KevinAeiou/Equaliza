@@ -9,7 +9,9 @@ import '../../core/widgets/overlays.dart';
 import '../../models/user.dart';
 import 'family_service.dart';
 
-/// Criação ou renomeação de família. Retorna `true` quando salva.
+enum FamilyResult { saved, delete }
+
+/// Criação ou renomeação de família. Retorna [FamilyResult], ou nulo se cancelado.
 class FamilyFormSheet extends StatefulWidget {
   const FamilyFormSheet({super.key, this.family});
 
@@ -46,7 +48,7 @@ class _FamilyFormSheetState extends State<FamilyFormSheet> {
     try {
       await FamilyService.save(id: widget.family?.id, name: _name.text.trim());
 
-      navigator.pop(true);
+      navigator.pop(FamilyResult.saved);
       messenger.showSnackBar(SnackBar(content: Text(_editing ? 'Família renomeada.' : 'Família criada.')));
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -90,6 +92,16 @@ class _FamilyFormSheetState extends State<FamilyFormSheet> {
           Text(
             'Criada em ${formatDateTime(createdAt)}',
             style: TextStyle(fontSize: 12, color: colors.mutedForeground),
+          ),
+        if (_editing)
+          OutlinedButton.icon(
+            onPressed: _loading ? null : () => Navigator.pop(context, FamilyResult.delete),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.destructive,
+              side: BorderSide(color: colors.destructive.withValues(alpha: 0.4)),
+            ),
+            icon: const Icon(LucideIcons.trash2, size: 16),
+            label: const Text('Excluir família'),
           ),
       ],
     );
