@@ -136,6 +136,25 @@ class _MemberCard extends StatelessWidget {
     final colors = context.colors;
 
     return AppCard(
+      // Tocar no card abre as ações do membro; o responsável não pode ser alterado.
+      onTap: member.role == UserRole.owner
+          ? null
+          : () => showActionSheet(
+                context,
+                icon: LucideIcons.user,
+                iconBackground: colors.muted,
+                iconColor: colors.foreground,
+                title: member.name,
+                description: member.email,
+                actions: [
+                  SheetAction(
+                    member.isActive ? 'Desativar membro' : 'Reativar membro',
+                    member.isActive ? LucideIcons.userX : LucideIcons.userCheck,
+                    onToggle,
+                  ),
+                  SheetAction('Remover da família', LucideIcons.trash2, onRemove, destructive: true),
+                ],
+              ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -162,18 +181,11 @@ class _MemberCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Transform.translate(
-                offset: const Offset(12, -8),
-                child: member.role == UserRole.owner
-                    ? const LockIndicator(reason: 'O responsável pela família não pode ser desativado nem removido')
-                    : ActionMenuButton(
-                        tooltip: 'Ações de ${member.name}',
-                        items: [
-                          ActionItem(member.isActive ? 'Desativar membro' : 'Reativar membro', onToggle),
-                          ActionItem('Remover da família', onRemove, destructive: true),
-                        ],
-                      ),
-              ),
+              if (member.role == UserRole.owner)
+                Transform.translate(
+                  offset: const Offset(12, -8),
+                  child: const LockIndicator(reason: 'O responsável pela família não pode ser desativado nem removido'),
+                ),
             ],
           ),
           const SizedBox(height: 16),
