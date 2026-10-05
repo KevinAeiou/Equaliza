@@ -96,8 +96,8 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
           child: SegmentedControl(
             enabled: !_typeLocked,
             options: const [
-              SegmentOption(EntryType.expense, 'Despesa'),
               SegmentOption(EntryType.income, 'Receita'),
+              SegmentOption(EntryType.expense, 'Despesa'),
             ],
             value: _type,
             onChanged: (type) => setState(() => _type = type),
