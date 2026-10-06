@@ -59,6 +59,8 @@ class _RecurringFormSheetState extends State<RecurringFormSheet> {
   Future<DateTime?> _pickDate(DateTime initial) => showDatePicker(
         context: context,
         initialDate: initial,
+        // O modo de digitação do Flutter não tem máscara e aceita qualquer sequência de números.
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
         firstDate: DateTime(2000),
         lastDate: DateTime(2100),
       );

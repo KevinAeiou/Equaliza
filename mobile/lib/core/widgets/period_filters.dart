@@ -304,6 +304,7 @@ Future<Period?> pickPeriod(BuildContext context, PeriodType type, Period current
       final date = await showDatePicker(
         context: context,
         initialDate: current.from,
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
         firstDate: first,
         lastDate: last,
         helpText: type == PeriodType.week ? 'Escolha um dia da semana' : 'Escolha o dia',
@@ -313,6 +314,7 @@ Future<Period?> pickPeriod(BuildContext context, PeriodType type, Period current
       final range = await showDateRangePicker(
         context: context,
         initialDateRange: DateTimeRange(start: current.from, end: current.to),
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
         firstDate: first,
         lastDate: last,
       );

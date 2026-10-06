@@ -52,6 +52,8 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
     final date = await showDatePicker(
       context: context,
       initialDate: _date,
+      // O modo de digitação do Flutter não tem máscara e aceita qualquer sequência de números.
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
