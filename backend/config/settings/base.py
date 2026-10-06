@@ -119,7 +119,15 @@ DATABASE_URL = env.str(
     default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
 )
 
-DATABASES = {"default": db_url(DATABASE_URL)}
+DB_CONN_MAX_AGE = env.int("DB_CONN_MAX_AGE", default=600)
+
+DATABASES = {
+    "default": db_url(
+        DATABASE_URL,
+        conn_max_age=DB_CONN_MAX_AGE,
+        conn_health_checks=True,
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
