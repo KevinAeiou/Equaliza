@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.reports.views import DashboardSummaryView
 from apps.reports.views import DashboardChartsView
+from apps.reports.views import DashboardInsightsView
 
 
 urlpatterns = [
@@ -14,5 +15,10 @@ urlpatterns = [
         "dashboard/charts/",
         DashboardChartsView.as_view(),
         name="charts",
+    ),
+    path(
+        "dashboard/insights/",
+        DashboardInsightsView.as_view(),
+        name="insights",
     ),
 ]
