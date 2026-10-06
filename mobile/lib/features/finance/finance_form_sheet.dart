@@ -16,11 +16,20 @@ enum FinanceResult { saved, delete }
 
 /// Cadastro e edição de receita ou despesa. Retorna [FinanceResult], ou nulo se cancelado.
 class FinanceFormSheet extends StatefulWidget {
-  const FinanceFormSheet({super.key, required this.type, required this.categories, this.entry});
+  const FinanceFormSheet({
+    super.key,
+    required this.type,
+    required this.categories,
+    this.entry,
+    this.initialDate,
+  });
 
   final EntryType type;
   final List<Category> categories;
   final FinanceEntry? entry;
+
+  /// Data sugerida em um novo lançamento (início do período filtrado). Ignorada ao editar.
+  final DateTime? initialDate;
 
   @override
   State<FinanceFormSheet> createState() => _FinanceFormSheetState();
@@ -32,7 +41,7 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
     text: widget.entry == null ? '' : formatCurrency(widget.entry!.amount),
   );
   late final _description = TextEditingController(text: widget.entry?.description ?? '');
-  late DateTime _date = widget.entry?.date ?? DateTime.now();
+  late DateTime _date = widget.entry?.date ?? widget.initialDate ?? DateTime.now();
   late int? _category = widget.entry?.category.id;
 
   bool _loading = false;

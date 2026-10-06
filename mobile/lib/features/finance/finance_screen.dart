@@ -115,7 +115,12 @@ class _FinanceScreenState extends State<FinanceScreen> {
   Future<void> _openForm([FinanceEntry? entry]) async {
     final result = await showFormSheet<FinanceResult>(
       context,
-      (_) => FinanceFormSheet(type: _type, categories: _typeCategories, entry: entry),
+      (_) => FinanceFormSheet(
+        type: _type,
+        categories: _typeCategories,
+        entry: entry,
+        initialDate: _filters.period.from,
+      ),
     );
 
     if (!mounted) return;
