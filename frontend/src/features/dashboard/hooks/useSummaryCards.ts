@@ -21,13 +21,10 @@ export const useSummaryCards = (
 	// A API envia os valores decimais como texto.
 	const income = Number(summary?.income ?? 0)
 	const expense = Number(summary?.expense ?? 0)
-	const balance = Number(summary?.balance ?? 0)
 
 	return {
 		loaded: Boolean(summary),
 		income,
 		expense,
-		balance,
-		savingsRate: income > 0 ? balance / income : null,
 	}
 }
