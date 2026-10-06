@@ -56,12 +56,30 @@ class _RecurringFormSheetState extends State<RecurringFormSheet> {
 
   DateTime _initialEnd() => _endDate ?? (_startDate.isAfter(DateTime.now()) ? _startDate : DateTime.now());
 
-  Future<DateTime?> _pickDate(DateTime initial) => showDatePicker(
-        context: context,
-        initialDate: initial,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100),
-      );
+  /// Ao fechar um seletor o Flutter devolve o foco ao último campo de texto; aqui ele é descartado.
+  void _clearFocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    // A restauração do foco acontece após a transição da rota, então é refeita no quadro seguinte.
+    WidgetsBinding.instance.addPostFrameCallback((_) => FocusManager.instance.primaryFocus?.unfocus());
+  }
+
+  Future<DateTime?> _pickDate(DateTime initial) async {
+    _clearFocus();
+
+    final date = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      // O modo de digitação do Flutter não tem máscara e aceita qualquer sequência de números.
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    _clearFocus();
+
+    return date;
+  }
 
   Future<void> _pickStart() async {
     final date = await _pickDate(_startDate);
@@ -82,6 +100,8 @@ class _RecurringFormSheetState extends State<RecurringFormSheet> {
       });
 
   Future<void> _pickCategory() async {
+    _clearFocus();
+
     final colors = context.colors;
     final categories = _typeCategories;
 
@@ -114,6 +134,8 @@ class _RecurringFormSheetState extends State<RecurringFormSheet> {
         ),
       ),
     );
+
+    _clearFocus();
 
     if (selected != null) setState(() => _category = selected);
   }

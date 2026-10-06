@@ -218,6 +218,66 @@ export interface DashboardChartsProps {
 	}[]
 }
 
+export type InsightTone = "alert" | "warning" | "neutral" | "good"
+
+export type InsightKind =
+	| "above_average"
+	| "below_average"
+	| "drop"
+	| "rise"
+	| "total_change"
+	| "largest_expense"
+	| "trend"
+	| "concentration"
+	| "savings"
+	| "projection"
+	| "weekday"
+	| "upcoming"
+
+export interface DashboardInsightProps {
+	kind: InsightKind
+	tone: InsightTone
+	tag: string
+	title: string
+	body: string
+	bars: {
+		label: string
+		value: string
+		fraction: number
+		highlighted: boolean
+	}[]
+	progress: {
+		fraction: number
+		start: string
+		end: string
+	} | null
+	spark: {
+		label: string
+		value: string
+		fraction: number
+		highlighted: boolean
+	}[]
+	note: string | null
+}
+
+export interface DashboardInsightsReportProps {
+	insights: DashboardInsightProps[]
+	comparisons: {
+		name: string
+		value: number
+		average: number | null
+		change: number | null
+	}[]
+	has_expenses: boolean
+	has_history: boolean
+	has_previous: boolean
+	history_periods: number
+	average_label: string
+	above_count: number
+	below_count: number
+	dropped_count: number
+}
+
 export interface DashboardRecentTransactionProps {
 	id: number
 	description: string
@@ -244,6 +304,13 @@ export interface DashboardSummaryProps {
 export interface DashboardParams {
 	from_date?: string
 	to_date?: string
+	categories?: number[]
+}
+
+export interface DashboardInsightsParams {
+	from_date: string
+	to_date: string
+	period_type: string
 	categories?: number[]
 }
 

@@ -16,11 +16,20 @@ enum FinanceResult { saved, delete }
 
 /// Cadastro e edição de receita ou despesa. Retorna [FinanceResult], ou nulo se cancelado.
 class FinanceFormSheet extends StatefulWidget {
-  const FinanceFormSheet({super.key, required this.type, required this.categories, this.entry});
+  const FinanceFormSheet({
+    super.key,
+    required this.type,
+    required this.categories,
+    this.entry,
+    this.initialDate,
+  });
 
   final EntryType type;
   final List<Category> categories;
   final FinanceEntry? entry;
+
+  /// Data sugerida em um novo lançamento (início do período filtrado). Ignorada ao editar.
+  final DateTime? initialDate;
 
   @override
   State<FinanceFormSheet> createState() => _FinanceFormSheetState();
@@ -32,7 +41,8 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
     text: widget.entry == null ? '' : formatCurrency(widget.entry!.amount),
   );
   late final _description = TextEditingController(text: widget.entry?.description ?? '');
-  late DateTime _date = widget.entry?.date ?? DateTime.now();
+  final _amountFocus = FocusNode();
+  late DateTime _date = widget.entry?.date ?? widget.initialDate ?? DateTime.now();
   late int? _category = widget.entry?.category.id;
 
   bool _loading = false;
@@ -44,22 +54,39 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
   @override
   void dispose() {
     _amount.dispose();
+    _amountFocus.dispose();
     _description.dispose();
     super.dispose();
   }
 
+  /// Ao fechar um seletor o Flutter devolve o foco ao último campo de texto; aqui ele é descartado.
+  void _clearFocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    // A restauração do foco acontece após a transição da rota, então é refeita no quadro seguinte.
+    WidgetsBinding.instance.addPostFrameCallback((_) => FocusManager.instance.primaryFocus?.unfocus());
+  }
+
   Future<void> _pickDate() async {
+    _clearFocus();
+
     final date = await showDatePicker(
       context: context,
       initialDate: _date,
+      // O modo de digitação do Flutter não tem máscara e aceita qualquer sequência de números.
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
+
+    _clearFocus();
 
     if (date != null) setState(() => _date = date);
   }
 
   Future<void> _pickCategory() async {
+    _clearFocus();
+
     final colors = context.colors;
 
     final selected = await showModalBottomSheet<int>(
@@ -92,6 +119,8 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
       ),
     );
 
+    _clearFocus();
+
     if (selected != null) setState(() => _category = selected);
   }
 
@@ -110,7 +139,10 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
       _errors = {};
     });
 
-    if (!_formKey.currentState!.validate() || _category == null) return;
+    if (!_formKey.currentState!.validate() || _category == null) {
+      if (_amountError != null) _amountFocus.requestFocus();
+      return;
+    }
 
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
@@ -174,6 +206,7 @@ class _FinanceFormSheetState extends State<FinanceFormSheet> {
           label: 'Valor',
           child: TextFormField(
             controller: _amount,
+            focusNode: _amountFocus,
             keyboardType: TextInputType.number,
             inputFormatters: [CurrencyInputFormatter()],
             validator: (_) => _amountError,

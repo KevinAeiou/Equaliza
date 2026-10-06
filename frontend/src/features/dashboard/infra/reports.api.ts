@@ -1,6 +1,6 @@
 import { api } from "@/src/infra/api"
 import { configureError } from "@/src/lib/utils"
-import { ApiResponse, DashboardChartsProps, DashboardParams, DashboardRecentTransactionProps, DashboardSummaryProps, MemberBalanceProps } from "@/src/types"
+import { ApiResponse, DashboardChartsProps, DashboardInsightsParams, DashboardInsightsReportProps, DashboardParams, DashboardRecentTransactionProps, DashboardSummaryProps, MemberBalanceProps } from "@/src/types"
 
 export const ReportsAPI = () => ({
 	getSummary: async (
@@ -41,6 +41,25 @@ export const ReportsAPI = () => ({
 			}
 		} catch (error: unknown) {
 			throw configureError(error, "buscar gráficos do dashboard")
+		}
+	},
+
+	getInsights: async (
+		params: DashboardInsightsParams,
+	): Promise<ApiResponse<DashboardInsightsReportProps>> => {
+		try {
+			const response = await api({
+				url: "reports/dashboard/insights/",
+				params,
+			})
+
+			return {
+				status: response.status,
+				statusText: response.statusText,
+				data: response.data,
+			}
+		} catch (error: unknown) {
+			throw configureError(error, "buscar insights do dashboard")
 		}
 	},
 

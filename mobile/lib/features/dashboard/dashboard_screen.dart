@@ -8,10 +8,12 @@ import '../../core/widgets/overlays.dart';
 import '../../core/widgets/period_filters.dart';
 import '../../models/dashboard.dart';
 import '../../models/finance.dart';
+import '../../models/insights.dart';
 import '../category/category_service.dart';
 import '../finance/finance_service.dart';
 import 'dashboard_service.dart';
 import 'dashboard_widgets.dart';
+import 'insights_widgets.dart';
 
 class DashboardData {
   const DashboardData({
@@ -38,14 +40,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   PeriodFilters _filters = PeriodFilters.initial();
   List<Category> _categories = [];
   DashboardData? _data;
+  InsightsReport? _insights;
   ApiException? _error;
+  ApiException? _insightsError;
   int _request = 0;
+  int _insightsRequest = 0;
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
     _load();
+    _loadInsights();
   }
 
   Future<void> _loadCategories() async {
@@ -96,12 +102,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  /// Os insights são calculados no servidor e não bloqueiam o restante do dashboard.
+  Future<void> _loadInsights() async {
+    final request = ++_insightsRequest;
+    final filters = _filters;
+
+    setState(() {
+      _insights = null;
+      _insightsError = null;
+    });
+
+    try {
+      final report = await DashboardService.insights(filters);
+
+      if (!mounted || request != _insightsRequest) return;
+
+      setState(() => _insights = report);
+    } on ApiException catch (error) {
+      if (mounted && request == _insightsRequest) setState(() => _insightsError = error);
+    }
+  }
+
+  Future<void> _refresh() => Future.wait([_load(), _loadInsights()]);
+
   void _apply(PeriodFilters filters) {
     setState(() {
       _filters = filters;
       _data = null;
     });
     _load();
+    _loadInsights();
   }
 
   Future<void> _openFilters() async {
@@ -137,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final data = _data;
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _refresh,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
         children: [
@@ -166,11 +196,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 16),
           SummaryCards(summary: data?.summary),
           const SizedBox(height: 16),
-          IncomeExpenseChart(trend: data?.trend),
+          InsightsSection(report: _insights, error: _insightsError, onRetry: _loadInsights),
           const SizedBox(height: 16),
-          CategoryBreakdown(data: data?.charts.expensesByCategory),
+          if (_insights != null && _insights!.hasHistory && _insights!.comparisons.isNotEmpty)
+            CategoryVsAverage(report: _insights!)
+          else
+            CategoryBreakdown(data: data?.charts.expensesByCategory),
           const SizedBox(height: 16),
           MemberBalance(data: data?.charts.memberContributions),
+          const SizedBox(height: 16),
+          IncomeExpenseChart(trend: data?.trend),
           const SizedBox(height: 16),
           RecentTransactions(entries: data?.recent),
         ],

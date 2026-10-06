@@ -2,6 +2,7 @@ import '../../core/network/api_client.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/utils/period.dart';
 import '../../models/dashboard.dart';
+import '../../models/insights.dart';
 
 abstract final class DashboardService {
   static Future<DashboardSummary> summary(PeriodFilters filters) =>
@@ -16,5 +17,15 @@ abstract final class DashboardService {
         final response = await api.get('reports/dashboard/charts/', queryParameters: filters.toQuery());
 
         return DashboardCharts.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  static Future<InsightsReport> insights(PeriodFilters filters) =>
+      guard('buscar insights do dashboard', () async {
+        final response = await api.get(
+          'reports/dashboard/insights/',
+          queryParameters: {...filters.toQuery(), 'period_type': filters.type.apiValue},
+        );
+
+        return InsightsReport.fromJson(response.data as Map<String, dynamic>);
       });
 }
