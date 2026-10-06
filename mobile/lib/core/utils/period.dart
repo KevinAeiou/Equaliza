@@ -13,6 +13,15 @@ enum PeriodType {
   const PeriodType(this.label);
 
   final String label;
+
+  /// Valor aceito pela API (`period_type`).
+  String get apiValue => switch (this) {
+        day => 'DAY',
+        week => 'WEEK',
+        month => 'MONTH',
+        year => 'YEAR',
+        range => 'PERIOD',
+      };
 }
 
 class Period {

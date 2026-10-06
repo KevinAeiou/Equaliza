@@ -8,11 +8,11 @@ import '../../core/widgets/overlays.dart';
 import '../../core/widgets/period_filters.dart';
 import '../../models/dashboard.dart';
 import '../../models/finance.dart';
+import '../../models/insights.dart';
 import '../category/category_service.dart';
 import '../finance/finance_service.dart';
 import 'dashboard_service.dart';
 import 'dashboard_widgets.dart';
-import 'insights.dart';
 import 'insights_widgets.dart';
 
 class DashboardData {
@@ -102,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  /// Os insights usam só as despesas e não bloqueiam o restante do dashboard.
+  /// Os insights são calculados no servidor e não bloqueiam o restante do dashboard.
   Future<void> _loadInsights() async {
     final request = ++_insightsRequest;
     final filters = _filters;
@@ -113,23 +113,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
 
     try {
-      final window = insightsWindow(filters.type, filters.period);
-
-      final results = await Future.wait([
-        FinanceService.list(EntryType.expense, filters),
-        FinanceService.list(EntryType.expense, filters.copyWith(period: window)),
-      ]);
+      final report = await DashboardService.insights(filters);
 
       if (!mounted || request != _insightsRequest) return;
 
-      setState(() {
-        _insights = buildInsights(
-          type: filters.type,
-          period: filters.period,
-          current: results[0],
-          history: results[1],
-        );
-      });
+      setState(() => _insights = report);
     } on ApiException catch (error) {
       if (mounted && request == _insightsRequest) setState(() => _insightsError = error);
     }

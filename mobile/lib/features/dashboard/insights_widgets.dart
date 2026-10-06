@@ -7,7 +7,10 @@ import '../../core/network/api_exception.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/basics.dart';
-import 'insights.dart';
+import '../../models/insights.dart';
+
+/// Períodos anteriores com despesas necessários para falar em "média" (o mesmo limite do servidor).
+const _minHistoryPeriods = 2;
 
 const _tabular = [FontFeature.tabularFigures()];
 
@@ -28,6 +31,10 @@ IconData _icon(Insight insight) => switch (insight.kind) {
       InsightKind.totalChange => insight.tone == InsightTone.good ? LucideIcons.trendingDown : LucideIcons.trendingUp,
       InsightKind.largestExpense => LucideIcons.receipt,
       InsightKind.concentration => LucideIcons.chartPie,
+      InsightKind.savings => LucideIcons.piggyBank,
+      InsightKind.projection => LucideIcons.hourglass,
+      InsightKind.weekday => LucideIcons.calendarDays,
+      InsightKind.upcoming => LucideIcons.calendarClock,
     };
 
 /// Cabeçalho, resumo e cards de insights sobre as despesas do período.
@@ -176,7 +183,7 @@ class _HistoryNotice extends StatelessWidget {
                 const Text('Histórico insuficiente', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Text(
-                  '$found Para comparar com a média, são necessárias despesas em pelo menos $minHistoryPeriods períodos anteriores. '
+                  '$found Para comparar com a média, são necessárias despesas em pelo menos $_minHistoryPeriods períodos anteriores. '
                   'Conforme você registra mais gastos, novos insights aparecem aqui.',
                   style: TextStyle(fontSize: 13, height: 1.45, color: colors.mutedForeground),
                 ),
@@ -396,7 +403,7 @@ class _Spark extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       fontFeatures: _tabular,
-                      color: i == points.length - 1 ? color : colors.mutedForeground,
+                      color: points[i].highlighted ? color : colors.mutedForeground,
                     ),
                   ),
                 ),
@@ -404,7 +411,7 @@ class _Spark extends StatelessWidget {
                 Container(
                   height: math.max(points[i].fraction * _height, 4),
                   decoration: BoxDecoration(
-                    color: i == points.length - 1 ? color : colors.muted,
+                    color: points[i].highlighted ? color : colors.muted,
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
