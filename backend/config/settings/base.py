@@ -54,6 +54,7 @@ EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
 
 LOCAL_APPS = [
     "apps.core",
@@ -119,7 +120,15 @@ DATABASE_URL = env.str(
     default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
 )
 
-DATABASES = {"default": db_url(DATABASE_URL)}
+DB_CONN_MAX_AGE = env.int("DB_CONN_MAX_AGE", default=600)
+
+DATABASES = {
+    "default": db_url(
+        DATABASE_URL,
+        conn_max_age=DB_CONN_MAX_AGE,
+        conn_health_checks=True,
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -151,6 +160,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "apps.users.authentication.CookieJWTAuthentication",
     ),
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.OptionalPageNumberPagination",
 }
 
 SIMPLE_JWT = {

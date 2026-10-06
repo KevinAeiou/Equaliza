@@ -68,26 +68,25 @@ class DashboardManager:
             queryset=Expense.objects.filter(family=family),
         ).qs
 
-        incomes = (
+        income_rows = (
             incomes.annotate(month=TruncMonth("date"))
-            .values("month")
+            .values("month", "created_by")
             .annotate(total=Sum("amount"))
-            .order_by("month")
         )
 
-        expenses = (
+        expense_rows = (
             expenses.annotate(month=TruncMonth("date"))
-            .values("month")
+            .values("month", "created_by", "category__name")
             .annotate(total=Sum("amount"))
-            .order_by("month")
         )
 
         months = {}
+        by_category = {}
+        income_by_member = {}
+        paid_by_member = {}
 
-        for income in incomes:
-            key = income["month"]
-
-            months.setdefault(
+        def month_entry(key):
+            return months.setdefault(
                 key,
                 {
                     "month": key.strftime("%b"),
@@ -97,56 +96,22 @@ class DashboardManager:
                 },
             )
 
-            months[key]["income"] = income["total"]
+        for row in income_rows:
+            month_entry(row["month"])["income"] += row["total"]
 
-        for expense in expenses:
-            key = expense["month"]
-
-            months.setdefault(
-                key,
-                {
-                    "month": key.strftime("%b"),
-                    "period": key.strftime("%Y-%m"),
-                    "income": 0,
-                    "expense": 0,
-                },
+            income_by_member[row["created_by"]] = (
+                income_by_member.get(row["created_by"], Decimal("0.00")) + row["total"]
             )
 
-            months[key]["expense"] = expense["total"]
+        for row in expense_rows:
+            month_entry(row["month"])["expense"] += row["total"]
 
-        expenses_by_category = (
-            DashboardFilter(
-                filters,
-                queryset=Expense.objects.filter(family=family),
+            by_category[row["category__name"]] = (
+                by_category.get(row["category__name"], Decimal("0.00")) + row["total"]
             )
-            .qs.values("category__name")
-            .annotate(value=Sum("amount"))
-            .order_by("-value")
-        )
-
-        income_by_member = {
-            item["created_by"]: item["total"]
-            for item in (
-                DashboardFilter(
-                    filters,
-                    queryset=Income.objects.filter(family=family),
-                )
-                .qs.values("created_by")
-                .annotate(total=Sum("amount"))
+            paid_by_member[row["created_by"]] = (
+                paid_by_member.get(row["created_by"], Decimal("0.00")) + row["total"]
             )
-        }
-
-        paid_by_member = {
-            item["created_by"]: item["total"]
-            for item in (
-                DashboardFilter(
-                    filters,
-                    queryset=Expense.objects.filter(family=family),
-                )
-                .qs.values("created_by")
-                .annotate(total=Sum("amount"))
-            )
-        }
 
         total_income = sum(income_by_member.values(), Decimal("0.00"))
         total_expense = sum(paid_by_member.values(), Decimal("0.00"))
@@ -174,13 +139,12 @@ class DashboardManager:
             )
 
         return {
-            "income_vs_expense": list(months.values()),
+            "income_vs_expense": [months[key] for key in sorted(months)],
             "expenses_by_category": [
-                {
-                    "category": item["category__name"],
-                    "value": item["value"],
-                }
-                for item in expenses_by_category
+                {"category": name, "value": value}
+                for name, value in sorted(
+                    by_category.items(), key=lambda item: item[1], reverse=True
+                )
             ],
             "member_contributions": member_contributions,
         }

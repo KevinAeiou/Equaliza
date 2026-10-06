@@ -1,7 +1,8 @@
 from django.conf import settings
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken, TokenError
+from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -37,6 +38,25 @@ class CookieJWTAuthentication(JWTAuthentication):
             validated_token = self._refresh_access_token(request)
 
         return self.get_user(validated_token), validated_token
+
+    def get_user(self, validated_token):
+        """Igual ao padrão, mas já traz a família atual (evita uma query por requisição)."""
+        try:
+            user_id = validated_token[api_settings.USER_ID_CLAIM]
+        except KeyError:
+            raise InvalidToken("Token não contém identificação reconhecível do usuário.")
+
+        try:
+            user = self.user_model.objects.select_related("current_family").get(
+                **{api_settings.USER_ID_FIELD: user_id}
+            )
+        except self.user_model.DoesNotExist:
+            raise AuthenticationFailed("Usuário não encontrado.", code="user_not_found")
+
+        if not user.is_active:
+            raise AuthenticationFailed("Usuário inativo.", code="user_inactive")
+
+        return user
 
     def get_header(self, request):
         """

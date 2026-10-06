@@ -32,3 +32,9 @@ class RecurringTransaction(BaseModel):
 
     class Meta:
         db_table = "recurring_transactions"
+        indexes = [
+            models.Index(
+                fields=["family", "is_active", "next_date"],
+                name="rec_family_active_next_idx",
+            ),
+        ]
