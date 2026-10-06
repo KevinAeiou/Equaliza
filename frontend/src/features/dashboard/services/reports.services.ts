@@ -21,6 +21,17 @@ const buildDashboardParams = (
 
 export class ReportsService {
 
+	static async getInsights(filters: FormDashboardFilterSchemaType) {
+		const response = await reportsApi.getInsights({
+			from_date: format(filters.period.from, "yyyy-MM-dd"),
+			to_date: format(filters.period.to, "yyyy-MM-dd"),
+			period_type: filters.type,
+			categories: filters.categories.length ? filters.categories : undefined,
+		})
+
+		return response.data
+	}
+
 	static async getDashboardData(filters: FormDashboardFilterSchemaType) {
 		const params = buildDashboardParams(filters)
 

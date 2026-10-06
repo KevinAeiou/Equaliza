@@ -4,12 +4,15 @@ import { useState } from "react"
 import { FilterButton } from "@/src/components/filters"
 import { HeaderScreen } from "@/src/components/headerScreen"
 import { useDashboardCategories } from "../hooks/useDashboardCategories"
+import { useDashboardInsights } from "../hooks/useDashboardInsights"
 import { useDashboardCharts } from "../hooks/useDashboardCharts"
 import { useDashboardTrend } from "../hooks/useDashboardTrend"
 import { getDefaultValues, FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 import { ActiveFilters } from "./ActiveFilters"
 import { CategoryBreakdown } from "./CategoryBreakdown"
+import { CategoryVsAverage } from "./CategoryVsAverage"
 import { DashboardFilters } from "./DashboardFilters"
+import { DashboardInsights } from "./DashboardInsights"
 import { IncomeExpenseChart } from "./IncomeExpenseChart"
 import { MemberBalance } from "./MemberBalance"
 import { PeriodNavigator } from "./PeriodNavigator"
@@ -25,6 +28,7 @@ export const DashboardScreen = () => {
 	const { categoryOptions, categoryGroups } = useDashboardCategories()
 	const { chartData } = useDashboardCharts(filters)
 	const { trend } = useDashboardTrend(filters)
+	const { report: insights, error: insightsError, retry: retryInsights } = useDashboardInsights(filters)
 
 	return (
 		<section className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-6">
@@ -59,15 +63,25 @@ export const DashboardScreen = () => {
 				trend={trend}
 			/>
 
+			<DashboardInsights
+				report={insights}
+				error={insightsError}
+				onRetry={retryInsights}
+			/>
+
 			<div className="grid gap-4 sm:gap-6 xl:grid-cols-3">
 				<IncomeExpenseChart
 					trend={trend}
 					className="xl:col-span-2"
 				/>
 
-				<CategoryBreakdown
-					data={chartData?.expenses_by_category}
-				/>
+				{insights?.has_history && insights.comparisons.length > 0 ? (
+					<CategoryVsAverage report={insights} />
+				) : (
+					<CategoryBreakdown
+						data={chartData?.expenses_by_category}
+					/>
+				)}
 			</div>
 
 			<div className="grid gap-4 sm:gap-6 xl:grid-cols-3">
