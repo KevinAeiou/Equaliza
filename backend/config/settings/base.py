@@ -159,6 +159,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "apps.users.authentication.CookieJWTAuthentication",
     ),
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.OptionalPageNumberPagination",
 }
 
 SIMPLE_JWT = {
