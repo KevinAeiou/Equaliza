@@ -13,6 +13,7 @@ import '../shell/app_section.dart';
 
 const _tabular = [FontFeature.tabularFigures()];
 
+/// Receitas e despesas do período; cada card leva à lista correspondente.
 class SummaryCards extends StatelessWidget {
   const SummaryCards({super.key, required this.summary});
 
@@ -22,99 +23,28 @@ class SummaryCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final data = summary;
-    final savings = data?.savingsRate;
 
-    return Column(
+    return Row(
       children: [
-        AppCard(
-          color: colors.brand,
-          child: DefaultTextStyle.merge(
-            style: const TextStyle(color: Colors.white),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _CardHeading(
-                  title: 'Saldo do período',
-                  titleColor: Colors.white,
-                  icon: LucideIcons.wallet,
-                  iconBackground: Colors.white.withValues(alpha: 0.15),
-                  iconColor: Colors.white,
-                ),
-                const SizedBox(height: 12),
-                data == null
-                    ? Skeleton(height: 32, width: 180, radius: 8)
-                    : _Value(formatCurrency(data.balance), size: 28, color: Colors.white),
-                const SizedBox(height: 12),
-                Text(
-                  'Receitas menos despesas',
-                  style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.8)),
-                ),
-              ],
-            ),
+        Expanded(
+          child: _SmallSummary(
+            title: 'Receitas',
+            onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.income),
+            value: data?.income,
+            icon: LucideIcons.arrowUpRight,
+            iconBackground: colors.incomeSoft,
+            iconColor: colors.income,
           ),
         ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _SmallSummary(
-                title: 'Receitas',
-                onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.income),
-                value: data?.income,
-                icon: LucideIcons.arrowUpRight,
-                iconBackground: colors.incomeSoft,
-                iconColor: colors.income,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _SmallSummary(
-                title: 'Despesas',
-                onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.expense),
-                value: data?.expense,
-                icon: LucideIcons.arrowDownRight,
-                iconBackground: colors.expenseSoft,
-                iconColor: colors.expenseStrong,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _CardHeading(
-                title: 'Poupança',
-                icon: LucideIcons.piggyBank,
-                iconBackground: colors.incomeSoft,
-                iconColor: colors.income,
-              ),
-              const SizedBox(height: 12),
-              data == null
-                  ? const Skeleton(height: 32, width: 120)
-                  : _Value(savings == null ? '—' : formatPercent(savings), size: 28),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text('da receita guardada', style: TextStyle(fontSize: 14, color: colors.mutedForeground)),
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(999),
-                    child: SizedBox(
-                      width: 96,
-                      height: 8,
-                      child: LinearProgressIndicator(
-                        value: (savings ?? 0).clamp(0, 1).toDouble(),
-                        backgroundColor: colors.incomeSoft,
-                        color: colors.income,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        const SizedBox(width: 16),
+        Expanded(
+          child: _SmallSummary(
+            title: 'Despesas',
+            onTap: () => ShellScope.of(context).navigate(AppSection.finance, entryType: EntryType.expense),
+            value: data?.expense,
+            icon: LucideIcons.arrowDownRight,
+            iconBackground: colors.expenseSoft,
+            iconColor: colors.expenseStrong,
           ),
         ),
       ],
@@ -128,14 +58,12 @@ class _CardHeading extends StatelessWidget {
     required this.icon,
     required this.iconBackground,
     required this.iconColor,
-    this.titleColor,
   });
 
   final String title;
   final IconData icon;
   final Color iconBackground;
   final Color iconColor;
-  final Color? titleColor;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -146,7 +74,7 @@ class _CardHeading extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: titleColor ?? context.colors.mutedForeground,
+                color: context.colors.mutedForeground,
               ),
             ),
           ),
@@ -156,11 +84,9 @@ class _CardHeading extends StatelessWidget {
 }
 
 class _Value extends StatelessWidget {
-  const _Value(this.text, {this.size = 20, this.color});
+  const _Value(this.text);
 
   final String text;
-  final double size;
-  final Color? color;
 
   @override
   Widget build(BuildContext context) => FittedBox(
@@ -169,10 +95,9 @@ class _Value extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            fontSize: size,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             letterSpacing: -0.4,
-            color: color,
             fontFeatures: _tabular,
           ),
         ),
