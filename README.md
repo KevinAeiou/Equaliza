@@ -316,7 +316,7 @@ python manage.py seed_demo
 | `THROTTLE_RATE_LOGIN` / `_REGISTER` / `_PASSWORD_RESET` / `_INVITATION_VALIDATE` | Limites de requisição por IP nas rotas públicas | `10/min`, `10/hour`, `10/hour`, `30/min` |
 | `NUM_PROXIES` | Proxies confiáveis à frente da API (para identificar o IP) | — |
 | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `DEFAULT_FROM_EMAIL` | Envio de e-mails | console |
-| `RECURRING_SCHEDULER_ENABLED` | Agendador interno de recorrências | `False` (`True` em produção) |
+| `RECURRING_SCHEDULER_ENABLED` | Agendador interno de recorrências (**obsoleto**: use o Cron Job) | `False` |
 | `LOG_LEVEL` | Nível dos logs | `INFO` |
 
 ---
@@ -448,7 +448,7 @@ Sem autenticação ficam apenas: `login`, `register`, `password-reset`, `passwor
 
 * **Backend** (Render) e **frontend** (Vercel): o deploy é disparado ao criar uma tag `v*` e só roda se o CI passar.
 * **Mobile**: a tag `mobile-v*` gera o APK e o publica em uma release do GitHub.
-* **Recorrências**: um Cron Job do Render (`render.yaml`) executa `python manage.py generate_recurring` todos os dias.
+* **Recorrências**: um Cron Job do Render (`render.yaml`) executa `python manage.py generate_recurring` todos os dias; as vencidas também são lançadas ao listar receitas e despesas. O agendador interno em thread (`RECURRING_SCHEDULER_ENABLED`) está obsoleto e será removido.
 * O health check do serviço web pode apontar para `/api/health/`.
 
 ---

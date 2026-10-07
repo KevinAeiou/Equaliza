@@ -30,6 +30,9 @@ class ProductionSettingsTests(SimpleTestCase):
         )
         self.assertEqual(settings.CSRF_TRUSTED_ORIGINS, [])
 
+    def test_internal_recurring_scheduler_is_off_by_default(self):
+        self.assertFalse(load_production(BASE_ENV).RECURRING_SCHEDULER_ENABLED)
+
     def test_secret_key_is_required(self):
         with self.assertRaises(ImproperlyConfigured):
             load_production({"ALLOWED_HOSTS": "api.equaliza.app"})

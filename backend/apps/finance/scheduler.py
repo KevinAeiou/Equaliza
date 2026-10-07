@@ -11,7 +11,9 @@ SERVER_COMMANDS = ("gunicorn", "runserver", "daphne", "uvicorn")
 
 
 class RecurringScheduler:
-    """Thread em segundo plano que registra periodicamente as finanças recorrentes vencidas.
+    """OBSOLETO: use o Cron Job (`python manage.py generate_recurring`), veja o render.yaml.
+
+    Thread em segundo plano que registra periodicamente as finanças recorrentes vencidas.
 
     Vários processos (ex.: workers do gunicorn) podem rodar o agendador ao mesmo tempo: o
     service trava as linhas com select_for_update, então cada ocorrência é criada uma só vez.
@@ -80,6 +82,11 @@ def start_scheduler():
 
     if not settings.RECURRING_SCHEDULER_ENABLED or _scheduler or not is_server_process():
         return None
+
+    logger.warning(
+        "O agendador interno de recorrências está obsoleto e será removido; "
+        "use o Cron Job (python manage.py generate_recurring)."
+    )
 
     _scheduler = RecurringScheduler(
         interval=settings.RECURRING_SCHEDULER_INTERVAL,

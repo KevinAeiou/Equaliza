@@ -38,4 +38,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-RECURRING_SCHEDULER_ENABLED = env.bool("RECURRING_SCHEDULER_ENABLED", default=True)
+# As recorrências são geradas pelo Cron Job do Render (render.yaml) e, de forma preguiçosa,
+# ao listar receitas/despesas. O agendador interno em thread está obsoleto: desligado por
+# padrão (RECURRING_SCHEDULER_ENABLED=True religa) e será removido em uma versão futura.

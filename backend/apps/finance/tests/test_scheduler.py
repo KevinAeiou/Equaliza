@@ -54,6 +54,15 @@ class RecurringSchedulerTests(TestCase):
         self.assertIsNone(start_scheduler())
 
     @override_settings(RECURRING_SCHEDULER_ENABLED=True)
+    def test_starting_warns_that_it_is_deprecated(self):
+        with mock.patch.object(scheduler, "is_server_process", return_value=True):
+            with mock.patch.object(RecurringScheduler, "start"):
+                with self.assertLogs("apps.finance.scheduler", level="WARNING") as logs:
+                    self.assertIsNotNone(start_scheduler())
+
+        self.assertIn("obsoleto", logs.output[0])
+
+    @override_settings(RECURRING_SCHEDULER_ENABLED=True)
     def test_only_starts_for_server_processes(self):
         with mock.patch.object(scheduler, "is_server_process", return_value=False):
             self.assertIsNone(start_scheduler())
