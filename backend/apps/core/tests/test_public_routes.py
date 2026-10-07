@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 # Únicas rotas que podem ser acessadas sem autenticação. Qualquer outra rota pública
 # precisa ser adicionada aqui de propósito (e revisada) antes de ir para produção.
 PUBLIC_ROUTES = {
+    "api/health/",
     "api/login/",
     "api/register/",
     "api/password-reset/",
