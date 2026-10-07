@@ -2,8 +2,8 @@
 
 import { UserRound } from "lucide-react"
 import { FormDialog } from "@/src/components/formDialog"
-import { FormAvatarField } from "../formAvatarField"
-import { useProfileDialog } from "./useProfileDialog"
+import { FormAvatarField } from "./FormAvatarField"
+import { useProfileDialog } from "../hooks/useProfileDialog"
 import { FormTextField } from "@/src/features/auth/components/FormTextField"
 
 interface ProfileDialogProps {

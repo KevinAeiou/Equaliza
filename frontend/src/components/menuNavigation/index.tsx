@@ -4,7 +4,7 @@ import { Home, LucideIcon, Mail, Tags, Users, UsersRound, Wallet } from "lucide-
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/src/lib/utils"
-import { useMenuNavegation } from "./useMenuNavegation"
+import { useMenuNavigation } from "./useMenuNavigation"
 
 interface NavLink {
 	href: string
@@ -26,8 +26,8 @@ export const NAV_LINKS: NavLink[] = [
 export const isActiveLink = (pathname: string, href: string) =>
 	pathname === href || pathname.startsWith(`${href}/`)
 
-export const MenuNavegation = () => {
-	const { isAdmin } = useMenuNavegation()
+export const MenuNavigation = () => {
+	const { isAdmin } = useMenuNavigation()
 	const pathname = usePathname()
 
 	return (

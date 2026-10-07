@@ -1,5 +1,5 @@
 import { useAuth } from "@/src/components/providers/AuthProvider"
-import { getDefaultValues, ProfileFormSchema, ProfileFormSchemaType } from "@/src/schemas/profile.schema"
+import { getDefaultValues, ProfileFormSchema, ProfileFormSchemaType } from "@/src/features/profile/schemas/profile.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"

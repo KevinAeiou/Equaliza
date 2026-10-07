@@ -12,10 +12,10 @@ import {
 	DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu"
 import { useUserNavigation } from "./useUserNavigation"
-import { UserSettingsSheet } from "../userSettingsSheet"
-import { ProfileDialog } from "../profileDialog"
+import { UserSettingsSheet } from "@/src/features/profile/components/UserSettingsSheet"
+import { ProfileDialog } from "@/src/features/profile/components/ProfileDialog"
 
-export const UserNavegation = () => {
+export const UserNavigation = () => {
 	const {
 		user,
 		avatar,

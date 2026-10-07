@@ -1,7 +1,7 @@
 import z from "zod"
 import { FormLoginSchema } from "../features/auth/schemas/login.shema"
 import { FormRegisterSchema } from "../features/auth/schemas/register.shema"
-import { ProfileFormSchemaType } from "../schemas/profile.schema"
+import { ProfileFormSchemaType } from "../features/profile/schemas/profile.schema"
 import { AxiosError } from "axios"
 import type { components } from "./api"
 

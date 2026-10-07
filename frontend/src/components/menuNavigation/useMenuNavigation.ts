@@ -5,7 +5,7 @@ import { useFamilyScreen } from "@/src/features/family/hooks/useFamilyScreen"
 import { toast } from "sonner"
 import { isApiError } from "@/src/lib/utils"
 
-export const useMenuNavegation = () => {
+export const useMenuNavigation = () => {
 
 	const {
 		open: showInviteDialog, setOpen: setShowInviteDialog,

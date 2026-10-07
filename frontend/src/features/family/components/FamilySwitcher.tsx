@@ -14,14 +14,14 @@ import {
 	DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu"
 import { getFamilyMonogram } from "@/src/features/dashboard/utils"
-import { useMenuNavegation } from "../menuNavegation/useMenuNavegation"
+import { useMenuNavigation } from "@/src/components/menuNavigation/useMenuNavigation"
 
 export const FamilySwitcher = () => {
 	const {
 		families,
 		selectedFamily,
 		handleFamilyChange,
-	} = useMenuNavegation()
+	} = useMenuNavigation()
 
 	if (!selectedFamily) {
 		return (

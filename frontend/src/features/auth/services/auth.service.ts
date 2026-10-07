@@ -1,7 +1,7 @@
 import { Credentials, FormRegisterShemaType } from "@/src/types"
 import { invitationApi } from "../../invitation/infra/invite"
 import { authenticationApi } from "../infra/authentication"
-import { ProfileFormSchemaType } from "@/src/schemas/profile.schema"
+import { ProfileFormSchemaType } from "@/src/features/profile/schemas/profile.schema"
 
 
 export class AuthService {
