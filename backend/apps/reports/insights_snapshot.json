@@ -1,0 +1,1898 @@
+{
+ "above_and_below_average": {
+  "above_count": 1,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 2000.0,
+    "change": 0.38,
+    "name": "Moradia",
+    "value": 2760
+   },
+   {
+    "average": 800.0,
+    "change": 0.0,
+    "name": "Mercado",
+    "value": 800
+   },
+   {
+    "average": 300.0,
+    "change": -0.5,
+    "name": "Lazer",
+    "value": 150
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 2.760,00"
+     },
+     {
+      "fraction": 0.724637681,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 2.000,00"
+     }
+    ],
+    "body": "Você gastou R$ 2.760,00 no período. A média dos 6 meses anteriores é R$ 2.000,00 — são R$ 760,00 a mais.",
+    "kind": "above_average",
+    "note": "Moradia concentra 74% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Moradia ficou 38% acima da sua média",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.835579515,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 3.100,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 3.710,00"
+     }
+    ],
+    "body": "De R$ 3.100,00 para R$ 3.710,00: R$ 610,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 20% em relação ao mês anterior",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "\"Moradia\", de R$ 2.760,00, é o maior lançamento — 100% de tudo o que você gastou em Moradia.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 3.710,00",
+     "fraction": 0.74393531,
+     "start": "R$ 2.760,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 74% do período",
+    "tone": "warning"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 300,00"
+     },
+     {
+      "fraction": 0.5,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 150,00"
+     }
+    ],
+    "body": "De R$ 300,00 para R$ 150,00: R$ 150,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Lazer caiu 50% em relação ao mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 150,00 e a média da categoria dos 6 meses anteriores é R$ 300,00.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 300,00",
+     "fraction": 0.5,
+     "start": "R$ 150,00 gastos"
+    },
+    "spark": [],
+    "tag": "Abaixo da média",
+    "title": "Lazer ficou R$ 150,00 abaixo da média",
+    "tone": "good"
+   }
+  ]
+ },
+ "above_ongoing": {
+  "above_count": 1,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 1700.0,
+    "change": 0.235294118,
+    "name": "Moradia",
+    "value": 2100
+   },
+   {
+    "average": 300.0,
+    "change": -0.866666667,
+    "name": "Lazer",
+    "value": 40
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 4.422,67"
+     },
+     {
+      "fraction": 0.452215858,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 2.000,00"
+     }
+    ],
+    "body": "Em 15 dos 31 dias você gastou R$ 2.140,00. Isso aponta para 121% acima da média total dos 6 meses anteriores (R$ 2.000,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 4.422,67 em despesas",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 2.100,00"
+     },
+     {
+      "fraction": 0.80952381,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 1.700,00"
+     }
+    ],
+    "body": "Você já gastou R$ 2.100,00 neste mês. A média dos 6 meses anteriores é R$ 1.700,00 — são R$ 400,00 a mais.",
+    "kind": "above_average",
+    "note": "Moradia concentra 98% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Acima da média",
+    "title": "Moradia está 24% acima da sua média",
+    "tone": "warning"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 300,00"
+     },
+     {
+      "fraction": 0.133333333,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 40,00"
+     }
+    ],
+    "body": "De R$ 300,00 para R$ 40,00: R$ 260,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Lazer caiu 87% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 40,00 e a média da categoria dos 6 meses anteriores é R$ 300,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 300,00",
+     "fraction": 0.133333333,
+     "start": "R$ 40,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Lazer: faltam R$ 260,00 para chegar à média",
+    "tone": "good"
+   }
+  ]
+ },
+ "custom_period": {
+  "above_count": 2,
+  "average_label": "dos 2 períodos anteriores",
+  "below_count": 0,
+  "comparisons": [
+   {
+    "average": 390.0,
+    "change": 0.794871795,
+    "name": "Mercado",
+    "value": 700
+   },
+   {
+    "average": 50.0,
+    "change": 3.4,
+    "name": "Lazer",
+    "value": 220
+   }
+  ],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": false,
+  "history_periods": 2,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este período",
+      "value": "R$ 700,00"
+     },
+     {
+      "fraction": 0.557142857,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 390,00"
+     }
+    ],
+    "body": "Você gastou R$ 700,00 no período. A média dos 2 períodos anteriores é R$ 390,00 — são R$ 310,00 a mais.",
+    "kind": "above_average",
+    "note": "Mercado concentra 76% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Mercado ficou 79% acima da sua média",
+    "tone": "alert"
+   }
+  ]
+ },
+ "day": {
+  "above_count": 0,
+  "average_label": "dos 1 dias anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": true,
+  "history_periods": 1,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 0.5,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 200,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Hoje",
+      "value": "R$ 400,00"
+     }
+    ],
+    "body": "De R$ 200,00 para R$ 400,00: R$ 200,00 a mais.",
+    "kind": "rise",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em alta",
+    "title": "Mercado subiu 100% em relação ao mesmo ponto do dia anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.5,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 260,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Hoje",
+      "value": "R$ 520,00"
+     }
+    ],
+    "body": "De R$ 260,00 para R$ 520,00: R$ 260,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 100% em relação ao mesmo ponto do dia anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [],
+    "body": "R$ 400,00 de R$ 520,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 520,00",
+     "fraction": 0.769230769,
+     "start": "Mercado"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Mercado concentra 77% das despesas",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "drop": {
+  "above_count": 0,
+  "average_label": "dos 5 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 412.0,
+    "change": -0.203883495,
+    "name": "Transporte",
+    "value": 328
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 5,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 420,00"
+     },
+     {
+      "fraction": 0.780952381,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 328,00"
+     }
+    ],
+    "body": "De R$ 420,00 para R$ 328,00: R$ 92,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Transporte caiu 22% em relação ao mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 420,00"
+     },
+     {
+      "fraction": 0.780952381,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 328,00"
+     }
+    ],
+    "body": "De R$ 420,00 para R$ 328,00: R$ 92,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 22% em relação ao mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 328,00 e a média da categoria dos 5 meses anteriores é R$ 412,00.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 412,00",
+     "fraction": 0.796116505,
+     "start": "R$ 328,00 gastos"
+    },
+    "spark": [],
+    "tag": "Abaixo da média",
+    "title": "Transporte ficou R$ 84,00 abaixo da média",
+    "tone": "good"
+   }
+  ]
+ },
+ "empty": {
+  "above_count": 0,
+  "average_label": "",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": false,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": []
+ },
+ "everything": {
+  "above_count": 3,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 2000.0,
+    "change": 0.38,
+    "name": "Moradia",
+    "value": 2760
+   },
+   {
+    "average": 1250.0,
+    "change": 0.2,
+    "name": "Mercado",
+    "value": 1500
+   },
+   {
+    "average": 300.0,
+    "change": 0.3,
+    "name": "Lazer",
+    "value": 390
+   },
+   {
+    "average": 410.0,
+    "change": -0.707317073,
+    "name": "Transporte",
+    "value": 120
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 2.760,00"
+     },
+     {
+      "fraction": 0.724637681,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 2.000,00"
+     }
+    ],
+    "body": "Você já gastou R$ 2.760,00 neste mês. A média dos 6 meses anteriores é R$ 2.000,00 — são R$ 760,00 a mais.",
+    "kind": "above_average",
+    "note": "Moradia concentra 58% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Moradia está 38% acima da sua média",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.6,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 900,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.500,00"
+     }
+    ],
+    "body": "De R$ 900,00 para R$ 1.500,00: R$ 600,00 a mais.",
+    "kind": "rise",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em alta",
+    "title": "Mercado subiu 67% em relação ao mesmo ponto do mês anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.756813417,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 3.610,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 4.770,00"
+     }
+    ],
+    "body": "De R$ 3.610,00 para R$ 4.770,00: R$ 1.160,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 32% em relação ao mesmo ponto do mês anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 8.215,00"
+     },
+     {
+      "fraction": 0.48204504,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 3.960,00"
+     }
+    ],
+    "body": "Em 18 dos 31 dias você gastou R$ 4.770,00. Isso aponta para 107% acima da média total dos 6 meses anteriores (R$ 3.960,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 8.215,00 em despesas",
+    "tone": "alert"
+   },
+   {
+    "bars": [],
+    "body": "\"Aluguel\", de R$ 2.760,00, é o maior lançamento — 100% de tudo o que você gastou em Moradia.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 4.770,00",
+     "fraction": 0.578616352,
+     "start": "R$ 2.760,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 58% do período",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "4 lançamentos programados; o maior é \"Aluguel\", de R$ 1.500,00, em 25/10.",
+    "kind": "upcoming",
+    "note": null,
+    "progress": {
+     "end": "Previsto R$ 6.470,50",
+     "fraction": 0.737191871,
+     "start": "Gasto R$ 4.770,00"
+    },
+    "spark": [],
+    "tag": "A vencer",
+    "title": "Ainda há R$ 1.700,50 em despesas recorrentes até o fim do período",
+    "tone": "neutral"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 410,00"
+     },
+     {
+      "fraction": 0.292682927,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 120,00"
+     }
+    ],
+    "body": "De R$ 410,00 para R$ 120,00: R$ 290,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Transporte caiu 71% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 120,00 e a média da categoria dos 6 meses anteriores é R$ 410,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 410,00",
+     "fraction": 0.292682927,
+     "start": "R$ 120,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Transporte: faltam R$ 290,00 para chegar à média",
+    "tone": "good"
+   }
+  ]
+ },
+ "largest_and_concentration": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "\"Aluguel de outubro\", de R$ 1.800,00, é o maior lançamento — 100% de tudo o que você gastou em Moradia.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 2.200,00",
+     "fraction": 0.818181818,
+     "start": "R$ 1.800,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 82% do período",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "R$ 1.800,00 de R$ 2.200,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 2.200,00",
+     "fraction": 0.818181818,
+     "start": "Moradia"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Moradia concentra 82% das despesas",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "margin_until_average": {
+  "above_count": 0,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 310.0,
+    "change": -0.612903226,
+    "name": "Lazer",
+    "value": 120
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 310,00"
+     },
+     {
+      "fraction": 0.387096774,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 120,00"
+     }
+    ],
+    "body": "De R$ 310,00 para R$ 120,00: R$ 190,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Lazer caiu 61% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 310,00"
+     },
+     {
+      "fraction": 0.387096774,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 120,00"
+     }
+    ],
+    "body": "De R$ 310,00 para R$ 120,00: R$ 190,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 61% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 120,00 e a média da categoria dos 6 meses anteriores é R$ 310,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 310,00",
+     "fraction": 0.387096774,
+     "start": "R$ 120,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Lazer: faltam R$ 190,00 para chegar à média",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.8,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 248,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 310,00"
+     }
+    ],
+    "body": "Em 15 dos 31 dias você gastou R$ 120,00. Isso aponta para 20% abaixo da média total dos 6 meses anteriores (R$ 310,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 248,00 em despesas",
+    "tone": "good"
+   }
+  ]
+ },
+ "no_history": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "\"Moradia\", de R$ 1.800,00, é o maior lançamento — 100% de tudo o que você gastou em Moradia.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 2.200,00",
+     "fraction": 0.818181818,
+     "start": "R$ 1.800,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 82% do período",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "R$ 1.800,00 de R$ 2.200,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 2.200,00",
+     "fraction": 0.818181818,
+     "start": "Moradia"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Moradia concentra 82% das despesas",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "projection": {
+  "above_count": 0,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 1500.0,
+    "change": -0.333333333,
+    "name": "Mercado",
+    "value": 1000
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 3.100,00"
+     },
+     {
+      "fraction": 0.483870968,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 1.500,00"
+     }
+    ],
+    "body": "Em 10 dos 31 dias você gastou R$ 1.000,00. Isso aponta para 107% acima da média total dos 6 meses anteriores (R$ 1.500,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 3.100,00 em despesas",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 1.500,00"
+     },
+     {
+      "fraction": 0.666666667,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.000,00"
+     }
+    ],
+    "body": "De R$ 1.500,00 para R$ 1.000,00: R$ 500,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Mercado caiu 33% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 1.500,00"
+     },
+     {
+      "fraction": 0.666666667,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.000,00"
+     }
+    ],
+    "body": "De R$ 1.500,00 para R$ 1.000,00: R$ 500,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 33% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 1.000,00 e a média da categoria dos 6 meses anteriores é R$ 1.500,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 1.500,00",
+     "fraction": 0.666666667,
+     "start": "R$ 1.000,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Mercado: faltam R$ 500,00 para chegar à média",
+    "tone": "good"
+   }
+  ]
+ },
+ "projection_below": {
+  "above_count": 0,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 1500.0,
+    "change": -0.733333333,
+    "name": "Mercado",
+    "value": 400
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 1.500,00"
+     },
+     {
+      "fraction": 0.266666667,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 400,00"
+     }
+    ],
+    "body": "De R$ 1.500,00 para R$ 400,00: R$ 1.100,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Mercado caiu 73% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 1.500,00"
+     },
+     {
+      "fraction": 0.266666667,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 400,00"
+     }
+    ],
+    "body": "De R$ 1.500,00 para R$ 400,00: R$ 1.100,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 73% em relação ao mesmo ponto do mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 400,00 e a média da categoria dos 6 meses anteriores é R$ 1.500,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 1.500,00",
+     "fraction": 0.266666667,
+     "start": "R$ 400,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Mercado: faltam R$ 1.100,00 para chegar à média",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.826666667,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 1.240,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 1.500,00"
+     }
+    ],
+    "body": "Em 10 dos 31 dias você gastou R$ 400,00. Isso aponta para 17% abaixo da média total dos 6 meses anteriores (R$ 1.500,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 1.240,00 em despesas",
+    "tone": "good"
+   }
+  ]
+ },
+ "rise_and_total_change": {
+  "above_count": 0,
+  "average_label": "dos 1 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": true,
+  "history_periods": 1,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 0.6,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 900,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.500,00"
+     }
+    ],
+    "body": "De R$ 900,00 para R$ 1.500,00: R$ 600,00 a mais.",
+    "kind": "rise",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em alta",
+    "title": "Mercado subiu 67% em relação ao mês anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.832876712,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 3.040,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 3.650,00"
+     }
+    ],
+    "body": "De R$ 3.040,00 para R$ 3.650,00: R$ 610,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 20% em relação ao mês anterior",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "\"Moradia\", de R$ 2.000,00, é o maior lançamento — 100% de tudo o que você gastou em Moradia.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 3.650,00",
+     "fraction": 0.547945205,
+     "start": "R$ 2.000,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 55% do período",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "R$ 2.000,00 de R$ 3.650,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 3.650,00",
+     "fraction": 0.547945205,
+     "start": "Moradia"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Moradia concentra 55% das despesas",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "same_point_ongoing": {
+  "above_count": 0,
+  "average_label": "dos 6 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 250.0,
+    "change": -0.6,
+    "name": "Mercado",
+    "value": 100
+   }
+  ],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 6,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 310,00"
+     },
+     {
+      "fraction": 0.806451613,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 250,00"
+     }
+    ],
+    "body": "Em 10 dos 31 dias você gastou R$ 100,00. Isso aponta para 24% acima da média total dos 6 meses anteriores (R$ 250,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 310,00 em despesas",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "Você gastou R$ 100,00 e a média da categoria dos 6 meses anteriores é R$ 250,00. Esse é o espaço que ainda há antes de gastar mais do que costuma.",
+    "kind": "below_average",
+    "note": null,
+    "progress": {
+     "end": "Média R$ 250,00",
+     "fraction": 0.4,
+     "start": "R$ 100,00 gastos"
+    },
+    "spark": [],
+    "tag": "Margem até a média",
+    "title": "Mercado: faltam R$ 150,00 para chegar à média",
+    "tone": "good"
+   }
+  ]
+ },
+ "savings_alert": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 0.833333333,
+      "highlighted": false,
+      "label": "Receitas",
+      "value": "R$ 2.500,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Despesas",
+      "value": "R$ 3.000,00"
+     }
+    ],
+    "body": "As despesas somam R$ 3.000,00 para R$ 2.500,00 de receita (120% da receita).",
+    "kind": "savings",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas acima da receita",
+    "title": "Você gastou R$ 500,00 a mais do que recebeu",
+    "tone": "alert"
+   }
+  ]
+ },
+ "savings_good": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "R$ 4.000,00 sobram de R$ 5.000,00 recebidos depois de R$ 1.000,00 em despesas.",
+    "kind": "savings",
+    "note": null,
+    "progress": {
+     "end": "Receitas R$ 5.000,00",
+     "fraction": 0.2,
+     "start": "Despesas R$ 1.000,00"
+    },
+    "spark": [],
+    "tag": "Poupança",
+    "title": "Você guardou 80% da receita",
+    "tone": "good"
+   }
+  ]
+ },
+ "savings_warning": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "Sobram só R$ 200,00 de R$ 2.500,00 recebidos. Qualquer imprevisto pode fechar o período no vermelho.",
+    "kind": "savings",
+    "note": null,
+    "progress": {
+     "end": "Receitas R$ 2.500,00",
+     "fraction": 0.92,
+     "start": "Despesas R$ 2.300,00"
+    },
+    "spark": [],
+    "tag": "Pouca folga",
+    "title": "As despesas consumiram 92% da receita",
+    "tone": "warning"
+   }
+  ]
+ },
+ "total_drop": {
+  "above_count": 0,
+  "average_label": "dos 1 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 2,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": true,
+  "history_periods": 1,
+  "insights": [
+   {
+    "bars": [],
+    "body": "R$ 1.500,00 de R$ 2.100,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 2.100,00",
+     "fraction": 0.714285714,
+     "start": "Moradia"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Moradia concentra 71% das despesas",
+    "tone": "neutral"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 2.000,00"
+     },
+     {
+      "fraction": 0.75,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.500,00"
+     }
+    ],
+    "body": "De R$ 2.000,00 para R$ 1.500,00: R$ 500,00 a menos. Foi o maior recuo entre as suas categorias.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Moradia caiu 25% em relação ao mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 2.900,00"
+     },
+     {
+      "fraction": 0.724137931,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 2.100,00"
+     }
+    ],
+    "body": "De R$ 2.900,00 para R$ 2.100,00: R$ 800,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 28% em relação ao mês anterior",
+    "tone": "good"
+   }
+  ]
+ },
+ "trend": {
+  "above_count": 2,
+  "average_label": "dos 3 meses anteriores",
+  "below_count": 0,
+  "comparisons": [
+   {
+    "average": 1083.333333333,
+    "change": 0.384615385,
+    "name": "Mercado",
+    "value": 1500
+   },
+   {
+    "average": 113.333333333,
+    "change": 0.323529412,
+    "name": "Lazer",
+    "value": 150
+   }
+  ],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 3,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.500,00"
+     },
+     {
+      "fraction": 0.722222222,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 1.083,33"
+     }
+    ],
+    "body": "Você gastou R$ 1.500,00 no período. A média dos 3 meses anteriores é R$ 1.083,33 — são R$ 416,67 a mais.",
+    "kind": "above_average",
+    "note": "Mercado concentra 91% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Mercado ficou 38% acima da sua média",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.806060606,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 1.330,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 1.650,00"
+     }
+    ],
+    "body": "De R$ 1.330,00 para R$ 1.650,00: R$ 320,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 24% em relação ao mês anterior",
+    "tone": "warning"
+   },
+   {
+    "bars": [],
+    "body": "Subiu de R$ 110,00 para R$ 150,00 nos últimos 3 meses. Vale rever esse gasto antes que vire hábito.",
+    "kind": "trend",
+    "note": null,
+    "progress": null,
+    "spark": [
+     {
+      "fraction": 0.666666667,
+      "highlighted": false,
+      "label": "Jul",
+      "value": "R$ 100,00"
+     },
+     {
+      "fraction": 0.733333333,
+      "highlighted": false,
+      "label": "Ago",
+      "value": "R$ 110,00"
+     },
+     {
+      "fraction": 0.866666667,
+      "highlighted": false,
+      "label": "Set",
+      "value": "R$ 130,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Out",
+      "value": "R$ 150,00"
+     }
+    ],
+    "tag": "Tendência de alta",
+    "title": "Lazer vem subindo há 3 meses",
+    "tone": "warning"
+   }
+  ]
+ },
+ "upcoming": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "4 lançamentos programados; o maior é \"Aluguel\", de R$ 1.500,00, em 25/10.",
+    "kind": "upcoming",
+    "note": null,
+    "progress": {
+     "end": "Previsto R$ 2.100,50",
+     "fraction": 0.19043085,
+     "start": "Gasto R$ 400,00"
+    },
+    "spark": [],
+    "tag": "A vencer",
+    "title": "Ainda há R$ 1.700,50 em despesas recorrentes até o fim do período",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "vanished_category": {
+  "above_count": 0,
+  "average_label": "dos 2 meses anteriores",
+  "below_count": 1,
+  "comparisons": [
+   {
+    "average": 490.0,
+    "change": 0.020408163,
+    "name": "Mercado",
+    "value": 500
+   }
+  ],
+  "dropped_count": 1,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 2,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 260,00"
+     },
+     {
+      "fraction": 0.0,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 0,00"
+     }
+    ],
+    "body": "Foram R$ 260,00 a menos nessa categoria.",
+    "kind": "drop",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em queda",
+    "title": "Lazer não teve gastos, contra R$ 260,00 ao mês anterior",
+    "tone": "good"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 760,00"
+     },
+     {
+      "fraction": 0.657894737,
+      "highlighted": true,
+      "label": "Este mês",
+      "value": "R$ 500,00"
+     }
+    ],
+    "body": "De R$ 760,00 para R$ 500,00: R$ 260,00 a menos.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em queda",
+    "title": "Suas despesas caíram 34% em relação ao mês anterior",
+    "tone": "good"
+   }
+  ]
+ },
+ "week": {
+  "above_count": 2,
+  "average_label": "das 2 semanas anteriores",
+  "below_count": 0,
+  "comparisons": [
+   {
+    "average": 205.0,
+    "change": 1.390243902,
+    "name": "Mercado",
+    "value": 490
+   },
+   {
+    "average": 30.0,
+    "change": 3.0,
+    "name": "Lazer",
+    "value": 120
+   }
+  ],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 2,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Esta semana",
+      "value": "R$ 490,00"
+     },
+     {
+      "fraction": 0.418367347,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 205,00"
+     }
+    ],
+    "body": "Você já gastou R$ 490,00 nesta semana. A média das 2 semanas anteriores é R$ 205,00 — são R$ 285,00 a mais.",
+    "kind": "above_average",
+    "note": "Mercado concentra 80% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Mercado está 139% acima da sua média",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.5,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 60,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Esta semana",
+      "value": "R$ 120,00"
+     }
+    ],
+    "body": "De R$ 60,00 para R$ 120,00: R$ 60,00 a mais.",
+    "kind": "rise",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Em alta",
+    "title": "Lazer subiu 100% em relação ao mesmo ponto da semana anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.426229508,
+      "highlighted": false,
+      "label": "Mesmo ponto",
+      "value": "R$ 260,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Esta semana",
+      "value": "R$ 610,00"
+     }
+    ],
+    "body": "De R$ 260,00 para R$ 610,00: R$ 350,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 135% em relação ao mesmo ponto da semana anterior",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Projeção",
+      "value": "R$ 711,67"
+     },
+     {
+      "fraction": 0.330210773,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 235,00"
+     }
+    ],
+    "body": "Em 6 dos 7 dias você gastou R$ 610,00. Isso aponta para 203% acima da média total das 2 semanas anteriores (R$ 235,00).",
+    "kind": "projection",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Projeção",
+    "title": "No ritmo atual, você fecha com R$ 711,67 em despesas",
+    "tone": "alert"
+   },
+   {
+    "bars": [],
+    "body": "\"Mercado\", de R$ 400,00, é o maior lançamento — 82% de tudo o que você gastou em Mercado.",
+    "kind": "largest_expense",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 610,00",
+     "fraction": 0.655737705,
+     "start": "R$ 400,00"
+    },
+    "spark": [],
+    "tag": "Maior despesa",
+    "title": "Uma única despesa pesa 66% do período",
+    "tone": "warning"
+   }
+  ]
+ },
+ "weekday": {
+  "above_count": 0,
+  "average_label": "dos 0 meses anteriores",
+  "below_count": 0,
+  "comparisons": [],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": false,
+  "has_previous": false,
+  "history_periods": 0,
+  "insights": [
+   {
+    "bars": [],
+    "body": "R$ 1.000,00 de R$ 1.060,00 no período. Uma variação nessa categoria muda muito o seu total.",
+    "kind": "concentration",
+    "note": null,
+    "progress": {
+     "end": "Total R$ 1.060,00",
+     "fraction": 0.943396226,
+     "start": "Lazer"
+    },
+    "spark": [],
+    "tag": "Concentração",
+    "title": "Lazer concentra 94% das despesas",
+    "tone": "neutral"
+   },
+   {
+    "bars": [],
+    "body": "R$ 1.000,00 de R$ 1.060,00 foram gastos em sábados. Se quiser economizar, vale olhar para esse dia primeiro.",
+    "kind": "weekday",
+    "note": null,
+    "progress": null,
+    "spark": [
+     {
+      "fraction": 0.0,
+      "highlighted": false,
+      "label": "Dom",
+      "value": "R$ 0,00"
+     },
+     {
+      "fraction": 0.02,
+      "highlighted": false,
+      "label": "Seg",
+      "value": "R$ 20,00"
+     },
+     {
+      "fraction": 0.02,
+      "highlighted": false,
+      "label": "Ter",
+      "value": "R$ 20,00"
+     },
+     {
+      "fraction": 0.02,
+      "highlighted": false,
+      "label": "Qua",
+      "value": "R$ 20,00"
+     },
+     {
+      "fraction": 0.0,
+      "highlighted": false,
+      "label": "Qui",
+      "value": "R$ 0,00"
+     },
+     {
+      "fraction": 0.0,
+      "highlighted": false,
+      "label": "Sex",
+      "value": "R$ 0,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Sáb",
+      "value": "R$ 1.000,00"
+     }
+    ],
+    "tag": "Dia da semana",
+    "title": "Sábados concentram 94% das despesas",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "year": {
+  "above_count": 1,
+  "average_label": "dos 2 anos anteriores",
+  "below_count": 0,
+  "comparisons": [
+   {
+    "average": 8500.0,
+    "change": 0.411764706,
+    "name": "Mercado",
+    "value": 12000
+   },
+   {
+    "average": 3050.0,
+    "change": -0.016393443,
+    "name": "Lazer",
+    "value": 3000
+   }
+  ],
+  "dropped_count": 0,
+  "has_expenses": true,
+  "has_history": true,
+  "has_previous": true,
+  "history_periods": 2,
+  "insights": [
+   {
+    "bars": [
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este ano",
+      "value": "R$ 12.000,00"
+     },
+     {
+      "fraction": 0.708333333,
+      "highlighted": false,
+      "label": "Média",
+      "value": "R$ 8.500,00"
+     }
+    ],
+    "body": "Você gastou R$ 12.000,00 no período. A média dos 2 anos anteriores é R$ 8.500,00 — são R$ 3.500,00 a mais.",
+    "kind": "above_average",
+    "note": "Mercado concentra 80% de todas as despesas.",
+    "progress": null,
+    "spark": [],
+    "tag": "Gasto elevado",
+    "title": "Mercado ficou 41% acima da sua média",
+    "tone": "alert"
+   },
+   {
+    "bars": [
+     {
+      "fraction": 0.806666667,
+      "highlighted": false,
+      "label": "Anterior",
+      "value": "R$ 12.100,00"
+     },
+     {
+      "fraction": 1.0,
+      "highlighted": true,
+      "label": "Este ano",
+      "value": "R$ 15.000,00"
+     }
+    ],
+    "body": "De R$ 12.100,00 para R$ 15.000,00: R$ 2.900,00 a mais.",
+    "kind": "total_change",
+    "note": null,
+    "progress": null,
+    "spark": [],
+    "tag": "Despesas em alta",
+    "title": "Suas despesas subiram 24% em relação ao ano anterior",
+    "tone": "warning"
+   }
+  ]
+ }
+}
