@@ -6,16 +6,8 @@ from .list_financial import ListFinancialSerializer
 from apps.finance.models import Expense, Income
 
 
-class CreateExpenseSerializer(BaseFinancialSerializer):
-    pass
-
-
-class CreateIncomeSerializer(BaseFinancialSerializer):
-    pass
-
-
-# Na edição, a categoria precisa ser do mesmo tipo do lançamento.
-class UpdateFinancialSerializer(BaseFinancialSerializer):
+# A categoria precisa ser do mesmo tipo do lançamento, na criação e na edição.
+class TypedFinancialSerializer(BaseFinancialSerializer):
     category_type = None
     category_error = ""
 
@@ -30,14 +22,30 @@ class UpdateFinancialSerializer(BaseFinancialSerializer):
         return attrs
 
 
-class UpdateExpenseSerializer(UpdateFinancialSerializer):
+class ExpenseCategoryMixin:
     category_type = CategoryType.EXPENSE
     category_error = "Categoria inválida para uma despesa."
 
 
-class UpdateIncomeSerializer(UpdateFinancialSerializer):
+class IncomeCategoryMixin:
     category_type = CategoryType.INCOME
     category_error = "Categoria inválida para uma receita."
+
+
+class CreateExpenseSerializer(ExpenseCategoryMixin, TypedFinancialSerializer):
+    pass
+
+
+class CreateIncomeSerializer(IncomeCategoryMixin, TypedFinancialSerializer):
+    pass
+
+
+class UpdateExpenseSerializer(ExpenseCategoryMixin, TypedFinancialSerializer):
+    pass
+
+
+class UpdateIncomeSerializer(IncomeCategoryMixin, TypedFinancialSerializer):
+    pass
 
 
 class ListExpenseSerializer(ListFinancialSerializer):
