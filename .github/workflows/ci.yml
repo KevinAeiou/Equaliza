@@ -54,6 +54,11 @@ jobs:
       - run: npm run lint
       - run: npx tsc --noEmit
 
+      - name: Tipos da API atualizados
+        run: |
+          npm run gen:api
+          git diff --exit-code src/types/api.d.ts || { echo "::error::Rode 'make gen_api' e commite src/types/api.d.ts."; exit 1; }
+
       - name: Build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8000

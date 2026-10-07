@@ -3,6 +3,10 @@ import { FormLoginSchema } from "../features/auth/schemas/login.shema"
 import { FormRegisterSchema } from "../features/auth/schemas/register.shema"
 import { ProfileFormSchemaType } from "../schemas/profile.schema"
 import { AxiosError } from "axios"
+import type { components } from "./api"
+
+// Tipos gerados a partir do schema OpenAPI do backend (npm run gen:api).
+type Schemas = components["schemas"]
 
 export enum UserRole {
 	ADMIN = "Administrador",
@@ -39,12 +43,7 @@ export interface ApiResponse<T = unknown> {
 	meta?: Record<string, unknown>
 }
 
-export interface FamilyProps {
-	id: number
-	name: string
-	created_at: string
-	updated_at: string
-}
+export type FamilyProps = Schemas["ListFamily"]
 
 export interface FamilyOverviewProps extends FamilyProps {
 	role: UserRole | null
@@ -52,10 +51,7 @@ export interface FamilyOverviewProps extends FamilyProps {
 	members_count: number
 }
 
-export interface AvatarProps {
-	id: string
-	url: string
-}
+export type AvatarProps = Schemas["UserAvatar"]
 
 export interface UserProps {
 	id: number
@@ -101,10 +97,7 @@ export interface CategoryProps {
 	usage_count?: number | null
 }
 
-export interface FinanceAuthorProps {
-	id: number
-	name: string
-}
+export type FinanceAuthorProps = Schemas["UserRef"]
 
 export interface ExpenseProps {
 	id: number
@@ -325,15 +318,7 @@ export interface CategoryParams {
 	type: string
 }
 
-export interface MemberProps {
-	id: number
-	name: string
-	email: string
-	role: string
-	avatar: string
-	joined_at: string
-	is_active: boolean
-}
+export type MemberProps = Schemas["ListFamilyMember"]
 
 export type ErrorResponse = {
 	detail?: string
