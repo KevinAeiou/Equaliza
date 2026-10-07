@@ -623,7 +623,6 @@ export interface components {
             status: string;
         };
         IncomeVsExpense: {
-            month: string;
             period: string;
             /** Format: double */
             income: number;

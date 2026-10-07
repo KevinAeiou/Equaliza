@@ -1707,8 +1707,6 @@ components:
     IncomeVsExpense:
       type: object
       properties:
-        month:
-          type: string
         period:
           type: string
         income:
@@ -1728,7 +1726,6 @@ components:
       required:
       - expense
       - income
-      - month
       - period
     Insight:
       type: object

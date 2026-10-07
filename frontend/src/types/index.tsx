@@ -192,7 +192,6 @@ export interface CategoryPayload {
 
 export interface DashboardChartsProps {
 	income_vs_expense: {
-		month: string
 		period: string
 		income: number
 		expense: number
