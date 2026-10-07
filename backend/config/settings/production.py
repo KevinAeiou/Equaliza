@@ -1,21 +1,27 @@
+from django.core.exceptions import ImproperlyConfigured
+
 from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS: list[str] = env.str(
-    "ALLOWED_HOSTS",
-    default="",
-).split(",")
+# Em produção a chave e os hosts vêm obrigatoriamente do ambiente: sem eles a aplicação
+# não sobe, em vez de rodar com o valor inseguro padrão ou aceitando qualquer host.
+SECRET_KEY = env.str("SECRET_KEY")
 
-CORS_ALLOWED_ORIGINS: list[str] = env.str(
-    "CORS_ALLOWED_ORIGINS",
-    default="",
-).split(",")
+if SECRET_KEY.startswith("django-insecure"):
+    raise ImproperlyConfigured("SECRET_KEY de produção não pode ser a chave insegura de desenvolvimento.")
 
-CSRF_TRUSTED_ORIGINS: list[str] = env.str(
-    "CSRF_TRUSTED_ORIGINS",
-    default="",
-).split(",")
+
+def env_list(name, **kwargs):
+    """Lista separada por vírgulas, ignorando espaços e itens vazios."""
+    return [item.strip() for item in env.list(name, **kwargs) if item.strip()]
+
+
+ALLOWED_HOSTS: list[str] = env_list("ALLOWED_HOSTS")
+
+CORS_ALLOWED_ORIGINS: list[str] = env_list("CORS_ALLOWED_ORIGINS", default=[])
+
+CSRF_TRUSTED_ORIGINS: list[str] = env_list("CSRF_TRUSTED_ORIGINS", default=[])
 
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
