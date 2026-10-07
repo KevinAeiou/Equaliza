@@ -160,6 +160,8 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "apps.users.authentication.CookieJWTAuthentication",
     ),
+    # Rotas públicas (login, cadastro, convite...) declaram AllowAny explicitamente.
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.OptionalPageNumberPagination",
 }
 
