@@ -85,10 +85,26 @@ class CookieJWTAuthentication(JWTAuthentication):
         if not refresh_token:
             raise InvalidToken("Refresh token não encontrado.")
 
+        # O middleware lê o HttpRequest: atributos gravados no Request do DRF não chegam a ele.
+        http_request = getattr(request, "_request", request)
+
         try:
             refresh = RefreshToken(refresh_token)
 
             access_token = refresh.access_token
+
+            if api_settings.ROTATE_REFRESH_TOKENS:
+                if api_settings.BLACKLIST_AFTER_ROTATION:
+                    refresh.blacklist()
+
+                refresh.set_jti()
+                refresh.set_exp()
+                refresh.set_iat()
+
+                if hasattr(refresh, "outstand"):
+                    refresh.outstand()
+
+                http_request._new_refresh_token = str(refresh)
 
             new_access = str(access_token)
 
@@ -98,7 +114,7 @@ class CookieJWTAuthentication(JWTAuthentication):
                 f"Bearer {new_access}"
             )
 
-            request._new_access_token = new_access
+            http_request._new_access_token = new_access
 
             return access_token
 

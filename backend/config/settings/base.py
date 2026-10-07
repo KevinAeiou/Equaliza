@@ -166,8 +166,13 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env.int("ACCESS_TOKEN_LIFETIME_MINUTES", default=30)),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("REFRESH_TOKEN_LIFETIME_DAYS", default=7)),
+    # Cada renovação automática emite um novo refresh token (sessão deslizante).
+    "ROTATE_REFRESH_TOKENS": True,
+    # Invalidar o refresh antigo derruba requisições paralelas que chegaram com o mesmo
+    # access vencido (todas tentam renovar com o mesmo cookie), por isso fica desligado.
+    "BLACKLIST_AFTER_ROTATION": env.bool("JWT_BLACKLIST_AFTER_ROTATION", default=False),
 }
 
 

@@ -1,5 +1,6 @@
-from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
+
+from .utils import set_access_cookie, set_refresh_cookie
 
 
 class RefreshCookieMiddleware(MiddlewareMixin):
@@ -11,13 +12,12 @@ class RefreshCookieMiddleware(MiddlewareMixin):
         if access is None:
             return response
 
-        response.set_cookie(
-            key=settings.AUTH_COOKIE_ACCESS,
-            value=access,
-            httponly=True,
-            secure=settings.SECURE_COOKIES,
-            samesite="None" if settings.SECURE_COOKIES else "Lax",
-            path="/",
-        )
+        set_access_cookie(response, access)
+
+        # Com a rotação ativa, a renovação também devolve um novo refresh token.
+        refresh = getattr(request, "_new_refresh_token", None)
+
+        if refresh is not None:
+            set_refresh_cookie(response, refresh)
 
         return response
