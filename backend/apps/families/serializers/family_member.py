@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.families.models import FamilyMember
@@ -21,9 +22,11 @@ class ListFamilyMemberSerializer(serializers.ModelSerializer):
             "is_active",
         )
 
+    @extend_schema_field(serializers.CharField())
     def get_name(self, obj):
         return obj.user.get_full_name() or obj.user.email
 
+    @extend_schema_field(serializers.CharField())
     def get_avatar(self, obj):
         # Mesmo formato do avatar em UserSerializer.
         return f"/avatars/{obj.user.avatar}.jpg"

@@ -1,10 +1,13 @@
 import logging
 
 from django.db import connection
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from .serializers import HealthSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +18,7 @@ class HealthCheckView(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer, 503: HealthSerializer})
     def get(self, request):
         try:
             with connection.cursor() as cursor:

@@ -1,6 +1,9 @@
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from apps.finance.models import Income
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -19,7 +22,13 @@ from apps.finance.filters import IncomeFilter
 from apps.core.permissions import IsFamilyMember, IsRecordOwner
 
 
+@extend_schema_view(
+    create=extend_schema(responses={201: ListIncomeSerializer}),
+    update=extend_schema(responses={200: ListIncomeSerializer}),
+    partial_update=extend_schema(responses={200: ListIncomeSerializer}),
+)
 class IncomeViewSet(viewsets.ModelViewSet):
+    queryset = Income.objects.none()  # só para o schema; get_queryset define o real
     filter_backends = [DjangoFilterBackend]
     filterset_class = IncomeFilter
     permission_classes = [

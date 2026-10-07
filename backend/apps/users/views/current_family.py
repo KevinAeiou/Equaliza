@@ -1,14 +1,17 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.families.models import FamilyMember
+from apps.users.serializers.current_family import CurrentFamilySerializer
 
 
 class CurrentFamilyView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=CurrentFamilySerializer, responses={204: None})
     def patch(self, request):
         family_id = request.data.get("family_id")
 

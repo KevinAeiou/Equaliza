@@ -69,6 +69,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "drf_spectacular",
+    "drf_spectacular.contrib.django_filters",
 ]
 
 DJANGO_APPS = [
@@ -184,6 +186,7 @@ REST_FRAMEWORK = {
         "apps.users.authentication.CookieJWTAuthentication",
     ),
     # Rotas públicas (login, cadastro, convite...) declaram AllowAny explicitamente.
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     # Limites por IP das rotas públicas (rotas com `throttle_scope` usam ScopedRateThrottle).
     "DEFAULT_THROTTLE_RATES": {
@@ -196,6 +199,16 @@ REST_FRAMEWORK = {
     # vem do X-Forwarded-For inteiro e pode ser forjado para escapar do limite.
     "NUM_PROXIES": env.int("NUM_PROXIES", default=None),
     "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.OptionalPageNumberPagination",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Equaliza API",
+    "DESCRIPTION": "API do Equaliza: finanças familiares colaborativas.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # O schema só é servido a quem está autenticado.
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 SIMPLE_JWT = {

@@ -1,8 +1,10 @@
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.core.permissions import IsFamilyAdministrator
+from apps.invitations.models import Invitation
 from apps.invitations.serializers import (
     CreateInvitationSerializer,
     ListInvitationSerializer,
@@ -14,7 +16,15 @@ from apps.invitations.services import (
 )
 
 
+@extend_schema_view(
+    create=extend_schema(responses={201: ListInvitationSerializer}),
+    # Estas rotas existem no router, mas respondem 405: ficam fora do schema.
+    retrieve=extend_schema(exclude=True),
+    update=extend_schema(exclude=True),
+    partial_update=extend_schema(exclude=True),
+)
 class InvitationViewSet(viewsets.ModelViewSet):
+    queryset = Invitation.objects.none()  # só para o schema; get_queryset define o real
     permission_classes = [
         IsAuthenticated,
         IsFamilyAdministrator,

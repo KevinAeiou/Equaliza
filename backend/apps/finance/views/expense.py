@@ -1,6 +1,9 @@
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from apps.finance.models import Expense
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -19,7 +22,13 @@ from apps.finance.filters import ExpenseFilter
 from apps.core.permissions import IsFamilyMember, IsRecordOwner
 
 
+@extend_schema_view(
+    create=extend_schema(responses={201: ListExpenseSerializer}),
+    update=extend_schema(responses={200: ListExpenseSerializer}),
+    partial_update=extend_schema(responses={200: ListExpenseSerializer}),
+)
 class ExpenseViewSet(viewsets.ModelViewSet):
+    queryset = Expense.objects.none()  # só para o schema; get_queryset define o real
     filter_backends = [DjangoFilterBackend]
     filterset_class = ExpenseFilter
     permission_classes = [
