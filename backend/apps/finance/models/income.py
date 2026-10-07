@@ -1,7 +1,7 @@
 from django.db import models
 
 from .base import BaseFinancial
-from apps.finance.manager import IncomeManager
+from apps.finance.managers import IncomeManager
 
 
 class Income(BaseFinancial):
