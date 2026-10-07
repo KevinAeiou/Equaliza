@@ -3,7 +3,7 @@ import django_filters
 from apps.finance.models import FinancialCategory
 
 
-class BaseFilter(django_filters.FilterSet):
+class FinancialFilter(django_filters.FilterSet):
     from_date = django_filters.DateFilter(
         field_name="date",
         lookup_expr="gte",

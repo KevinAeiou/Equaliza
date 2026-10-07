@@ -1,11 +1,9 @@
-from .income import IncomeManager
-from .expense import ExpenseManager
+from .financial import FinancialManager
 from .recurring_transaction import RecurringTransactionManager
 from .category import FinancialCategoryManager
 
 __all__ = [
-	"IncomeManager",
-	"ExpenseManager",
+	"FinancialManager",
 	"FinancialCategoryManager",
 	"RecurringTransactionManager",
 ]

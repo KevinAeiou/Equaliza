@@ -1,12 +1,9 @@
 from django.db import models
 
 from .base import BaseFinancial
-from apps.finance.managers import ExpenseManager
 
 
 class Expense(BaseFinancial):
-
-    objects: ExpenseManager = ExpenseManager()
 
     class Meta:
         db_table = "expenses"
