@@ -4,6 +4,7 @@ from uuid import UUID
 from typing import TypedDict, cast
 
 from rest_framework.permissions import AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,6 +21,8 @@ class ValidateInvitationView(APIView):
 
     authentication_classes = []
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "invitation_validate"
 
     def get(self, request, token):
         params = cast(

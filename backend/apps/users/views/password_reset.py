@@ -16,7 +16,6 @@ from ..services.password_reset import (
 
 class PasswordResetThrottle(AnonRateThrottle):
     scope = "password_reset"
-    rate = "10/hour"
 
 
 class PasswordResetRequestView(APIView):
