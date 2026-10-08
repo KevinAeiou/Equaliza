@@ -125,6 +125,18 @@ Filtros:
 
 ---
 
+## 🤝 Acerto de contas
+
+Cada membro deveria cobrir as despesas do mês na proporção da sua receita (sem receita no mês, a divisão é igual). O acerto mostra quem deve a quem:
+
+* Saldo por membro e sugestões de quem paga quem, calculados no backend (com ids)
+* Registro de pagamentos totais ou parciais, feito só pelo devedor; o restante vira "Saldo anterior" no mês seguinte
+* Histórico com filtros e estorno (apenas responsável ou administrador), sem apagar o registro
+* O saldo conta a partir do mês de início da família (`Family.settlement_start`)
+* Acertos não são receitas nem despesas: o app só registra, não move dinheiro
+
+---
+
 ## 👤 Perfil
 
 * Alteração do nome
@@ -217,6 +229,7 @@ equaliza/
 │   │   ├── families/       # Famílias e membros
 │   │   ├── invitations/    # Convites
 │   │   ├── finance/        # Receitas, despesas, categorias e recorrências
+│   │   ├── settlements/    # Acerto de contas entre membros: saldo, pagamentos e histórico
 │   │   └── reports/        # Dashboard: resumo, gráficos e insights
 │   │
 │   ├── config/             # Settings (base, development, production, ci) e URLs
@@ -436,6 +449,7 @@ Todas as rotas ficam sob `/api/`:
 /api/invitations/  /api/invitations/<token>/validate/  /api/invitations/<token>/accept/
 /api/finances/expenses/  /api/finances/income/  /api/finances/recurring/  /api/finances/categories/
 /api/reports/dashboard/summary/  /api/reports/dashboard/charts/  /api/reports/dashboard/insights/
+/api/settlements/  /api/settlements/balance/  /api/settlements/<id>/cancel/
 /api/health/
 /api/schema/  /api/docs/
 ```
@@ -469,7 +483,7 @@ O Equaliza foi criado para facilitar o gerenciamento financeiro familiar atravé
 
 As fases planejadas estão detalhadas em [PLANO.md](PLANO.md). Em resumo:
 
-* [ ] Acerto de contas entre membros
+* [x] Acerto de contas entre membros
 * [ ] Orçamentos por categoria
 * [ ] Notificações
 * [ ] Metas financeiras

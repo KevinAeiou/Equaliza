@@ -13,6 +13,9 @@ from apps.families.models import Family, FamilyMember
 from apps.finance.enums import CategoryType
 from apps.finance.models import Expense, FinancialCategory, Income
 from apps.invitations.models import Invitation
+from apps.settlements.enums import SettlementStatus
+from apps.settlements.models import Settlement
+from apps.settlements.services.balance import BalanceService
 from apps.users.enums import Avatar
 from apps.users.models import User
 
@@ -59,7 +62,7 @@ def add_months(month: date, months: int) -> date:
 
 
 class Command(BaseCommand):
-    help = "Povoa o banco com uma família de demonstração e 6 meses de receitas e despesas."
+    help = "Povoa o banco com uma família de demonstração, 6 meses de receitas e despesas e acertos entre membros."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -82,10 +85,11 @@ class Command(BaseCommand):
             categories = self.load_categories(family)
             incomes, expenses = self.create_entries(family, users, categories)
             invitations = self.create_invitations(family, users)
+            settlements = self.create_settlements(family, users)
 
         self.stdout.write(self.style.SUCCESS(
-            f"{FAMILY_NAME}: {len(users)} membros, {incomes} receitas, {expenses} despesas "
-            f"e {invitations} convites."
+            f"{FAMILY_NAME}: {len(users)} membros, {incomes} receitas, {expenses} despesas, "
+            f"{invitations} convites e {settlements} acertos."
         ))
         self.stdout.write(f"Senha de todos os usuários: {PASSWORD}")
 
@@ -133,7 +137,11 @@ class Command(BaseCommand):
 
     def create_family(self, users):
         owner = users["ana"]
-        family = Family.objects.create(name=FAMILY_NAME, created_by=owner, updated_by=owner)
+        # O acerto de contas conta desde o primeiro mês dos dados de demonstração.
+        first_month = add_months(timezone.localdate().replace(day=1), -(MONTHS - 1))
+        family = Family.objects.create(
+            name=FAMILY_NAME, settlement_start=first_month, created_by=owner, updated_by=owner
+        )
 
         for email, first_name, _last_name, role, _avatar in MEMBERS:
             user = users[first_name.lower()]
@@ -233,6 +241,66 @@ class Command(BaseCommand):
             Invitation.objects.filter(pk=invitation.pk).update(created_at=created_at)
 
         return len(invitations)
+
+    def create_settlements(self, family, users):
+        """Quita os três primeiros meses (o segundo em duas parcelas), estorna um pagamento e
+        deixa os meses recentes em aberto, para a tela de acertos ter o que mostrar."""
+        today = timezone.localdate()
+        first_month = family.settlement_start
+        count = 0
+
+        def register(payer, receiver, amount, month, paid_at, status=SettlementStatus.ACTIVE):
+            settlement = Settlement.objects.create(
+                family=family,
+                payer_id=payer,
+                receiver_id=receiver,
+                amount=amount,
+                reference_month=month,
+                paid_at=paid_at,
+                status=status,
+                created_by=users["ana"],
+                updated_by=users["ana"],
+            )
+
+            if status == SettlementStatus.CANCELLED:
+                settlement.cancelled_at = timezone.now()
+                settlement.cancelled_by = users["ana"]
+
+            remaining = max(-BalanceService.user_balances(family, month).get(payer, Decimal("0")), Decimal("0"))
+            settlement.remaining_after = remaining
+            settlement.carried_to = add_months(month, 1) if remaining > 0 else None
+            settlement.save()
+
+            return settlement
+
+        for index in range(3):
+            month = add_months(first_month, index)
+            paid_at = min(add_months(month, 1).replace(day=5), today)
+            suggestions = BalanceService.compute(family, month)["suggestions"]
+
+            for suggestion in suggestions:
+                amount = suggestion["amount"]
+
+                if index == 1:
+                    half = (amount / 2).quantize(Decimal("0.01"))
+                    register(suggestion["payer"], suggestion["receiver"], half, month, paid_at)
+                    count += 1
+                    amount -= half
+
+                register(suggestion["payer"], suggestion["receiver"], amount, month, paid_at)
+                count += 1
+
+        # Um pagamento lançado por engano e estornado, que fica no histórico.
+        month = add_months(first_month, 3)
+        suggestions = BalanceService.compute(family, month)["suggestions"]
+
+        if suggestions:
+            first = suggestions[0]
+            register(first["payer"], first["receiver"], min(first["amount"], Decimal("50.00")), month,
+                     min(add_months(month, 1).replace(day=3), today), status=SettlementStatus.CANCELLED)
+            count += 1
+
+        return count
 
     def amount(self, low, high):
         if low == high:
