@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 
 import { getPeriod, isApiError } from "@/src/lib/utils"
-import { CategoryProps, FinanceEntryType, SelectOption } from "@/src/types"
+import { CategoryProps, FinanceEntryType, FinanceMemberProps, SelectOption } from "@/src/types"
 
 import { toast } from "sonner"
 
@@ -29,7 +29,7 @@ export const countFinanceFilters = (filters: FormFinanceFilterSchemaType) => {
 		!isSameDay(filters.period.from, defaults.period.from) ||
 		!isSameDay(filters.period.to, defaults.period.to)
 
-	return filters.categories.length + Number(customPeriod)
+	return filters.categories.length + filters.members.length + Number(customPeriod)
 }
 
 export const useFinanceFilters = ({
@@ -40,6 +40,7 @@ export const useFinanceFilters = ({
 	onApply,
 }: UseFinanceFiltersProps) => {
 	const [categories, setCategories] = useState<CategoryProps[]>([])
+	const [members, setMembers] = useState<FinanceMemberProps[]>([])
 
 	const form = useForm<FormFinanceFilterSchemaType>({
 		resolver: zodResolver(FormFinanceFilterSchema),
@@ -55,6 +56,13 @@ export const useFinanceFilters = ({
 		(category) => ({
 			label: category.name,
 			value: category.id,
+		})
+	)
+
+	const memberOptions: SelectOption<number>[] = members.map(
+		(member) => ({
+			label: member.name,
+			value: member.id,
 		})
 	)
 
@@ -94,6 +102,22 @@ export const useFinanceFilters = ({
 		loadCategories()
 	}, [type])
 
+	useEffect(() => {
+		const loadMembers = async () => {
+			try {
+				setMembers(await FinanceService.listMembers())
+			} catch (error) {
+				const message = isApiError(error)
+					? error.message
+					: "Erro desconhecido ao listar membros"
+
+				toast.error(message)
+			}
+		}
+
+		loadMembers()
+	}, [])
+
 	// O painel sempre abre mostrando o filtro em uso, e não o que ficou marcado e não foi aplicado.
 	useEffect(() => {
 		if (showFilter) form.reset(filters)
@@ -119,6 +143,7 @@ export const useFinanceFilters = ({
 		periodType,
 		onSubmit,
 		categoryOptions,
+		memberOptions,
 		handleClear,
 	}
 }

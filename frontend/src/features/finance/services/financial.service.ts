@@ -1,4 +1,4 @@
-import { CategoryProps, FinanceEntryType, FinanceParams } from "@/src/types"
+import { CategoryProps, FinanceEntryType, FinanceMemberProps, FinanceParams } from "@/src/types"
 import { financeApi, FinanceResponse } from "../infra/finance"
 import { FormFinanceSchemaType } from "../schemas/finance.schema"
 import { format } from "date-fns"
@@ -15,7 +15,7 @@ export class FinanceService {
 
 	static async list<T extends FinanceEntryType>(
 		type: T,
-		filters: FormFinanceFilterSchemaType
+		filters: Omit<FormFinanceFilterSchemaType, "members"> & { members?: number[] }
 	): Promise<FinanceResponse<T>[]> {
 		const params: FinanceParams = {
 			from_date: filters.period.from
@@ -29,6 +29,10 @@ export class FinanceService {
 			categories: filters.categories.length
 				? filters.categories
 				: undefined,
+
+			members: filters.members?.length
+				? filters.members
+				: undefined,
 		}
 
 		return await financeApi.list(type, params)
@@ -36,6 +40,10 @@ export class FinanceService {
 
 	static async listCategories(): Promise<CategoryProps[]> {
 		return await financeApi.listCategories()
+	}
+
+	static async listMembers(): Promise<FinanceMemberProps[]> {
+		return await financeApi.listMembers()
 	}
 
 	static async create(
