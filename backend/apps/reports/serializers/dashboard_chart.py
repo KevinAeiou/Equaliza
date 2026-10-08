@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 
 class IncomeVsExpenseSerializer(serializers.Serializer):
-    month = serializers.CharField()
+    # Mês no formato AAAA-MM; o rótulo de exibição é montado pelo cliente.
     period = serializers.CharField()
     income = serializers.DecimalField(
         max_digits=12,

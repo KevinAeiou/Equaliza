@@ -1,84 +1,23 @@
-from rest_framework import status, viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from django_filters.rest_framework import DjangoFilterBackend
-
+from apps.finance.models import Expense
 from apps.finance.serializers import (
     CreateExpenseSerializer,
     ListExpenseSerializer,
     UpdateExpenseSerializer,
 )
-from apps.finance.services import (
-    CreateExpenseService,
-    DeleteExpenseService,
-    ListExpenseService,
-    UpdateExpenseService,
+from apps.finance.services import ExpenseService
+from apps.finance.views.financial import FinancialViewSet
+
+
+@extend_schema_view(
+    create=extend_schema(responses={201: ListExpenseSerializer}),
+    update=extend_schema(responses={200: ListExpenseSerializer}),
+    partial_update=extend_schema(responses={200: ListExpenseSerializer}),
 )
-from apps.finance.filters import ExpenseFilter
-from apps.core.permissions import IsFamilyMember, IsRecordOwner
-
-
-class ExpenseViewSet(viewsets.ModelViewSet):
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = ExpenseFilter
-    permission_classes = [
-        IsAuthenticated,
-        IsFamilyMember,
-        IsRecordOwner,
-    ]
-
-    lookup_field = "pk"
-
-    def get_serializer_class(self):
-        if self.action == "create":
-            return CreateExpenseSerializer
-
-        if self.action in ["update", "partial_update"]:
-            return UpdateExpenseSerializer
-
-        return ListExpenseSerializer
-
-    def get_queryset(self):
-        return ListExpenseService.execute(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-
-        expense = CreateExpenseService.execute(
-            user=request.user,
-            data=serializer.validated_data,
-        )
-
-        return Response(
-            ListExpenseSerializer(expense).data,
-            status=status.HTTP_201_CREATED,
-        )
-
-    def update(self, request, *args, **kwargs):
-        expense = self.get_object()
-
-        serializer = self.get_serializer(
-            expense,
-            data=request.data,
-            partial=kwargs.get("partial", False),
-        )
-        serializer.is_valid(raise_exception=True)
-
-        expense = UpdateExpenseService.execute(
-            expense=expense,
-            data=serializer.validated_data,
-        )
-
-        return Response(ListExpenseSerializer(expense).data)
-
-    def destroy(self, request, *args, **kwargs):
-        expense = self.get_object()
-
-        DeleteExpenseService.execute(
-            expense=expense,
-        )
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class ExpenseViewSet(FinancialViewSet):
+    queryset = Expense.objects.none()  # só para o schema; get_queryset define o real
+    service = ExpenseService
+    create_serializer_class = CreateExpenseSerializer
+    update_serializer_class = UpdateExpenseSerializer
+    list_serializer_class = ListExpenseSerializer

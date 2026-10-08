@@ -4,7 +4,7 @@ import { ReportsService } from "../services/reports.services"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 
 export const useSummaryCards = (
-	filters: FormDashboardFilterSchemaType,
+	filters: FormDashboardFilterSchemaType & { members?: number[] },
 	refresh = 0,
 ) => {
 	const [summary, setSummary] = useState<DashboardSummaryProps>()

@@ -54,6 +54,7 @@ EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
 
 LOCAL_APPS = [
     "apps.core",
@@ -62,12 +63,15 @@ LOCAL_APPS = [
     "apps.finance",
     "apps.reports",
     "apps.invitations",
+    "apps.settlements",
 ]
 
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "drf_spectacular",
+    "drf_spectacular.contrib.django_filters",
 ]
 
 DJANGO_APPS = [
@@ -119,7 +123,15 @@ DATABASE_URL = env.str(
     default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
 )
 
-DATABASES = {"default": db_url(DATABASE_URL)}
+DB_CONN_MAX_AGE = env.int("DB_CONN_MAX_AGE", default=600)
+
+DATABASES = {
+    "default": db_url(
+        DATABASE_URL,
+        conn_max_age=DB_CONN_MAX_AGE,
+        conn_health_checks=True,
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -147,15 +159,67 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOG_LEVEL = env.str("LOG_LEVEL", default="INFO")
+
+# Tudo vai para o stdout, de onde o Render (e o Docker) coletam os logs.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "apps.users.authentication.CookieJWTAuthentication",
     ),
+    # Rotas públicas (login, cadastro, convite...) declaram AllowAny explicitamente.
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # Limites por IP das rotas públicas (rotas com `throttle_scope` usam ScopedRateThrottle).
+    "DEFAULT_THROTTLE_RATES": {
+        "login": env.str("THROTTLE_RATE_LOGIN", default="10/min"),
+        "register": env.str("THROTTLE_RATE_REGISTER", default="10/hour"),
+        "password_reset": env.str("THROTTLE_RATE_PASSWORD_RESET", default="10/hour"),
+        "invitation_validate": env.str("THROTTLE_RATE_INVITATION_VALIDATE", default="30/min"),
+    },
+    # Quantos proxies confiáveis ficam na frente da API (ex.: 1 no Render). Sem isso, o IP
+    # vem do X-Forwarded-For inteiro e pode ser forjado para escapar do limite.
+    "NUM_PROXIES": env.int("NUM_PROXIES", default=None),
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.OptionalPageNumberPagination",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Equaliza API",
+    "DESCRIPTION": "API do Equaliza: finanças familiares colaborativas.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # O schema só é servido a quem está autenticado.
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env.int("ACCESS_TOKEN_LIFETIME_MINUTES", default=30)),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("REFRESH_TOKEN_LIFETIME_DAYS", default=7)),
+    # Cada renovação automática emite um novo refresh token (sessão deslizante).
+    "ROTATE_REFRESH_TOKENS": True,
+    # Invalidar o refresh antigo derruba requisições paralelas que chegaram com o mesmo
+    # access vencido (todas tentam renovar com o mesmo cookie), por isso fica desligado.
+    "BLACKLIST_AFTER_ROTATION": env.bool("JWT_BLACKLIST_AFTER_ROTATION", default=False),
 }
 
 

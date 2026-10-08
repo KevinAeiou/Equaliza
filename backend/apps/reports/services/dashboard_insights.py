@@ -53,7 +53,7 @@ class DashboardInsightsService:
                 category_id=expense.category_id,
                 category=expense.category.name,
                 title=expense.description.strip() or expense.category.name,
-                amount=float(expense.amount),
+                amount=expense.amount,
             )
             for expense in expenses.select_related("category")
         ]
@@ -63,7 +63,7 @@ class DashboardInsightsService:
 
         if not categories:
             total = Income.objects.for_family(family).filter(date__gte=start, date__lte=end).aggregate(total=Sum("amount"))["total"]
-            income = float(total or Decimal("0"))
+            income = total or Decimal("0")
 
         return build_insights(
             period_type,
@@ -77,7 +77,7 @@ class DashboardInsightsService:
                 Recurring(
                     category_id=item.category_id,
                     title=item.description.strip() or item.category.name,
-                    amount=float(item.amount),
+                    amount=item.amount,
                     frequency=item.frequency,
                     start_date=item.start_date,
                     end_date=item.end_date,

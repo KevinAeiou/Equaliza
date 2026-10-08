@@ -11,6 +11,7 @@ import '../../models/finance.dart';
 import '../../models/insights.dart';
 import '../category/category_service.dart';
 import '../finance/finance_service.dart';
+import '../settlement/settlement_months.dart';
 import 'dashboard_service.dart';
 import 'dashboard_widgets.dart';
 import 'insights_widgets.dart';
@@ -203,7 +204,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           else
             CategoryBreakdown(data: data?.charts.expensesByCategory),
           const SizedBox(height: 16),
-          MemberBalance(data: data?.charts.memberContributions),
+          MemberBalance(
+            data: data?.charts.memberContributions,
+            month: monthKey(_filters.period.from),
+          ),
           const SizedBox(height: 16),
           IncomeExpenseChart(trend: data?.trend),
           const SizedBox(height: 16),

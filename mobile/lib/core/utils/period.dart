@@ -97,6 +97,7 @@ class PeriodFilters {
     required this.type,
     required this.period,
     this.categories = const [],
+    this.members = const [],
   });
 
   factory PeriodFilters.initial() =>
@@ -105,18 +106,21 @@ class PeriodFilters {
   final PeriodType type;
   final Period period;
   final List<int> categories;
+  final List<int> members;
 
-  PeriodFilters copyWith({PeriodType? type, Period? period, List<int>? categories}) =>
+  PeriodFilters copyWith({PeriodType? type, Period? period, List<int>? categories, List<int>? members}) =>
       PeriodFilters(
         type: type ?? this.type,
         period: period ?? this.period,
         categories: categories ?? this.categories,
+        members: members ?? this.members,
       );
 
   Map<String, dynamic> toQuery() => {
         'from_date': toApiDate(period.from),
         'to_date': toApiDate(period.to),
         if (categories.isNotEmpty) 'categories': categories,
+        if (members.isNotEmpty) 'members': members,
       };
 }
 
@@ -150,46 +154,4 @@ List<TrendPoint> buildTrend(Period period, List<MonthTotals> data) {
       expense: item?.expense ?? 0,
     );
   });
-}
-
-class Settlement {
-  const Settlement({required this.from, required this.to, required this.amount});
-
-  final String from;
-  final String to;
-  final double amount;
-}
-
-/// Quem pagou abaixo da cota transfere para quem pagou acima, até zerar as diferenças.
-List<Settlement> buildSettlements(List<MemberContribution> contributions) {
-  final debtors = [
-    for (final item in contributions)
-      if (item.difference <= -0.01) (member: item.member, amount: -item.difference),
-  ]..sort((a, b) => b.amount.compareTo(a.amount));
-
-  final creditors = [
-    for (final item in contributions)
-      if (item.difference >= 0.01) (member: item.member, amount: item.difference),
-  ]..sort((a, b) => b.amount.compareTo(a.amount));
-
-  final remaining = [for (final creditor in creditors) creditor.amount];
-  final settlements = <Settlement>[];
-  var index = 0;
-
-  for (final debtor in debtors) {
-    var debt = debtor.amount;
-
-    while (debt >= 0.01 && index < creditors.length) {
-      final amount = debt < remaining[index] ? debt : remaining[index];
-
-      settlements.add(Settlement(from: debtor.member, to: creditors[index].member, amount: amount));
-
-      debt -= amount;
-      remaining[index] -= amount;
-
-      if (remaining[index] < 0.01) index++;
-    }
-  }
-
-  return settlements;
 }

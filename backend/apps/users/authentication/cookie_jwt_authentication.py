@@ -1,7 +1,8 @@
 from django.conf import settings
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken, TokenError
+from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -38,6 +39,25 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         return self.get_user(validated_token), validated_token
 
+    def get_user(self, validated_token):
+        """Igual ao padrão, mas já traz a família atual (evita uma query por requisição)."""
+        try:
+            user_id = validated_token[api_settings.USER_ID_CLAIM]
+        except KeyError:
+            raise InvalidToken("Token não contém identificação reconhecível do usuário.")
+
+        try:
+            user = self.user_model.objects.select_related("current_family").get(
+                **{api_settings.USER_ID_FIELD: user_id}
+            )
+        except self.user_model.DoesNotExist:
+            raise AuthenticationFailed("Usuário não encontrado.", code="user_not_found")
+
+        if not user.is_active:
+            raise AuthenticationFailed("Usuário inativo.", code="user_inactive")
+
+        return user
+
     def get_header(self, request):
         """
         Prioriza o Authorization header.
@@ -65,10 +85,26 @@ class CookieJWTAuthentication(JWTAuthentication):
         if not refresh_token:
             raise InvalidToken("Refresh token não encontrado.")
 
+        # O middleware lê o HttpRequest: atributos gravados no Request do DRF não chegam a ele.
+        http_request = getattr(request, "_request", request)
+
         try:
             refresh = RefreshToken(refresh_token)
 
             access_token = refresh.access_token
+
+            if api_settings.ROTATE_REFRESH_TOKENS:
+                if api_settings.BLACKLIST_AFTER_ROTATION:
+                    refresh.blacklist()
+
+                refresh.set_jti()
+                refresh.set_exp()
+                refresh.set_iat()
+
+                if hasattr(refresh, "outstand"):
+                    refresh.outstand()
+
+                http_request._new_refresh_token = str(refresh)
 
             new_access = str(access_token)
 
@@ -78,7 +114,7 @@ class CookieJWTAuthentication(JWTAuthentication):
                 f"Bearer {new_access}"
             )
 
-            request._new_access_token = new_access
+            http_request._new_access_token = new_access
 
             return access_token
 

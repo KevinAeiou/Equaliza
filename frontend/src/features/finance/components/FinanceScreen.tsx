@@ -21,6 +21,7 @@ export const FinanceScreen = () => {
 		filters, setFilters,
 		handleTypeChange,
 		categoryOptions,
+		memberOptions,
 	} = useFinanceScreen()
 
 	return (
@@ -56,6 +57,7 @@ export const FinanceScreen = () => {
 			<ActiveFilters
 				filters={filters}
 				categoryOptions={categoryOptions}
+				memberOptions={memberOptions}
 				onChange={setFilters}
 			/>
 

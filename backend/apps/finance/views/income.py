@@ -1,84 +1,23 @@
-from rest_framework import status, viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from django_filters.rest_framework import DjangoFilterBackend
-
+from apps.finance.models import Income
 from apps.finance.serializers import (
     CreateIncomeSerializer,
     ListIncomeSerializer,
     UpdateIncomeSerializer,
 )
-from apps.finance.services import (
-    CreateIncomeService,
-    DeleteIncomeService,
-    ListIncomeService,
-    UpdateIncomeService,
+from apps.finance.services import IncomeService
+from apps.finance.views.financial import FinancialViewSet
+
+
+@extend_schema_view(
+    create=extend_schema(responses={201: ListIncomeSerializer}),
+    update=extend_schema(responses={200: ListIncomeSerializer}),
+    partial_update=extend_schema(responses={200: ListIncomeSerializer}),
 )
-from apps.finance.filters import IncomeFilter
-from apps.core.permissions import IsFamilyMember, IsRecordOwner
-
-
-class IncomeViewSet(viewsets.ModelViewSet):
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = IncomeFilter
-    permission_classes = [
-        IsAuthenticated,
-        IsFamilyMember,
-        IsRecordOwner,
-    ]
-
-    lookup_field = "pk"
-
-    def get_serializer_class(self):
-        if self.action == "create":
-            return CreateIncomeSerializer
-
-        if self.action in ["update", "partial_update"]:
-            return UpdateIncomeSerializer
-
-        return ListIncomeSerializer
-
-    def get_queryset(self):
-        return ListIncomeService.execute(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-
-        income = CreateIncomeService.execute(
-            user=request.user,
-            data=serializer.validated_data,
-        )
-
-        return Response(
-            ListIncomeSerializer(income).data,
-            status=status.HTTP_201_CREATED,
-        )
-
-    def update(self, request, *args, **kwargs):
-        income = self.get_object()
-
-        serializer = self.get_serializer(
-            income,
-            data=request.data,
-            partial=kwargs.get("partial", False),
-        )
-        serializer.is_valid(raise_exception=True)
-
-        income = UpdateIncomeService.execute(
-            income=income,
-            data=serializer.validated_data,
-        )
-
-        return Response(ListIncomeSerializer(income).data)
-
-    def destroy(self, request, *args, **kwargs):
-        income = self.get_object()
-
-        DeleteIncomeService.execute(
-            income=income,
-        )
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class IncomeViewSet(FinancialViewSet):
+    queryset = Income.objects.none()  # só para o schema; get_queryset define o real
+    service = IncomeService
+    create_serializer_class = CreateIncomeSerializer
+    update_serializer_class = UpdateIncomeSerializer
+    list_serializer_class = ListIncomeSerializer

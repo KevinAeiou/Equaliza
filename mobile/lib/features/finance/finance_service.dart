@@ -13,6 +13,14 @@ abstract final class FinanceService {
             .toList();
       });
 
+  static Future<List<FinanceMember>> members() => guard('listar membros', () async {
+        final response = await api.get('finances/members/');
+
+        return (response.data as List)
+            .map((item) => FinanceMember.fromJson(item as Map<String, dynamic>))
+            .toList();
+      });
+
   static Future<void> save(
     EntryType type, {
     int? id,

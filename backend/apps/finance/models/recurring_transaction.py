@@ -4,7 +4,7 @@ from apps.core.models import BaseModel
 from apps.families.models import Family
 from apps.finance.constants import DESCRIPTION_MAX_LENGTH
 from apps.finance.enums import CategoryType, RecurrenceFrequency
-from apps.finance.manager import RecurringTransactionManager
+from apps.finance.managers import RecurringTransactionManager
 from apps.finance.models import FinancialCategory
 
 
@@ -32,3 +32,9 @@ class RecurringTransaction(BaseModel):
 
     class Meta:
         db_table = "recurring_transactions"
+        indexes = [
+            models.Index(
+                fields=["family", "is_active", "next_date"],
+                name="rec_family_active_next_idx",
+            ),
+        ]

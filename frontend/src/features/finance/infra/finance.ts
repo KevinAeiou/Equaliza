@@ -4,6 +4,7 @@ import {
 	CategoryProps,
 	ExpenseProps,
 	FinanceEntryType,
+	FinanceMemberProps,
 	FinanceParams,
 	FinancialPayload,
 	IncomeProps,
@@ -55,6 +56,15 @@ const FinanceAPI = () => ({
 	listCategories: async (): Promise<CategoryProps[]> => {
 		const response = await api<CategoryProps[]>({
 			url: "finances/categories/",
+			method: "GET",
+		})
+
+		return response.data
+	},
+
+	listMembers: async (): Promise<FinanceMemberProps[]> => {
+		const response = await api<FinanceMemberProps[]>({
+			url: "finances/members/",
 			method: "GET",
 		})
 

@@ -1,7 +1,13 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from apps.users.models import User
 from apps.families.models import FamilyMember
 from apps.families.serializers import ListFamilySerializer
+
+
+class UserAvatarSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    url = serializers.CharField()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
             "avatar",
         ]
 
+    @extend_schema_field(ListFamilySerializer(many=True))
     def get_families(self, obj):
         memberships = obj.memberships.select_related("family").filter(is_active=True)
 
@@ -32,6 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
             many=True,
         ).data
 
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_role(self, obj):
         if obj.current_family is None:
             return None
@@ -41,6 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
             family=obj.current_family,
         )
 
+    @extend_schema_field(UserAvatarSerializer())
     def get_avatar(self, obj):
         return {
             "id": obj.avatar,

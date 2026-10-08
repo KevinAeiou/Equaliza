@@ -1,5 +1,7 @@
 from typing import Any, cast
 
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
 from ..serializers.customTokenObtainPair import CustomTokenObtainPairSerializer
 from ..utils import set_auth_cookies
@@ -20,7 +22,16 @@ class LoginView(TokenObtainPairView):
     """
 
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"
 
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                description="Sessão iniciada. Os tokens seguem em cookies HttpOnly, sem corpo."
+            )
+        }
+    )
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 

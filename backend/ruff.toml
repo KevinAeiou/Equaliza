@@ -1,0 +1,13 @@
+# Começa só com erros reais (sintaxe, nomes indefinidos, imports sem uso); regras de
+# estilo podem entrar depois, aos poucos.
+extend-exclude = ["migrations"]
+
+[lint]
+select = ["E9", "F"]
+
+[lint.per-file-ignores]
+# `from .base import *` é o padrão dos módulos de settings do Django.
+"config/settings/*.py" = ["F403", "F405"]
+# Reexportações em `__init__.py` e o `admin.py` gerado pelo Django.
+"**/__init__.py" = ["F401"]
+"**/admin.py" = ["F401"]

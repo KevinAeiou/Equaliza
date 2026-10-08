@@ -141,12 +141,11 @@ class BuildInsightsTests(APITestCase):
         self.assertEqual(insight["tone"], "alert")
         self.assertIn("R$\xa0500,00 a mais", insight["title"])
 
-    def test_savings_rate(self):
-        report = build([expense("Moradia", 1000, date(2026, 10, 5))], [], income=5000.0)
-        insight = next(item for item in report["insights"] if item["kind"] == "savings")
+    def test_no_savings_card_when_expenses_fit_the_income(self):
+        for expenses, income in ((1000, 5000.0), (2300, 2500.0)):
+            report = build([expense("Moradia", expenses, date(2026, 10, 5))], [], income=income)
 
-        self.assertEqual(insight["tone"], "good")
-        self.assertEqual(insight["title"], "Você guardou 80% da receita")
+            self.assertNotIn("savings", kinds(report))
 
     def test_no_savings_insight_without_income(self):
         report = build([expense("Moradia", 1000, date(2026, 10, 5))], [], income=None)

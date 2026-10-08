@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+from apps.core.views import HealthCheckView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
+    path('api/health/', HealthCheckView.as_view(), name='health'),
 	path(
         "api/",
         include(
@@ -47,6 +53,12 @@ urlpatterns = [
         "api/reports/",
         include(
             "apps.reports.urls"
+        ),
+    ),
+	path(
+        "api/settlements/",
+        include(
+            "apps.settlements.urls"
         ),
     ),
 ]

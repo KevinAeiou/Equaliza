@@ -1,5 +1,6 @@
 "use client"
 
+import { format } from "date-fns"
 import { useState } from "react"
 import { FilterButton } from "@/src/components/filters"
 import { HeaderScreen } from "@/src/components/headerScreen"
@@ -87,6 +88,7 @@ export const DashboardScreen = () => {
 			<div className="grid gap-4 sm:gap-6 xl:grid-cols-3">
 				<MemberBalance
 					data={chartData?.member_contributions}
+					month={format(filters.period.from, "yyyy-MM")}
 					className="xl:col-span-2"
 				/>
 

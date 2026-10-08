@@ -5,7 +5,11 @@ on:
     tags: ["v*"]
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: ci
     runs-on: ubuntu-latest
     # Os secrets dos hooks ficam no environment "Production" do GitHub.
     environment: Production

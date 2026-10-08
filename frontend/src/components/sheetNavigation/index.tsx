@@ -15,12 +15,12 @@ import {
 import { getFamilyMonogram } from "@/src/features/dashboard/utils"
 import { cn } from "@/src/lib/utils"
 
-import { isActiveLink, NAV_LINKS } from "../menuNavegation"
-import { useMenuNavegation } from "../menuNavegation/useMenuNavegation"
-import { useUserNavigation } from "../userNavegation/useUserNavigation"
+import { isActiveLink, NAV_LINKS } from "../menuNavigation"
+import { useMenuNavigation } from "@/src/components/menuNavigation/useMenuNavigation"
+import { useUserNavigation } from "../userNavigation/useUserNavigation"
 import { useSheetNavigation } from "./useSheetNavigation"
-import { ProfileDialog } from "../profileDialog"
-import { UserSettingsSheet } from "../userSettingsSheet"
+import { ProfileDialog } from "@/src/features/profile/components/ProfileDialog"
+import { UserSettingsSheet } from "@/src/features/profile/components/UserSettingsSheet"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 const SectionTitle = ({ children }: { children: string }) => (
@@ -35,7 +35,7 @@ export const SheetNavigation = () => {
 		selectedFamily,
 		handleFamilyChange,
 		isAdmin,
-	} = useMenuNavegation()
+	} = useMenuNavigation()
 
 	const {
 		user,

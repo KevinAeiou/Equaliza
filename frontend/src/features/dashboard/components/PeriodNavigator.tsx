@@ -5,15 +5,17 @@ import { Button } from "@/src/components/ui/button"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 import { formatPeriodLabel, shiftPeriod } from "../utils"
 
-interface PeriodNavigatorProps {
-	filters: FormDashboardFilterSchemaType
-	onChange: (filters: FormDashboardFilterSchemaType) => void
+type PeriodFilters = Pick<FormDashboardFilterSchemaType, "type" | "period">
+
+interface PeriodNavigatorProps<T extends PeriodFilters> {
+	filters: T
+	onChange: (filters: T) => void
 }
 
-export const PeriodNavigator = ({
+export const PeriodNavigator = <T extends PeriodFilters>({
 	filters,
 	onChange,
-}: PeriodNavigatorProps) => {
+}: PeriodNavigatorProps<T>) => {
 	const move = (step: 1 | -1) =>
 		onChange({
 			...filters,

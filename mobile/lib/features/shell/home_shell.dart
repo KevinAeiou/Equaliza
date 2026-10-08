@@ -12,6 +12,7 @@ import '../family/family_screen.dart';
 import '../finance/finance_screen.dart';
 import '../../models/finance.dart';
 import '../invitation/invitation_screen.dart';
+import '../settlement/settlement_screen.dart';
 import '../member/member_screen.dart';
 import 'app_menu.dart';
 import 'app_section.dart';
@@ -31,13 +32,21 @@ class _HomeShellState extends State<HomeShell> {
       : AppSection.dashboard;
 
   EntryType _financeType = EntryType.expense;
+  String? _settlementMonth;
+  int? _settlementPayTo;
 
-  void _navigate(AppSection section, {EntryType? entryType}) {
+  void _navigate(AppSection section, {EntryType? entryType, String? month, int? payTo}) {
     _scaffoldKey.currentState?.closeEndDrawer();
 
     if (section == AppSection.finance && entryType != null) _financeType = entryType;
 
-    if (section != _section) setState(() => _section = section);
+    if (section == AppSection.settlement) {
+      _settlementMonth = month;
+      _settlementPayTo = payTo;
+    }
+
+    // Reabrir Acertos com outro mês ou atalho de pagamento recria a tela.
+    if (section != _section || section == AppSection.settlement) setState(() => _section = section);
   }
 
   Widget _body() {
@@ -64,11 +73,12 @@ class _HomeShellState extends State<HomeShell> {
     }
 
     // A chave da família recarrega a tela quando a família atual muda.
-    final key = ValueKey('${_section.name}-${user.currentFamily?.id}-${_section == AppSection.finance ? _financeType.name : ''}');
+    final key = ValueKey('${_section.name}-${user.currentFamily?.id}-${_section == AppSection.finance ? _financeType.name : ''}${_section == AppSection.settlement ? '$_settlementMonth-$_settlementPayTo' : ''}');
 
     return switch (_section) {
       AppSection.dashboard => DashboardScreen(key: key),
       AppSection.finance => FinanceScreen(key: key, initialType: _financeType),
+      AppSection.settlement => SettlementScreen(key: key, initialMonth: _settlementMonth, initialPayTo: _settlementPayTo),
       AppSection.category => CategoryScreen(key: key),
       AppSection.member => MemberScreen(key: key),
       AppSection.invitation => InvitationScreen(key: key),
