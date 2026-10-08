@@ -97,6 +97,7 @@ class PeriodFilters {
     required this.type,
     required this.period,
     this.categories = const [],
+    this.members = const [],
   });
 
   factory PeriodFilters.initial() =>
@@ -105,18 +106,21 @@ class PeriodFilters {
   final PeriodType type;
   final Period period;
   final List<int> categories;
+  final List<int> members;
 
-  PeriodFilters copyWith({PeriodType? type, Period? period, List<int>? categories}) =>
+  PeriodFilters copyWith({PeriodType? type, Period? period, List<int>? categories, List<int>? members}) =>
       PeriodFilters(
         type: type ?? this.type,
         period: period ?? this.period,
         categories: categories ?? this.categories,
+        members: members ?? this.members,
       );
 
   Map<String, dynamic> toQuery() => {
         'from_date': toApiDate(period.from),
         'to_date': toApiDate(period.to),
         if (categories.isNotEmpty) 'categories': categories,
+        if (members.isNotEmpty) 'members': members,
       };
 }
 

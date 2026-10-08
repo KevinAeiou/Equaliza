@@ -15,6 +15,17 @@ enum EntryType {
       value == income.value ? income : expense;
 }
 
+/// Membro da família que pode ter registrado lançamentos (`id` é o do usuário).
+class FinanceMember {
+  const FinanceMember({required this.id, required this.name});
+
+  factory FinanceMember.fromJson(Map<String, dynamic> json) =>
+      FinanceMember(id: json['id'] as int, name: json['name'] as String? ?? '');
+
+  final int id;
+  final String name;
+}
+
 class Category {
   const Category({
     required this.id,
