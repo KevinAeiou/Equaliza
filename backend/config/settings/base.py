@@ -63,6 +63,7 @@ LOCAL_APPS = [
     "apps.finance",
     "apps.reports",
     "apps.invitations",
+    "apps.settlements",
 ]
 
 THIRD_PARTY_APPS = [
