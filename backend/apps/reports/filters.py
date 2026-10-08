@@ -31,6 +31,11 @@ class DashboardFilter(filters.FilterSet):
         if categories:
             queryset = queryset.filter(category_id__in=categories)
 
+        members = data.getlist("members")
+
+        if members:
+            queryset = queryset.filter(created_by_id__in=members)
+
         if not from_date and not to_date:
             today = timezone.localdate()
 
