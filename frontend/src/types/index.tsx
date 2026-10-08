@@ -334,3 +334,22 @@ export const userInitialState = {} as UserProps
 
 export type FormLoginSchemaType = z.infer<typeof FormLoginSchema>
 export type FormRegisterShemaType = z.infer<typeof FormRegisterSchema>
+export type SettlementBalanceProps = Schemas["Balance"]
+export type SettlementMemberProps = Schemas["BalanceMember"]
+export type SettlementSuggestionProps = Schemas["Suggestion"]
+export type SettlementProps = Schemas["ListSettlement"]
+export type SettlementStatus = SettlementProps["status"]
+
+export interface SettlementPayload {
+	receiver: number
+	amount: string
+	month: string
+	note?: string
+	paid_at?: string
+}
+
+export interface SettlementHistoryParams {
+	month?: string
+	member?: number
+	status?: SettlementStatus
+}

@@ -1,6 +1,8 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import {
 	Card,
 	CardContent,
@@ -9,11 +11,16 @@ import {
 	CardTitle,
 } from "@/src/components/ui/card"
 import { cn, formatCurrency } from "@/src/lib/utils"
-import { DashboardChartsProps } from "@/src/types"
-import { buildSettlements, getFirstName, getInitials } from "../utils"
+import { DashboardChartsProps, SettlementSuggestionProps } from "@/src/types"
+import { useAuth } from "@/src/components/providers/AuthProvider"
+import { SettlementService } from "@/src/features/settlement/services/settlement.service"
+import { currentMonth } from "@/src/features/settlement/utils"
+import { getFirstName, getInitials } from "../utils"
 
 interface MemberBalanceProps {
 	data?: DashboardChartsProps["member_contributions"]
+	// Mês (AAAA-MM) do período do dashboard; o acerto é sempre de um mês.
+	month: string
 	className?: string
 }
 
@@ -22,8 +29,30 @@ const signedCurrency = (value: number) =>
 
 export const MemberBalance = ({
 	data,
+	month,
 	className,
 }: MemberBalanceProps) => {
+	const { user } = useAuth()
+	const [suggestions, setSuggestions] = useState<SettlementSuggestionProps[]>([])
+	const settlementMonth = month > currentMonth() ? currentMonth() : month
+
+	// O "Para equilibrar" vem do backend (saldo acumulado do mês, com ids).
+	useEffect(() => {
+		let ignore = false
+
+		SettlementService.getBalance(settlementMonth)
+			.then((balance) => {
+				if (!ignore) setSuggestions(balance.suggestions)
+			})
+			.catch(() => {
+				if (!ignore) setSuggestions([])
+			})
+
+		return () => {
+			ignore = true
+		}
+	}, [settlementMonth])
+
 	const members = (data ?? []).map((item) => ({
 		member: item.member,
 		expected: Number(item.expected),
@@ -33,7 +62,6 @@ export const MemberBalance = ({
 
 	const totalExpected = members.reduce((sum, item) => sum + item.expected, 0)
 	const scale = Math.max(...members.flatMap((item) => [item.expected, item.paid]), 0) * 1.08
-	const settlements = buildSettlements(data ?? [])
 
 	return (
 		<Card className={cn("min-w-0", className)}>
@@ -103,16 +131,31 @@ export const MemberBalance = ({
 					)
 				})}
 
-				{settlements.length > 0 && (
+				{suggestions.length > 0 && (
 					<div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg bg-muted px-4 py-3 text-sm">
-						<span className="font-semibold">Para equilibrar</span>
+						<Link
+							href={`/settlement?month=${settlementMonth}`}
+							className="flex items-center gap-1 font-semibold hover:underline"
+						>
+							Para equilibrar
+							<ChevronRight className="size-3.5" aria-hidden />
+						</Link>
 
-						{settlements.map((item) => (
-							<span key={`${item.from}-${item.to}`} className="flex items-center gap-1.5">
-								{getFirstName(item.from)}
+						{suggestions.map((item) => (
+							<span key={`${item.payer}-${item.receiver}`} className="flex items-center gap-1.5">
+								{getFirstName(item.payer_name)}
 								<ArrowRight className="size-3.5 text-muted-foreground" aria-label="transfere para" />
-								{getFirstName(item.to)}
-								<span className="font-semibold tabular-nums">{formatCurrency(item.amount)}</span>
+								{getFirstName(item.receiver_name)}
+								<span className="font-semibold tabular-nums">{formatCurrency(Number(item.amount))}</span>
+
+								{item.payer === user.id && (
+									<Link
+										href={`/settlement?month=${settlementMonth}&pay=${item.receiver}`}
+										className="ml-1 rounded-md bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground"
+									>
+										Pagar
+									</Link>
+								)}
 							</span>
 						))}
 					</div>
