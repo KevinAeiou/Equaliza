@@ -1,7 +1,6 @@
 "use client"
 
 import { ArrowDownRight, ArrowUpRight } from "lucide-react"
-import { useMemo } from "react"
 import { cn, formatCurrency } from "@/src/lib/utils"
 import { FinanceEntryType } from "@/src/types"
 import { useSummaryCards } from "../../dashboard/hooks/useSummaryCards"
@@ -24,9 +23,7 @@ export const FinanceTabs = ({
 	setFinanceId,
 	filters,
 }: FinanceTabsProps) => {
-	// Os totais ignoram o filtro de categorias, que vale só para o tipo exibido na tabela.
-	const summaryFilters = useMemo(() => ({ ...filters, categories: [] }), [filters])
-	const { loaded, income, expense } = useSummaryCards(summaryFilters, refresh)
+	const { loaded, income, expense } = useSummaryCards(filters, refresh)
 
 	const tabs = [
 		{ value: "INCOME" as const, label: "Receitas", total: income, icon: ArrowUpRight, iconClassName: "bg-income-soft text-income" },
