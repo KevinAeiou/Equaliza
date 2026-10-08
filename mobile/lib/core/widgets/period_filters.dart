@@ -164,6 +164,7 @@ class PeriodFilterPanel extends StatefulWidget {
     required this.initial,
     required this.groups,
     this.emptyMessage = 'Nenhuma categoria cadastrada.',
+    this.members,
   });
 
   final String title;
@@ -171,6 +172,9 @@ class PeriodFilterPanel extends StatefulWidget {
   final PeriodFilters initial;
   final List<CategoryGroup> groups;
   final String emptyMessage;
+
+  /// Quando informado, o painel mostra também o filtro por membro.
+  final List<FinanceMember>? members;
 
   @override
   State<PeriodFilterPanel> createState() => _PeriodFilterPanelState();
@@ -190,6 +194,12 @@ class _PeriodFilterPanelState extends State<PeriodFilterPanel> {
         final selected = [..._filters.categories];
         selected.contains(id) ? selected.remove(id) : selected.add(id);
         _filters = _filters.copyWith(categories: selected);
+      });
+
+  void _toggleMember(int id) => setState(() {
+        final selected = [..._filters.members];
+        selected.contains(id) ? selected.remove(id) : selected.add(id);
+        _filters = _filters.copyWith(members: selected);
       });
 
   Future<void> _pickPeriod() async {
@@ -277,6 +287,37 @@ class _PeriodFilterPanelState extends State<PeriodFilterPanel> {
               ],
             ],
           ),
+          if (widget.members != null) ...[
+            const SizedBox(height: 32),
+            FilterSection(
+              title: 'Membros',
+              hint: _filters.members.isEmpty
+                  ? null
+                  : '${_filters.members.length} selecionado${_filters.members.length > 1 ? 's' : ''}',
+              children: [
+                if (widget.members!.isEmpty)
+                  Text('Nenhum membro na família.', style: TextStyle(fontSize: 14, color: colors.mutedForeground))
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      SelectChip(
+                        label: 'Todos',
+                        selected: _filters.members.isEmpty,
+                        onTap: () => setState(() => _filters = _filters.copyWith(members: [])),
+                      ),
+                      for (final member in widget.members!)
+                        SelectChip(
+                          label: member.name,
+                          selected: _filters.members.contains(member.id),
+                          onTap: () => _toggleMember(member.id),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
       footer: SheetFooter(

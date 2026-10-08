@@ -1,3 +1,4 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from apps.finance.views import (
@@ -5,6 +6,7 @@ from apps.finance.views import (
     IncomeViewSet,
     FinancialCategoryViewSet,
     RecurringTransactionViewSet,
+    FinanceMemberListView,
 )
 
 router = DefaultRouter()
@@ -14,4 +16,7 @@ router.register("income", IncomeViewSet, basename="income")
 router.register("recurring", RecurringTransactionViewSet, basename="recurring")
 router.register("categories", FinancialCategoryViewSet, basename="categories")
 
-urlpatterns = router.urls
+urlpatterns = [
+    path("members/", FinanceMemberListView.as_view(), name="finance-members"),
+    *router.urls,
+]

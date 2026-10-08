@@ -297,6 +297,7 @@ export interface DashboardParams {
 	from_date?: string
 	to_date?: string
 	categories?: number[]
+	members?: number[]
 }
 
 export interface DashboardInsightsParams {
@@ -310,11 +311,17 @@ export interface FinanceParams {
 	from_date?: string
 	to_date?: string
 	categories?: number[]
+	members?: number[]
 }
 
 export interface CategoryParams {
 	name: string
 	type: string
+}
+
+export interface FinanceMemberProps {
+	id: number
+	name: string
 }
 
 export type MemberProps = Schemas["ListFamilyMember"]
