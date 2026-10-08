@@ -73,10 +73,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
     setState(() => _error = null);
 
     try {
-      // Os totais ignoram o filtro de categorias, que vale só para o tipo exibido na lista.
       final results = await Future.wait([
         FinanceService.list(type, filters),
-        DashboardService.summary(filters.copyWith(categories: [])),
+        DashboardService.summary(filters),
       ]);
 
       if (!mounted || request != _request) return;
