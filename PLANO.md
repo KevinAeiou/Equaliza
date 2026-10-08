@@ -38,17 +38,84 @@ Fazer antes das funcionalidades novas, para não replicar a bagunça.
 
 **Pronto quando:** o número de arquivos em `finance/` cai de forma visível, e todos os testes passam sem alterar os asserts.
 
-## Fase 3: Acerto de contas entre membros (4–6 dias)
+## Fase 3: Acerto de contas entre membros (~13 dias)
 
-A funcionalidade central do produto.
+A funcionalidade central do produto. Hoje o "Para equilibrar" é calculado no cliente (`buildSettlements`, duplicado em `frontend/src/features/dashboard/utils.ts` e `mobile/lib/core/utils/period.dart`), a partir do `member_contributions` do período filtrado e identificando as pessoas pelo **nome**. Esta fase move o cálculo para o backend (com ids), permite **registrar pagamentos totais ou parciais** e guarda o **histórico**.
 
-1. **[B]** Modelo `Settlement` (família, pagador, recebedor, valor, data, criado por). Migration.
-2. **[B]** Serviço de cálculo: parte da diferença `paid − expected` que o dashboard já calcula e inclui os acertos já registrados. Um algoritmo guloso (maior devedor com maior credor) gera o mínimo de transferências. Testes com 2, 3 e N membros e com valores que não fecham em centavos.
-3. **[B]** Endpoints `GET /reports/settlement/` (sugestões) e CRUD de `Settlement`, com permissão por perfil.
-4. **[F][M]** Tela "Acertos": quem deve quanto a quem, botão "Registrar pagamento", histórico.
-5. Card no dashboard: "Você deve R$ X a Fulano".
+### Decisões já tomadas
 
-**Pronto quando:** num cenário de seed, registrar os acertos sugeridos zera as diferenças.
+| Tema | Decisão |
+|---|---|
+| Quem registra | Só o devedor: o usuário autenticado paga a si mesmo, a um membro com crédito. Não há confirmação do recebedor. |
+| Início do saldo | A partir do mês do deploy (`Family.settlement_start`). Meses anteriores não geram dívida. |
+| Mês sem receita | Divide igualmente entre os membros ativos. |
+| Cancelamento | Estorno feito só pelo **responsável ou administrador** da família. Não é exclusão: fica no histórico. |
+| Interface | Página `/settlement` + modal de pagamento. |
+| Membro que saiu com saldo ≠ 0 | Continua no acerto até zerar. |
+| Histórico | Apenas os campos listados abaixo. |
+
+### Regras de negócio
+
+- **Competência = mês.** O acerto é sempre de um mês (`YYYY-MM`), independente do filtro do dashboard.
+- **Saldo acumulado.** Saldo do membro no fim do mês M = Σ (pago − cota) dos meses entre `settlement_start` e M, mais os acertos: quem paga soma `+valor`, quem recebe soma `−valor`. A soma dos saldos da família é sempre zero.
+- **Pagamento parcial.** O restante continua no saldo e aparece no mês seguinte como **"Saldo anterior"**. Cada pagamento também guarda um retrato do que sobrou (`remaining_after`) e do mês para onde foi (`carried_to`), para o histórico informar "Restaram R$ X, lançados em Nov/2026".
+- **Quanto pagar.** `0 < valor ≤ min(dívida do pagador, crédito do recebedor)`. **Total** é o valor sugerido para aquele par; **parcial** é qualquer valor menor. O mês de referência não pode ser futuro nem anterior a `settlement_start`, e a data do pagamento não pode ser futura.
+- **Cota.** Proporcional à receita do mês (como no dashboard). Sem receita no mês, divisão igual entre os membros ativos. Os centavos que sobram são distribuídos de forma determinística (maior resto), para a soma dar zero.
+- **Não é receita nem despesa.** Acertos ficam fora dos totais do dashboard e dos insights. O app registra o acerto, não move dinheiro.
+- **Estorno.** `status = CANCELLED` (com `cancelled_at` e `cancelled_by`). O saldo é recalculado sem o acerto estornado.
+- **Membros inativos** entram no cálculo enquanto o saldo for diferente de zero.
+
+### Dados (novo app `apps/settlements`)
+
+| Campo | Observação |
+|---|---|
+| `family`, `payer`, `receiver` | `payer ≠ receiver` (constraint) |
+| `amount` | `Decimal(10,2)`, `> 0` (constraint) |
+| `reference_month` | primeiro dia do mês acertado |
+| `paid_at` | data do pagamento (hoje por padrão) |
+| `note` | opcional, até 255 caracteres |
+| `status` | `ACTIVE` ou `CANCELLED`, com `cancelled_at` e `cancelled_by` |
+| `remaining_after`, `carried_to` | retrato do restante do pagador e do mês para onde foi |
+
+`created_by` e `updated_by` vêm do `BaseModel`. Índices em `(family, reference_month)` e `(family, -paid_at)`. Migration adiciona `Family.settlement_start` (primeiro dia do mês do deploy para as famílias existentes; mês da criação para as novas).
+
+### API (contrato no OpenAPI)
+
+- `GET /api/settlements/balance/?month=YYYY-MM`: por membro (com id), pago, cota, diferença do mês, saldo anterior, acertos do mês e saldo final; mais as **sugestões** (quem paga quem e quanto) e o seu saldo.
+- `POST /api/settlements/` com `{receiver, amount, month, note?}`: o pagador é o usuário autenticado. Devolve o acerto com `remaining_after` e `carried_to`.
+- `GET /api/settlements/?month=&member=&status=&page_size=`: histórico.
+- `POST /api/settlements/{id}/cancel/`: estorno (responsável ou administrador).
+- Permissões: `IsAuthenticated` + `IsFamilyMember` (estorno com `IsFamilyAdministrator`). Criar e estornar rodam em transação com `select_for_update` na família, para pagamentos simultâneos não estourarem o saldo.
+
+### Telas
+
+**Web**
+- **Card do dashboard:** o "Para equilibrar" vira botão para `/settlement?month=…`. Nas sugestões em que o usuário é o devedor, um atalho `?pay=<id>` abre o modal já preenchido.
+- **Página `/settlement`:** seletor de mês, "Seu saldo", sugestões com botão **Pagar** (só nas suas), tabela de membros com a coluna "Saldo anterior" e a aba **Histórico** (filtros por membro e status; ação Cancelar só para responsável/administrador).
+- **Modal de pagamento** (`FormDialog`): recebedor, valor (atalhos **Total** e **Parcial**), observação e data, com prévia "Restarão R$ X, lançados em Nov/2026".
+- **Menu:** item novo "Acertos" (`menuNavigation`).
+
+**Mobile:** tela equivalente em `features/settlement`, link a partir do card do dashboard e folha de pagamento.
+
+**Histórico (campos):** data do pagamento, mês de referência, quem pagou, quem recebeu, valor, observação, status, quanto restou e o mês para onde foi.
+
+### Etapas (um PR pequeno por etapa, com testes)
+
+| # | Entrega | Estimativa |
+|---|---|---|
+| 3.1 | Funções puras de saldo e sugestão (cota por receita, divisão igual sem receita, centavos, saldo acumulado) e testes, incluindo a propriedade "soma dos saldos = 0" | 2 dias |
+| 3.2 | App, modelo, constraints, migration e `Family.settlement_start` | 1 dia |
+| 3.3 | Serviços: saldo, criar (validações + lock), estornar e listar | 2 dias |
+| 3.4 | Endpoints, permissões, OpenAPI e `make gen_api` | 1,5 dia |
+| 3.5 | Web: página, modal, CTA no card, menu e histórico | 3 dias |
+| 3.6 | Mobile: tela e folha de pagamento | 2–3 dias |
+| 3.7 | `seed_demo` com acertos, remoção do `buildSettlements` dos clientes, README e passada manual | 1 dia |
+
+**Pronto quando:**
+- num cenário de seed, registrar as sugestões zera os saldos;
+- um pagamento parcial reaparece como "Saldo anterior" no mês seguinte;
+- o estorno devolve o saldo;
+- só o devedor consegue registrar e só responsável/administrador consegue estornar.
 
 ## Fase 4: Orçamentos e notificações (5–7 dias)
 
