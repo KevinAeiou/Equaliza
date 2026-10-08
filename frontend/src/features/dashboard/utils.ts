@@ -123,46 +123,6 @@ export const buildTrend = (
 	})
 }
 
-export interface Settlement {
-	from: string
-	to: string
-	amount: number
-}
-
-// Quem pagou abaixo da cota transfere para quem pagou acima, até zerar as diferenças.
-export const buildSettlements = (
-	contributions: DashboardChartsProps["member_contributions"],
-): Settlement[] => {
-	const debtors = contributions
-		.filter((item) => Number(item.difference) <= -0.01)
-		.map((item) => ({ member: item.member, amount: -Number(item.difference) }))
-		.sort((a, b) => b.amount - a.amount)
-
-	const creditors = contributions
-		.filter((item) => Number(item.difference) >= 0.01)
-		.map((item) => ({ member: item.member, amount: Number(item.difference) }))
-		.sort((a, b) => b.amount - a.amount)
-
-	const settlements: Settlement[] = []
-	let creditorIndex = 0
-
-	for (const debtor of debtors) {
-		while (debtor.amount >= 0.01 && creditorIndex < creditors.length) {
-			const creditor = creditors[creditorIndex]
-			const amount = Math.min(debtor.amount, creditor.amount)
-
-			settlements.push({ from: debtor.member, to: creditor.member, amount })
-
-			debtor.amount -= amount
-			creditor.amount -= amount
-
-			if (creditor.amount < 0.01) creditorIndex++
-		}
-	}
-
-	return settlements
-}
-
 export const getInitials = (name: string) =>
 	name
 		.split(" ")

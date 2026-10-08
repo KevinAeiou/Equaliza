@@ -8,19 +8,19 @@
     "average": 2000.0,
     "change": 0.38,
     "name": "Moradia",
-    "value": 2760
+    "value": 2760.0
    },
    {
     "average": 800.0,
     "change": 0.0,
     "name": "Mercado",
-    "value": 800
+    "value": 800.0
    },
    {
     "average": 300.0,
     "change": -0.5,
     "name": "Lazer",
-    "value": 150
+    "value": 150.0
    }
   ],
   "dropped_count": 1,
@@ -142,13 +142,13 @@
     "average": 1700.0,
     "change": 0.235294118,
     "name": "Moradia",
-    "value": 2100
+    "value": 2100.0
    },
    {
     "average": 300.0,
     "change": -0.866666667,
     "name": "Lazer",
-    "value": 40
+    "value": 40.0
    }
   ],
   "dropped_count": 1,
@@ -255,13 +255,13 @@
     "average": 390.0,
     "change": 0.794871795,
     "name": "Mercado",
-    "value": 700
+    "value": 700.0
    },
    {
     "average": 50.0,
     "change": 3.4,
     "name": "Lazer",
-    "value": 220
+    "value": 220.0
    }
   ],
   "dropped_count": 0,
@@ -381,7 +381,7 @@
     "average": 412.0,
     "change": -0.203883495,
     "name": "Transporte",
-    "value": 328
+    "value": 328.0
    }
   ],
   "dropped_count": 1,
@@ -476,25 +476,25 @@
     "average": 2000.0,
     "change": 0.38,
     "name": "Moradia",
-    "value": 2760
+    "value": 2760.0
    },
    {
     "average": 1250.0,
     "change": 0.2,
     "name": "Mercado",
-    "value": 1500
+    "value": 1500.0
    },
    {
     "average": 300.0,
     "change": 0.3,
     "name": "Lazer",
-    "value": 390
+    "value": 390.0
    },
    {
     "average": 410.0,
     "change": -0.707317073,
     "name": "Transporte",
-    "value": 120
+    "value": 120.0
    }
   ],
   "dropped_count": 1,
@@ -722,7 +722,7 @@
     "average": 310.0,
     "change": -0.612903226,
     "name": "Lazer",
-    "value": 120
+    "value": 120.0
    }
   ],
   "dropped_count": 1,
@@ -872,7 +872,7 @@
     "average": 1500.0,
     "change": -0.333333333,
     "name": "Mercado",
-    "value": 1000
+    "value": 1000.0
    }
   ],
   "dropped_count": 1,
@@ -979,7 +979,7 @@
     "average": 1500.0,
     "change": -0.733333333,
     "name": "Mercado",
-    "value": 400
+    "value": 400.0
    }
   ],
   "dropped_count": 1,
@@ -1177,7 +1177,7 @@
     "average": 250.0,
     "change": -0.6,
     "name": "Mercado",
-    "value": 100
+    "value": 100.0
    }
   ],
   "dropped_count": 0,
@@ -1274,23 +1274,7 @@
   "has_history": false,
   "has_previous": false,
   "history_periods": 0,
-  "insights": [
-   {
-    "bars": [],
-    "body": "R$ 4.000,00 sobram de R$ 5.000,00 recebidos depois de R$ 1.000,00 em despesas.",
-    "kind": "savings",
-    "note": null,
-    "progress": {
-     "end": "Receitas R$ 5.000,00",
-     "fraction": 0.2,
-     "start": "Despesas R$ 1.000,00"
-    },
-    "spark": [],
-    "tag": "Poupança",
-    "title": "Você guardou 80% da receita",
-    "tone": "good"
-   }
-  ]
+  "insights": []
  },
  "savings_warning": {
   "above_count": 0,
@@ -1302,23 +1286,7 @@
   "has_history": false,
   "has_previous": false,
   "history_periods": 0,
-  "insights": [
-   {
-    "bars": [],
-    "body": "Sobram só R$ 200,00 de R$ 2.500,00 recebidos. Qualquer imprevisto pode fechar o período no vermelho.",
-    "kind": "savings",
-    "note": null,
-    "progress": {
-     "end": "Receitas R$ 2.500,00",
-     "fraction": 0.92,
-     "start": "Despesas R$ 2.300,00"
-    },
-    "spark": [],
-    "tag": "Pouca folga",
-    "title": "As despesas consumiram 92% da receita",
-    "tone": "warning"
-   }
-  ]
+  "insights": []
  },
  "total_drop": {
   "above_count": 0,
@@ -1405,13 +1373,13 @@
     "average": 1083.333333333,
     "change": 0.384615385,
     "name": "Mercado",
-    "value": 1500
+    "value": 1500.0
    },
    {
     "average": 113.333333333,
     "change": 0.323529412,
     "name": "Lazer",
-    "value": 150
+    "value": 150.0
    }
   ],
   "dropped_count": 0,
@@ -1543,7 +1511,7 @@
     "average": 490.0,
     "change": 0.020408163,
     "name": "Mercado",
-    "value": 500
+    "value": 500.0
    }
   ],
   "dropped_count": 1,
@@ -1611,13 +1579,13 @@
     "average": 205.0,
     "change": 1.390243902,
     "name": "Mercado",
-    "value": 490
+    "value": 490.0
    },
    {
     "average": 30.0,
     "change": 3.0,
     "name": "Lazer",
-    "value": 120
+    "value": 120.0
    }
   ],
   "dropped_count": 0,
@@ -1830,13 +1798,13 @@
     "average": 8500.0,
     "change": 0.411764706,
     "name": "Mercado",
-    "value": 12000
+    "value": 12000.0
    },
    {
     "average": 3050.0,
     "change": -0.016393443,
     "name": "Lazer",
-    "value": 3000
+    "value": 3000.0
    }
   ],
   "dropped_count": 0,

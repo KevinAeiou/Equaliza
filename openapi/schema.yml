@@ -430,6 +430,14 @@ paths:
         schema:
           type: string
           format: date
+      - in: query
+        name: members
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
       - name: page
         required: false
         in: query
@@ -600,6 +608,14 @@ paths:
         schema:
           type: string
           format: date
+      - in: query
+        name: members
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
       - name: page
         required: false
         in: query
@@ -753,6 +769,24 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/finances/members/:
+    get:
+      operationId: finances_members_list
+      description: Membros da família (inclusive quem consulta), para o filtro de
+        despesas e receitas.
+      tags:
+      - finances
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRef'
+          description: ''
   /api/finances/recurring/:
     get:
       operationId: finances_recurring_list
@@ -1365,6 +1399,129 @@ paths:
               schema:
                 $ref: '#/components/schemas/DashboardSummary'
           description: ''
+  /api/settlements/:
+    get:
+      operationId: settlements_list
+      description: 'Acertos de contas entre membros: saldo, pagamentos, histórico
+        e estorno.'
+      parameters:
+      - in: query
+        name: member
+        schema:
+          type: integer
+        description: Filtra por quem pagou ou recebeu.
+      - in: query
+        name: month
+        schema:
+          type: string
+          minLength: 1
+      - name: page
+        required: false
+        in: query
+        description: Um número de página dentro do conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a serem retornados por página.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          enum:
+          - ACTIVE
+          - CANCELLED
+          type: string
+          minLength: 1
+        description: |-
+          * `ACTIVE` - Ativo
+          * `CANCELLED` - Estornado
+      tags:
+      - settlements
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListSettlementList'
+          description: ''
+    post:
+      operationId: settlements_create
+      description: 'Acertos de contas entre membros: saldo, pagamentos, histórico
+        e estorno.'
+      tags:
+      - settlements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSettlementRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateSettlementRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateSettlementRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSettlement'
+          description: ''
+  /api/settlements/{id}/cancel/:
+    post:
+      operationId: settlements_cancel_create
+      description: 'Acertos de contas entre membros: saldo, pagamentos, histórico
+        e estorno.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este settlement.
+        required: true
+      tags:
+      - settlements
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSettlement'
+          description: ''
+  /api/settlements/balance/:
+    get:
+      operationId: settlements_balance_retrieve
+      description: 'Acertos de contas entre membros: saldo, pagamentos, histórico
+        e estorno.'
+      parameters:
+      - in: query
+        name: month
+        schema:
+          type: string
+          minLength: 1
+        description: Mês no formato AAAA-MM. Sem ele, vale o mês atual.
+      tags:
+      - settlements
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+          description: ''
 components:
   schemas:
     AcceptInvitationData:
@@ -1399,6 +1556,74 @@ components:
         * `avatar-5` - Avatar 5
         * `avatar-6` - Avatar 6
         * `avatar-7` - Avatar 7
+    Balance:
+      type: object
+      properties:
+        month:
+          type: string
+        settlement_start:
+          type: string
+        my_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceMember'
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Suggestion'
+      required:
+      - members
+      - month
+      - my_balance
+      - settlement_start
+      - suggestions
+    BalanceMember:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_active:
+          type: boolean
+        paid:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        quota:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        difference:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        previous_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        settled:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - balance
+      - difference
+      - id
+      - is_active
+      - name
+      - paid
+      - previous_balance
+      - quota
+      - settled
     CategoryComparison:
       type: object
       properties:
@@ -1516,6 +1741,32 @@ components:
       - frequency
       - start_date
       - type
+    CreateSettlementRequest:
+      type: object
+      properties:
+        receiver:
+          type: integer
+          description: Id do usuário que recebe.
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        month:
+          type: string
+          minLength: 1
+          description: Mês acertado, no formato AAAA-MM.
+        note:
+          type: string
+          default: ''
+          maxLength: 255
+        paid_at:
+          type: string
+          format: date
+          description: Data do pagamento; hoje por padrão.
+      required:
+      - amount
+      - month
+      - receiver
     CustomTokenObtainPairRequest:
       type: object
       description: Serializador para obter um par de token e dados do usuário que
@@ -2084,6 +2335,60 @@ components:
       - start_date
       - type
       - updated_at
+    ListSettlement:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        payer:
+          allOf:
+          - $ref: '#/components/schemas/UserRef'
+          readOnly: true
+        receiver:
+          allOf:
+          - $ref: '#/components/schemas/UserRef'
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        reference_month:
+          type: string
+          readOnly: true
+        paid_at:
+          type: string
+          format: date
+        note:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_by:
+          allOf:
+          - $ref: '#/components/schemas/UserRef'
+          nullable: true
+          readOnly: true
+        remaining_after:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        carried_to:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+      - amount
+      - cancelled_by
+      - carried_to
+      - id
+      - payer
+      - receiver
+      - reference_month
     MemberContributions:
       type: object
       properties:
@@ -2304,6 +2609,33 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ListRecurringTransaction'
+    PaginatedListSettlementList:
+      oneOf:
+      - type: array
+        items:
+          $ref: '#/components/schemas/ListSettlement'
+      - type: object
+        required:
+        - count
+        - results
+        properties:
+          count:
+            type: integer
+            example: 123
+          next:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=4
+          previous:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=2
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/ListSettlement'
     PasswordResetConfirmRequest:
       type: object
       properties:
@@ -2495,6 +2827,35 @@ components:
       - first_name
       - id
       - last_name
+    StatusEnum:
+      enum:
+      - ACTIVE
+      - CANCELLED
+      type: string
+      description: |-
+        * `ACTIVE` - Ativo
+        * `CANCELLED` - Estornado
+    Suggestion:
+      type: object
+      properties:
+        payer:
+          type: integer
+        payer_name:
+          type: string
+        receiver:
+          type: integer
+        receiver_name:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - amount
+      - payer
+      - payer_name
+      - receiver
+      - receiver_name
     TypeEnum:
       enum:
       - EXPENSE

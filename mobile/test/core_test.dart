@@ -6,8 +6,10 @@ import 'package:equaliza/core/network/api_exception.dart';
 import 'package:equaliza/core/utils/formatters.dart';
 import 'package:equaliza/core/utils/period.dart';
 import 'package:equaliza/features/auth/auth_service.dart';
+import 'package:equaliza/features/settlement/settlement_months.dart';
 import 'package:equaliza/models/dashboard.dart';
 import 'package:equaliza/models/member.dart';
+import 'package:equaliza/models/settlement.dart';
 
 void main() {
   setUpAll(() => initializeDateFormatting('pt_BR'));
@@ -65,18 +67,61 @@ void main() {
       expect(trend.first.income, 0);
     });
 
-    test('acertos zeram as diferenças', () {
-      final settlements = buildSettlements(const [
-        MemberContribution(member: 'Ana Souza', expected: 4516.73, paid: 3380, difference: -1136.73),
-        MemberContribution(member: 'Bruno Souza', expected: 2789.74, paid: 3412.4, difference: 622.66),
-        MemberContribution(member: 'Carla Souza', expected: 929.93, paid: 1444, difference: 514.07),
-      ]);
+    test('meses do acerto de contas', () {
+      expect(shiftMonthKey('2026-01', -1), '2025-12');
+      expect(shiftMonthKey('2026-12', 1), '2027-01');
+      expect(monthLabel('2026-11'), 'Novembro de 2026');
+      expect(monthShortLabel('2026-11'), 'Nov/2026');
+    });
+  });
 
-      expect(settlements.map((item) => (item.from, item.to)), [
-        ('Ana Souza', 'Bruno Souza'),
-        ('Ana Souza', 'Carla Souza'),
-      ]);
-      expect(settlements.first.amount, closeTo(622.66, 0.001));
+  group('Acerto de contas', () {
+    test('lê o saldo e as sugestões com ids', () {
+      final balance = SettlementBalance.fromJson({
+        'month': '2026-10',
+        'settlement_start': '2026-09',
+        'my_balance': '-100.00',
+        'members': [
+          {
+            'id': 1,
+            'name': 'Ana',
+            'is_active': true,
+            'paid': '400.00',
+            'quota': '300.00',
+            'difference': '100.00',
+            'previous_balance': '0.00',
+            'settled': '0.00',
+            'balance': '100.00',
+          },
+        ],
+        'suggestions': [
+          {'payer': 2, 'payer_name': 'Bia', 'receiver': 1, 'receiver_name': 'Ana', 'amount': '100.00'},
+        ],
+      });
+
+      expect(balance.myBalance, -100);
+      expect(balance.member(1)?.balance, 100);
+      expect(balance.suggestions.single.payer, 2);
+      expect(balance.suggestions.single.amount, 100);
+    });
+
+    test('lê um pagamento parcial com o restante lançado no mês seguinte', () {
+      final settlement = Settlement.fromJson({
+        'id': 7,
+        'payer': {'id': 2, 'name': 'Bia'},
+        'receiver': {'id': 1, 'name': 'Ana'},
+        'amount': '30.00',
+        'reference_month': '2026-10',
+        'paid_at': '2026-10-05',
+        'note': '',
+        'status': 'ACTIVE',
+        'remaining_after': '70.00',
+        'carried_to': '2026-11',
+      });
+
+      expect(settlement.cancelled, isFalse);
+      expect(settlement.remainingAfter, 70);
+      expect(settlement.carriedTo, '2026-11');
     });
   });
 

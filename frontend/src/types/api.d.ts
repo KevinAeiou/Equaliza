@@ -196,6 +196,23 @@ export interface paths {
         patch: operations["finances_income_partial_update"];
         trace?: never;
     };
+    "/api/finances/members/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Membros da família (inclusive quem consulta), para o filtro de despesas e receitas. */
+        get: operations["finances_members_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/finances/recurring/": {
         parameters: {
             query?: never;
@@ -484,6 +501,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/settlements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Acertos de contas entre membros: saldo, pagamentos, histórico e estorno. */
+        get: operations["settlements_list"];
+        put?: never;
+        /** @description Acertos de contas entre membros: saldo, pagamentos, histórico e estorno. */
+        post: operations["settlements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settlements/{id}/cancel/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Acertos de contas entre membros: saldo, pagamentos, histórico e estorno. */
+        post: operations["settlements_cancel_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settlements/balance/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Acertos de contas entre membros: saldo, pagamentos, histórico e estorno. */
+        get: operations["settlements_balance_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -505,6 +574,31 @@ export interface components {
          * @enum {string}
          */
         AvatarEnum: "avatar-1" | "avatar-2" | "avatar-3" | "avatar-4" | "avatar-5" | "avatar-6" | "avatar-7";
+        Balance: {
+            month: string;
+            settlement_start: string;
+            /** Format: decimal */
+            my_balance: string;
+            members: components["schemas"]["BalanceMember"][];
+            suggestions: components["schemas"]["Suggestion"][];
+        };
+        BalanceMember: {
+            id: number;
+            name: string;
+            is_active: boolean;
+            /** Format: decimal */
+            paid: string;
+            /** Format: decimal */
+            quota: string;
+            /** Format: decimal */
+            difference: string;
+            /** Format: decimal */
+            previous_balance: string;
+            /** Format: decimal */
+            settled: string;
+            /** Format: decimal */
+            balance: string;
+        };
         CategoryComparison: {
             name: string;
             /** Format: double */
@@ -553,6 +647,21 @@ export interface components {
             start_date: string;
             /** Format: date */
             end_date?: string | null;
+        };
+        CreateSettlementRequest: {
+            /** @description Id do usuário que recebe. */
+            receiver: number;
+            /** Format: decimal */
+            amount: string;
+            /** @description Mês acertado, no formato AAAA-MM. */
+            month: string;
+            /** @default  */
+            note: string;
+            /**
+             * Format: date
+             * @description Data do pagamento; hoje por padrão.
+             */
+            paid_at?: string;
         };
         /** @description Serializador para obter um par de token e dados do usuário que usa email e senha para autenticação. */
         CustomTokenObtainPairRequest: {
@@ -752,6 +861,24 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string | null;
         };
+        ListSettlement: {
+            readonly id: number;
+            readonly payer: components["schemas"]["UserRef"];
+            readonly receiver: components["schemas"]["UserRef"];
+            /** Format: decimal */
+            amount: string;
+            readonly reference_month: string;
+            /** Format: date */
+            paid_at?: string;
+            note?: string;
+            status?: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            cancelled_at?: string | null;
+            readonly cancelled_by: components["schemas"]["UserRef"] | null;
+            /** Format: decimal */
+            remaining_after?: string;
+            readonly carried_to: string | null;
+        };
         MemberContributions: {
             member: string;
             /** Format: double */
@@ -866,6 +993,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["ListRecurringTransaction"][];
         };
+        PaginatedListSettlementList: components["schemas"]["ListSettlement"][] | {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ListSettlement"][];
+        };
         PasswordResetConfirmRequest: {
             uid: string;
             token: string;
@@ -954,6 +1096,20 @@ export interface components {
             email: string;
             first_name: string;
             last_name: string;
+        };
+        /**
+         * @description * `ACTIVE` - Ativo
+         *     * `CANCELLED` - Estornado
+         * @enum {string}
+         */
+        StatusEnum: "ACTIVE" | "CANCELLED";
+        Suggestion: {
+            payer: number;
+            payer_name: string;
+            receiver: number;
+            receiver_name: string;
+            /** Format: decimal */
+            amount: string;
         };
         /**
          * @description * `EXPENSE` - Despesa
@@ -1438,6 +1594,7 @@ export interface operations {
             query?: {
                 categories?: number[];
                 from_date?: string;
+                members?: number[];
                 /** @description Um número de página dentro do conjunto de resultados paginado. */
                 page?: number;
                 /** @description Número de resultados a serem retornados por página. */
@@ -1589,6 +1746,7 @@ export interface operations {
             query?: {
                 categories?: number[];
                 from_date?: string;
+                members?: number[];
                 /** @description Um número de página dentro do conjunto de resultados paginado. */
                 page?: number;
                 /** @description Número de resultados a serem retornados por página. */
@@ -1731,6 +1889,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ListIncome"];
+                };
+            };
+        };
+    };
+    finances_members_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserRef"][];
                 };
             };
         };
@@ -2293,6 +2470,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardSummary"];
+                };
+            };
+        };
+    };
+    settlements_list: {
+        parameters: {
+            query?: {
+                /** @description Filtra por quem pagou ou recebeu. */
+                member?: number;
+                month?: string;
+                /** @description Um número de página dentro do conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a serem retornados por página. */
+                page_size?: number;
+                /**
+                 * @description * `ACTIVE` - Ativo
+                 *     * `CANCELLED` - Estornado
+                 */
+                status?: "ACTIVE" | "CANCELLED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedListSettlementList"];
+                };
+            };
+        };
+    };
+    settlements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSettlementRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CreateSettlementRequest"];
+                "multipart/form-data": components["schemas"]["CreateSettlementRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListSettlement"];
+                };
+            };
+        };
+    };
+    settlements_cancel_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este settlement. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListSettlement"];
+                };
+            };
+        };
+    };
+    settlements_balance_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Mês no formato AAAA-MM. Sem ele, vale o mês atual. */
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Balance"];
                 };
             };
         };

@@ -1,8 +1,10 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.permissions import IsFamilyMember
+from apps.core.serializers import UserRefSerializer
 from apps.families.models import FamilyMember
 
 
@@ -11,6 +13,7 @@ class FinanceMemberListView(APIView):
 
     permission_classes = [IsAuthenticated, IsFamilyMember]
 
+    @extend_schema(responses=UserRefSerializer(many=True))
     def get(self, request):
         memberships = (
             FamilyMember.objects.for_family(request.user.current_family)

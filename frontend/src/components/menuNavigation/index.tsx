@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, LucideIcon, Mail, Tags, Users, UsersRound, Wallet } from "lucide-react"
+import { Home, HandCoins, LucideIcon, Mail, Tags, Users, UsersRound, Wallet } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/src/lib/utils"
@@ -17,6 +17,7 @@ interface NavLink {
 export const NAV_LINKS: NavLink[] = [
 	{ href: "/dashboard", label: "Dashboard", icon: Home },
 	{ href: "/finance", label: "Finanças", icon: Wallet },
+	{ href: "/settlement", label: "Acertos", icon: HandCoins },
 	{ href: "/category", label: "Categorias", icon: Tags, adminOnly: true },
 	{ href: "/member", label: "Membros", icon: Users, adminOnly: true },
 	{ href: "/invitation", label: "Convites", icon: Mail, adminOnly: true },
