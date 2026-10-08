@@ -7,6 +7,7 @@ import '../../models/finance.dart';
 enum AppSection {
   dashboard('Dashboard', LucideIcons.house),
   finance('Finanças', LucideIcons.wallet),
+  settlement('Acertos', LucideIcons.handCoins),
   category('Categorias', LucideIcons.tags, adminOnly: true),
   member('Membros', LucideIcons.users, adminOnly: true),
   invitation('Convites', LucideIcons.mail, adminOnly: true),
@@ -21,8 +22,9 @@ enum AppSection {
   final bool adminOnly;
 }
 
-/// Troca de seção; [entryType] escolhe a aba ao abrir Finanças.
-typedef NavigateCallback = void Function(AppSection section, {EntryType? entryType});
+/// Troca de seção; [entryType] escolhe a aba ao abrir Finanças e [month] (`AAAA-MM`) e [payTo] abrem
+/// o mês do acerto e o pagamento já preenchido.
+typedef NavigateCallback = void Function(AppSection section, {EntryType? entryType, String? month, int? payTo});
 
 /// Permite que as telas troquem de seção (ex.: "Ver todas" no dashboard).
 class ShellScope extends InheritedWidget {

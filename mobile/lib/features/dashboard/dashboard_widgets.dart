@@ -3,12 +3,17 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/network/api_exception.dart';
+import '../../core/session/app_scope.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/period.dart';
 import '../../core/widgets/basics.dart';
 import '../../models/dashboard.dart';
 import '../../models/finance.dart';
+import '../../models/settlement.dart';
+import '../settlement/settlement_months.dart';
+import '../settlement/settlement_service.dart';
 import '../shell/app_section.dart';
 
 const _tabular = [FontFeature.tabularFigures()];
@@ -401,20 +406,61 @@ class _CategoryBreakdownState extends State<CategoryBreakdown> {
 }
 
 /// Quanto cada um pagou em relação à cota proporcional à sua receita.
-class MemberBalance extends StatelessWidget {
-  const MemberBalance({super.key, required this.data});
+///
+/// [month] (`AAAA-MM`) é o mês do período filtrado: o "Para equilibrar" vem do saldo do
+/// acerto de contas desse mês e leva à tela de acertos.
+class MemberBalance extends StatefulWidget {
+  const MemberBalance({super.key, required this.data, required this.month});
 
   final List<MemberContribution>? data;
+  final String month;
+
+  @override
+  State<MemberBalance> createState() => _MemberBalanceState();
+}
+
+class _MemberBalanceState extends State<MemberBalance> {
+  List<SettlementSuggestion> _suggestions = const [];
+  int _request = 0;
+
+  /// O acerto é de um mês já iniciado: períodos futuros caem no mês atual.
+  String get _month => widget.month.compareTo(currentMonthKey()) > 0 ? currentMonthKey() : widget.month;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSuggestions();
+  }
+
+  @override
+  void didUpdateWidget(MemberBalance oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.month != widget.month) _loadSuggestions();
+  }
+
+  Future<void> _loadSuggestions() async {
+    final request = ++_request;
+
+    try {
+      final balance = await SettlementService.balance(_month);
+
+      if (mounted && request == _request) setState(() => _suggestions = balance.suggestions);
+    } on ApiException {
+      if (mounted && request == _request) setState(() => _suggestions = const []);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final members = data ?? [];
+    final members = widget.data ?? [];
     final totalExpected = members.fold<double>(0, (sum, item) => sum + item.expected);
     final scale = members.isEmpty
         ? 0.0
         : members.expand((item) => [item.expected, item.paid]).reduce(math.max) * 1.08;
-    final settlements = buildSettlements(members);
+    final userId = AppScope.of(context).session.user.id;
+    final navigate = ShellScope.of(context).navigate;
 
     return AppCard(
       child: Column(
@@ -425,8 +471,8 @@ class MemberBalance extends StatelessWidget {
             description: 'Quanto cada um pagou em relação à sua cota, que é proporcional à receita de cada membro.',
           ),
           const SizedBox(height: 16),
-          if (data == null) const Skeleton(height: 80),
-          if (data != null && members.isEmpty)
+          if (widget.data == null) const Skeleton(height: 80),
+          if (widget.data != null && members.isEmpty)
             Text(
               'Nenhum membro com movimentações no período.',
               style: TextStyle(fontSize: 14, color: colors.mutedForeground),
@@ -442,7 +488,7 @@ class MemberBalance extends StatelessWidget {
               ),
             ),
           ],
-          if (settlements.isNotEmpty)
+          if (_suggestions.isNotEmpty)
             Container(
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -452,12 +498,21 @@ class MemberBalance extends StatelessWidget {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Text('Para equilibrar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  for (final item in settlements)
+                  InkWell(
+                    onTap: () => navigate(AppSection.settlement, month: _month),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Para equilibrar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                        Icon(LucideIcons.chevronRight, size: 14),
+                      ],
+                    ),
+                  ),
+                  for (final item in _suggestions)
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(getFirstName(item.from), style: const TextStyle(fontSize: 14)),
+                        Text(getFirstName(item.payerName), style: const TextStyle(fontSize: 14)),
                         const SizedBox(width: 6),
                         Icon(
                           LucideIcons.arrowRight,
@@ -466,12 +521,24 @@ class MemberBalance extends StatelessWidget {
                           semanticLabel: 'transfere para',
                         ),
                         const SizedBox(width: 6),
-                        Text(getFirstName(item.to), style: const TextStyle(fontSize: 14)),
+                        Text(getFirstName(item.receiverName), style: const TextStyle(fontSize: 14)),
                         const SizedBox(width: 6),
                         Text(
                           formatCurrency(item.amount),
                           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, fontFeatures: _tabular),
                         ),
+                        if (item.payer == userId) ...[
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size(0, 28),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              textStyle: const TextStyle(fontSize: 12),
+                            ),
+                            onPressed: () => navigate(AppSection.settlement, month: _month, payTo: item.receiver),
+                            child: const Text('Pagar'),
+                          ),
+                        ],
                       ],
                     ),
                 ],
