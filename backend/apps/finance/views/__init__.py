@@ -1,6 +1,7 @@
 from .category import FinancialCategoryViewSet
 from .income import IncomeViewSet
 from .expense import ExpenseViewSet
+from .member import FinanceMemberListView
 from .recurring_transaction import RecurringTransactionViewSet
 
 __all__ = [
@@ -8,4 +9,5 @@ __all__ = [
 	"IncomeViewSet",
 	"FinancialCategoryViewSet",
 	"RecurringTransactionViewSet",
+	"FinanceMemberListView",
 ]

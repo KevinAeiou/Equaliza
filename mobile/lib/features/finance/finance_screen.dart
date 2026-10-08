@@ -33,6 +33,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
   late EntryType _type = widget.initialType;
   PeriodFilters _filters = PeriodFilters.initial();
   List<Category> _categories = [];
+  List<FinanceMember> _members = [];
   List<FinanceEntry>? _entries;
   DashboardSummary? _summary;
   ApiException? _error;
@@ -42,6 +43,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
   void initState() {
     super.initState();
     _loadCategories();
+    _loadMembers();
     _load();
   }
 
@@ -54,6 +56,15 @@ class _FinanceScreenState extends State<FinanceScreen> {
     }
   }
 
+  Future<void> _loadMembers() async {
+    try {
+      final members = await FinanceService.members();
+      if (mounted) setState(() => _members = members);
+    } catch (_) {
+      // O filtro de membros mostra a lista vazia.
+    }
+  }
+
   Future<void> _load() async {
     final request = ++_request;
     final type = _type;
@@ -62,10 +73,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
     setState(() => _error = null);
 
     try {
-      // Os totais ignoram o filtro de categorias, que vale só para o tipo exibido na lista.
       final results = await Future.wait([
         FinanceService.list(type, filters),
-        DashboardService.summary(filters.copyWith(categories: [])),
+        DashboardService.summary(filters),
       ]);
 
       if (!mounted || request != _request) return;
@@ -102,10 +112,11 @@ class _FinanceScreenState extends State<FinanceScreen> {
       context,
       (_) => PeriodFilterPanel(
         title: 'Filtrar ${_type.plural.toLowerCase()}',
-        description: 'Escolha o período e as categorias das ${_type.plural.toLowerCase()} exibidas.',
+        description: 'Escolha o período, as categorias e os membros das ${_type.plural.toLowerCase()} exibidas.',
         initial: _filters,
         groups: [CategoryGroup(null, _typeCategories)],
         emptyMessage: 'Nenhuma categoria de ${_type.plural.toLowerCase()} cadastrada.',
+        members: _members,
       ),
     );
 
@@ -157,6 +168,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
     }
 
     final names = {for (final category in _categories) category.id: category.name};
+    final memberNames = {for (final member in _members) member.id: member.name};
 
     return RefreshIndicator(
       onRefresh: _load,
@@ -169,7 +181,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
             children: [
               Expanded(child: PeriodNavigator(filters: _filters, onChanged: (filters) => _apply(filters: filters))),
               const SizedBox(width: 8),
-              FilterIconButton(activeCount: _filters.categories.length, onPressed: _openFilters),
+              FilterIconButton(activeCount: _filters.categories.length + _filters.members.length, onPressed: _openFilters),
             ],
           ),
           const SizedBox(height: 8),
@@ -178,7 +190,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
             icon: const Icon(LucideIcons.plus, size: 16),
             label: Text('Nova ${_type.singular}'),
           ),
-          if (_filters.categories.isNotEmpty) ...[
+          if (_filters.categories.isNotEmpty || _filters.members.isNotEmpty) ...[
             const SizedBox(height: 16),
             ActiveFilterChips(
               filters: [
@@ -187,8 +199,13 @@ class _FinanceScreenState extends State<FinanceScreen> {
                     names[id] ?? 'Categoria',
                     () => _apply(filters: _filters.copyWith(categories: [..._filters.categories]..remove(id))),
                   ),
+                for (final id in _filters.members)
+                  ActiveFilter(
+                    memberNames[id] ?? 'Membro',
+                    () => _apply(filters: _filters.copyWith(members: [..._filters.members]..remove(id))),
+                  ),
               ],
-              onClear: () => _apply(filters: _filters.copyWith(categories: [])),
+              onClear: () => _apply(filters: _filters.copyWith(categories: [], members: [])),
             ),
           ],
           const SizedBox(height: 16),

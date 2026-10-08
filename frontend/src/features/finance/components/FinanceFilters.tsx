@@ -26,10 +26,12 @@ export const FinanceFilters = ({
 		periodType,
 		onSubmit,
 		categoryOptions,
+		memberOptions,
 		handleClear,
 	} = useFinanceFilters({ filters, showFilter, setShowFilter, onApply, type })
 
 	const selected = form.watch("categories").length
+	const selectedMembers = form.watch("members").length
 	const entries = type === "EXPENSE" ? "despesas" : "receitas"
 
 	return (
@@ -37,7 +39,7 @@ export const FinanceFilters = ({
 			open={showFilter}
 			onOpenChange={setShowFilter}
 			title={`Filtrar ${entries}`}
-			description={`Escolha o período e as categorias das ${entries} exibidas.`}
+			description={`Escolha o período, as categorias e os membros das ${entries} exibidas.`}
 			formId="form-finance-filters"
 			onSubmit={form.handleSubmit(onSubmit)}
 			onClear={handleClear}
@@ -58,6 +60,18 @@ export const FinanceFilters = ({
 					name="categories"
 					groups={[{ options: categoryOptions }]}
 					emptyMessage={`Nenhuma categoria de ${entries} cadastrada.`}
+				/>
+			</FilterSection>
+
+			<FilterSection
+				title="Membros"
+				hint={selectedMembers ? `${selectedMembers} selecionado${selectedMembers > 1 ? "s" : ""}` : undefined}
+			>
+				<FormChipsField
+					control={form.control}
+					name="members"
+					groups={[{ options: memberOptions }]}
+					emptyMessage="Nenhum membro na família."
 				/>
 			</FilterSection>
 		</FilterSheet>

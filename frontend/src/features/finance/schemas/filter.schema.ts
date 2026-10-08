@@ -11,6 +11,8 @@ export const FormFinanceFilterSchema = z.object({
 	}),
 
 	categories: z.array(z.number()),
+
+	members: z.array(z.number()),
 })
 
 export type FormFinanceFilterSchemaType = z.infer<
@@ -26,4 +28,6 @@ export const getDefaultValues = (): FormFinanceFilterSchemaType => ({
 	},
 
 	categories: [],
+
+	members: [],
 })

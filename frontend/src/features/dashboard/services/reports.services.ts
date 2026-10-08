@@ -3,8 +3,11 @@ import { reportsApi } from "../infra/reports.api"
 import { FormDashboardFilterSchemaType } from "../schemas/filters.schema"
 import { format } from "date-fns"
 
+// `members` só existe na tela de finanças, que reaproveita o resumo do dashboard.
+type SummaryFilters = FormDashboardFilterSchemaType & { members?: number[] }
+
 const buildDashboardParams = (
-	filters: FormDashboardFilterSchemaType,
+	filters: SummaryFilters,
 ): DashboardParams => ({
 	from_date: filters.period.from
 		? format(filters.period.from, "yyyy-MM-dd")
@@ -16,6 +19,10 @@ const buildDashboardParams = (
 
 	categories: filters.categories.length
 		? filters.categories
+		: undefined,
+
+	members: filters.members?.length
+		? filters.members
 		: undefined,
 })
 
@@ -51,7 +58,7 @@ export class ReportsService {
 		}
 	}
 
-	static async getSummary(filters: FormDashboardFilterSchemaType) {
+	static async getSummary(filters: SummaryFilters) {
 		const params = buildDashboardParams(filters)
 
 		const response = await reportsApi.getSummary(params)

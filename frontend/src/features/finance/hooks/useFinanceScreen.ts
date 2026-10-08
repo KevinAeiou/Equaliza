@@ -1,7 +1,8 @@
-import { FinanceEntryType } from "@/src/types"
+import { FinanceEntryType, SelectOption } from "@/src/types"
 import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
+import { FinanceService } from "../services/financial.service"
 import { useDashboardCategories } from "../../dashboard/hooks/useDashboardCategories"
 
 
@@ -21,6 +22,17 @@ export const useFinanceScreen = () => {
 	// Nomes das categorias para as etiquetas de filtros ativos.
 	const { categoryOptions } = useDashboardCategories()
 
+	// Nomes dos membros para as etiquetas de filtros ativos.
+	const [memberOptions, setMemberOptions] = useState<SelectOption<number>[]>([])
+
+	useEffect(() => {
+		FinanceService.listMembers()
+			.then((members) =>
+				setMemberOptions(members.map((member) => ({ label: member.name, value: member.id })))
+			)
+			.catch(() => setMemberOptions([]))
+	}, [])
+
 	const handleTypeChange = (value: FinanceEntryType) => {
 		setType(value)
 
@@ -39,5 +51,6 @@ export const useFinanceScreen = () => {
 		filters, setFilters,
 		handleTypeChange,
 		categoryOptions,
+		memberOptions,
 	}
 }
