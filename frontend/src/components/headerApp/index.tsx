@@ -1,10 +1,10 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import { UserNavegation } from "@/src/components/userNavegation"
-import { MenuNavegation } from "../menuNavegation"
+import { UserNavigation } from "@/src/components/userNavigation"
+import { MenuNavigation } from "../menuNavigation"
 import { SheetNavigation } from "../sheetNavigation"
-import { FamilySwitcher } from "./FamilySwitcher"
+import { FamilySwitcher } from "@/src/features/family/components/FamilySwitcher"
 
 const Logo = ({ width, height }: { width: number, height: number }) => (
 	<Link
@@ -45,10 +45,10 @@ export const HeaderApp = () => {
 				</div>
 
 				<div className="flex flex-1 justify-center">
-					<MenuNavegation />
+					<MenuNavigation />
 				</div>
 
-				<UserNavegation />
+				<UserNavigation />
 			</div>
 
 			<div className="flex h-14 items-center justify-between lg:hidden">

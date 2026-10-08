@@ -1,4 +1,7 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+
+from apps.core.serializers import UserRefSerializer, user_ref
 
 from apps.finance.models import RecurringTransaction
 from ..serializers.list_category import ListFinancialCategorySerializer
@@ -26,13 +29,6 @@ class ListRecurringTransactionSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
+    @extend_schema_field(UserRefSerializer(allow_null=True))
     def get_created_by(self, obj):
-        user = obj.created_by
-
-        if user is None:
-            return None
-
-        return {
-            "id": user.id,
-            "name": user.get_full_name() or user.email,
-        }
+        return user_ref(obj.created_by)

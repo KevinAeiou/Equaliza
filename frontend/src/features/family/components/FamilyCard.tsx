@@ -150,9 +150,11 @@ export const FamilyCard = ({
 										{family.members_count} {family.members_count === 1 ? "membro ativo" : "membros ativos"}
 									</span>
 
-									<span>
-										Criada em {format(parseISO(family.created_at), "MMM 'de' yyyy", { locale: ptBR })}
-									</span>
+									{family.created_at && (
+										<span>
+											Criada em {format(parseISO(family.created_at), "MMM 'de' yyyy", { locale: ptBR })}
+										</span>
+									)}
 								</div>
 
 								<div className="mt-auto border-t pt-4">

@@ -1,9 +1,11 @@
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
 from apps.families.enums import FamilyRole
+from apps.families.models import Family
 from apps.families.serializers import (
     CreateFamilySerializer,
     FamilyOverviewSerializer,
@@ -18,7 +20,13 @@ from apps.families.services import (
 )
 
 
+@extend_schema_view(
+    create=extend_schema(responses={201: ListFamilySerializer}),
+    update=extend_schema(responses={200: ListFamilySerializer}),
+    partial_update=extend_schema(responses={200: ListFamilySerializer}),
+)
 class FamilyViewSet(viewsets.ModelViewSet):
+    queryset = Family.objects.none()  # só para o schema; get_queryset define o real
     permission_classes = [
         IsAuthenticated,
     ]

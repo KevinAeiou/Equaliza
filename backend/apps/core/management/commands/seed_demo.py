@@ -13,7 +13,7 @@ from apps.families.models import Family, FamilyMember
 from apps.finance.enums import CategoryType
 from apps.finance.models import Expense, FinancialCategory, Income
 from apps.invitations.models import Invitation
-from apps.users.enuns import Avatar
+from apps.users.enums import Avatar
 from apps.users.models import User
 
 PASSWORD = "equaliza123"

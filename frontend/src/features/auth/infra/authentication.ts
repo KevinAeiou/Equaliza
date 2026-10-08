@@ -1,6 +1,6 @@
 import { api } from "@/src/infra/api"
 import { configureError } from "@/src/lib/utils"
-import { ProfileFormSchemaType } from "@/src/schemas/profile.schema"
+import { ProfileFormSchemaType } from "@/src/features/profile/schemas/profile.schema"
 import { ApiResponse, Credentials, FormRegisterShemaType, UserProps } from "@/src/types"
 
 

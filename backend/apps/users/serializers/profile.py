@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.users.models import User
-from apps.users.enuns import Avatar
+from apps.users.enums import Avatar
 
 
 class ProfileSerializer(serializers.ModelSerializer):

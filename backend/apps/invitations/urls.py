@@ -1,9 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from apps.invitations.viewsets import InvitationViewSet
 from apps.invitations.views import (
     AcceptInvitationView,
+    InvitationViewSet,
     ValidateInvitationView,
 )
 

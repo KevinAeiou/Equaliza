@@ -9,6 +9,11 @@ docker_dev: docker_setup
 	docker compose -f docker-compose.dev.yml up -d
 	docker compose -f docker-compose.dev.yml exec backend python manage.py migrate --fake-initial
 
+# Regenerar o schema OpenAPI (openapi/schema.yml) e os tipos do frontend (src/types/api.d.ts)
+gen_api:
+	cd backend && python manage.py spectacular --settings=config.settings.ci --file ../openapi/schema.yml
+	cd frontend && npm run gen:api
+
 # Povoar o banco de desenvolvimento com dados de demonstração (recria a cada execução)
 docker_seed:
 	docker compose -f docker-compose.dev.yml exec backend python manage.py seed_demo

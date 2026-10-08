@@ -1,9 +1,11 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
+from apps.core.serializers import DetailSerializer
 from ..serializers.password_reset import (
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
@@ -16,7 +18,6 @@ from ..services.password_reset import (
 
 class PasswordResetThrottle(AnonRateThrottle):
     scope = "password_reset"
-    rate = "10/hour"
 
 
 class PasswordResetRequestView(APIView):
@@ -24,6 +25,7 @@ class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
     throttle_classes = [PasswordResetThrottle]
 
+    @extend_schema(request=PasswordResetRequestSerializer, responses={200: DetailSerializer})
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -44,6 +46,7 @@ class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
     throttle_classes = [PasswordResetThrottle]
 
+    @extend_schema(request=PasswordResetConfirmSerializer, responses={200: DetailSerializer})
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

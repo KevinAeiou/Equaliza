@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.families.models import Family
 from apps.finance.enums import CategoryType
-from apps.finance.manager import FinancialCategoryManager
+from apps.finance.managers import FinancialCategoryManager
 
 
 class FinancialCategory(models.Model):

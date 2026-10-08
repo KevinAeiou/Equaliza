@@ -1,8 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from apps.finance.models import FinancialCategory
 
 from apps.core.permissions import IsFamilyAdministrator
 
@@ -20,7 +23,13 @@ from apps.finance.services import (
 from apps.finance.filters import CategoryFilter
 
 
+@extend_schema_view(
+    create=extend_schema(responses={201: ListFinancialCategorySerializer}),
+    update=extend_schema(responses={200: ListFinancialCategorySerializer}),
+    partial_update=extend_schema(responses={200: ListFinancialCategorySerializer}),
+)
 class FinancialCategoryViewSet(viewsets.ModelViewSet):
+    queryset = FinancialCategory.objects.none()  # só para o schema; get_queryset define o real
     filter_backends = [DjangoFilterBackend]
     filterset_class = CategoryFilter
     permission_classes = [

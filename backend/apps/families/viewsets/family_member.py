@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.core.permissions import IsFamilyAdministrator
+from apps.families.models import FamilyMember
 from apps.families.serializers import (
     FamilyMemberStatusSerializer,
     ListFamilyMemberSerializer,
@@ -20,6 +21,8 @@ class FamilyMemberViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    queryset = FamilyMember.objects.none()  # só para o schema; get_queryset define o real
+
     permission_classes = [
         IsAuthenticated,
         IsFamilyAdministrator,

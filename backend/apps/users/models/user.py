@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from apps.core.models import BaseModel
-from apps.users.enuns import Avatar
+from apps.users.enums import Avatar
 from .manager import UserManager
 
 

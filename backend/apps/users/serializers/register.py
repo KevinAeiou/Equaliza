@@ -4,6 +4,17 @@ from rest_framework import serializers
 User = get_user_model()
 
 
+class RegisteredUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    email = serializers.EmailField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+
+class RegisterResponseSerializer(serializers.Serializer):
+    user = RegisteredUserSerializer()
+
+
 class RegisterSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
