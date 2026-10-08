@@ -30,4 +30,3 @@ class InsightsMoneyTests(SimpleTestCase):
         with_float = report(1000.0, 5000.0)
 
         self.assertEqual(with_decimal, with_float)
-        self.assertIn("savings", [item["kind"] for item in with_decimal["insights"]])

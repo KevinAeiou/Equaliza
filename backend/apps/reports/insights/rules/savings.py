@@ -1,14 +1,9 @@
-from decimal import Decimal
-
-from ..constants import ALERT, GOOD, WARNING
-from ..formatting import bar, format_currency, insight, percent, progress
-
-TIGHT_RATIO = Decimal("0.9")
-GOOD_SAVINGS = Decimal("0.2")
+from ..constants import ALERT
+from ..formatting import bar, format_currency, insight, percent
 
 
 def savings(ctx):
-    """Despesas frente à receita do período."""
+    """Alerta quando as despesas passam da receita do período."""
     income = ctx.income
 
     if not income or income <= 0:
@@ -17,7 +12,6 @@ def savings(ctx):
     total = ctx.total
     ongoing = ctx.ongoing
     ratio = total / income
-    left = income - total
     peak = max(income, total)
 
     if total > income:
@@ -31,28 +25,5 @@ def savings(ctx):
             bars=[bar("Receitas", income, peak), bar("Despesas", total, peak, True)],
         )
 
-    meter = progress(ratio, f"Despesas {format_currency(total)}", f"Receitas {format_currency(income)}")
-
-    if ratio >= TIGHT_RATIO:
-        return insight(
-            "savings",
-            WARNING,
-            "Pouca folga",
-            f"As despesas {'consomem' if ongoing else 'consumiram'} {percent(ratio)}% da receita",
-            f"Sobram só {format_currency(left)} de {format_currency(income)} recebidos. "
-            "Qualquer imprevisto pode fechar o período no vermelho.",
-            progress=meter,
-        )
-
-    if left / income >= GOOD_SAVINGS:
-        return insight(
-            "savings",
-            GOOD,
-            "Poupança",
-            f"{'Você está guardando' if ongoing else 'Você guardou'} {percent(left / income)}% da receita",
-            f"{format_currency(left)} sobram de {format_currency(income)} recebidos "
-            f"depois de {format_currency(total)} em despesas.",
-            progress=meter,
-        )
-
+    # Folga e economia não viram card: o saldo de cada membro pode ser usado em outras famílias.
     return None
