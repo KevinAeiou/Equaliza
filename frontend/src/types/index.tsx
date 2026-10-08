@@ -307,6 +307,13 @@ export interface DashboardInsightsParams {
 	categories?: number[]
 }
 
+export interface DashboardInsightsParams {
+	from_date: string
+	to_date: string
+	period_type: string
+	categories?: number[]
+}
+
 export interface FinanceParams {
 	from_date?: string
 	to_date?: string
