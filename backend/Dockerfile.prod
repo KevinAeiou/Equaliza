@@ -23,7 +23,10 @@ RUN adduser --disabled-password --gecos "" appuser
 
 COPY --chown=appuser:appuser . .
 
-RUN python manage.py collectstatic --noinput
+# As variáveis do Render só existem em runtime, não durante o build. O collectstatic
+# não usa o banco nem a chave, então valores descartáveis (só deste comando) bastam.
+RUN SECRET_KEY=build-only-collectstatic-key ALLOWED_HOSTS=localhost \
+    python manage.py collectstatic --noinput
 
 USER appuser
 
