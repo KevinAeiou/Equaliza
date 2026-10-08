@@ -55,4 +55,10 @@ urlpatterns = [
             "apps.reports.urls"
         ),
     ),
+	path(
+        "api/settlements/",
+        include(
+            "apps.settlements.urls"
+        ),
+    ),
 ]
