@@ -6,6 +6,7 @@ from apps.settlements.enums import SettlementStatus
 from apps.settlements.models import Settlement
 from apps.settlements.services import BalanceService
 from apps.settlements.tests.test_services import month_start
+from apps.settlements.periods import add_months
 
 
 class SeedDemoSettlementsTests(TestCase):
@@ -16,7 +17,13 @@ class SeedDemoSettlementsTests(TestCase):
         oldest = family.settlement_start
 
         self.assertTrue(Settlement.objects.filter(family=family, status=SettlementStatus.CANCELLED).exists())
-        self.assertTrue(Settlement.objects.filter(family=family, remaining_after__gt=0).exists())
+        active = Settlement.objects.filter(family=family, status=SettlementStatus.ACTIVE)
+
+        # Pagamento parcial (com restante lançado no mês seguinte) e pagamentos que quitam o saldo.
+        partial = active.filter(remaining_after__gt=0)
+        self.assertTrue(partial.exists())
+        self.assertTrue(all(item.carried_to == add_months(item.reference_month, 1) for item in partial))
+        self.assertTrue(active.filter(remaining_after=0).exists())
 
         # Quitar as sugestões de cada mês zera o saldo: depois do seed, o mês mais antigo está em dia.
         balances = BalanceService.user_balances(family, oldest)

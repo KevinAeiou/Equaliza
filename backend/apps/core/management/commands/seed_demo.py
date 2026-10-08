@@ -243,8 +243,14 @@ class Command(BaseCommand):
         return len(invitations)
 
     def create_settlements(self, family, users):
-        """Quita os três primeiros meses (o segundo em duas parcelas), estorna um pagamento e
-        deixa os meses recentes em aberto, para a tela de acertos ter o que mostrar."""
+        """Cobre os estados do acerto de contas para a tela ter o que mostrar:
+
+        - mês 1: quitado de uma vez (pagamento total);
+        - mês 2: quitado em duas parcelas;
+        - mês 3: pagamento parcial (60%), com o restante lançado como "Saldo anterior" no mês seguinte;
+        - mês 4: um pagamento estornado, que fica no histórico;
+        - meses recentes: em aberto.
+        """
         today = timezone.localdate()
         first_month = family.settlement_start
         count = 0
@@ -273,7 +279,7 @@ class Command(BaseCommand):
 
             return settlement
 
-        for index in range(3):
+        for index in range(3):  # meses 1 a 3
             month = add_months(first_month, index)
             paid_at = min(add_months(month, 1).replace(day=5), today)
             suggestions = BalanceService.compute(family, month)["suggestions"]
@@ -287,10 +293,13 @@ class Command(BaseCommand):
                     count += 1
                     amount -= half
 
+                if index == 2:
+                    amount = (amount * Decimal("0.6")).quantize(Decimal("0.01"))
+
                 register(suggestion["payer"], suggestion["receiver"], amount, month, paid_at)
                 count += 1
 
-        # Um pagamento lançado por engano e estornado, que fica no histórico.
+        # Um pagamento lançado por engano e estornado, que fica no histórico (mês 4).
         month = add_months(first_month, 3)
         suggestions = BalanceService.compute(family, month)["suggestions"]
 
