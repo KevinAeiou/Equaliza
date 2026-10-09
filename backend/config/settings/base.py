@@ -87,6 +87,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "apps.core.middleware.RequestScopeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -97,6 +98,9 @@ MIDDLEWARE = [
     "apps.core.middleware.CurrentUserMiddleware",
     "apps.users.middleware.RefreshCookieMiddleware",
 ]
+
+REQUEST_SCOPE_PATH_PREFIXES = ["/api/", "/admin/", "/static/"]
+REQUEST_SCOPE_ALLOWED_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 ROOT_URLCONF = "config.urls"
 
