@@ -101,3 +101,81 @@ class CsvMapping {
   final int id;
   final String name;
 }
+
+/// Linha lida de um extrato em PDF, ainda para revisão (nada foi gravado).
+class StatementRow {
+  const StatementRow({
+    required this.date,
+    required this.description,
+    required this.amount,
+    required this.direction,
+    this.kind = '',
+  });
+
+  factory StatementRow.fromJson(Map<String, dynamic> json) => StatementRow(
+        date: toDay(json['date']),
+        description: json['description'] as String? ?? '',
+        kind: json['kind'] as String? ?? '',
+        amount: toDouble(json['amount']),
+        direction: PendingDirection.parse(json['direction']),
+      );
+
+  final DateTime date;
+  final String description;
+  final String kind;
+  final double amount;
+  final PendingDirection direction;
+
+  bool get isCredit => direction == PendingDirection.credit;
+
+  StatementRow withDescription(String value) =>
+      StatementRow(date: date, description: value, amount: amount, direction: direction, kind: kind);
+
+  /// O valor volta como texto com duas casas, como a API espera.
+  Map<String, dynamic> toJson() => {
+        'date': '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+        'description': description,
+        'kind': kind,
+        'amount': amount.toStringAsFixed(2),
+        'direction': direction.value,
+      };
+}
+
+/// Resultado da leitura de um PDF: as linhas e a conferência dos totais com os do extrato.
+class PdfPreview {
+  const PdfPreview({
+    required this.rows,
+    required this.accountRef,
+    required this.periodStart,
+    required this.periodEnd,
+    required this.matches,
+    required this.parsedIn,
+    required this.parsedOut,
+    this.pdfIn,
+    this.pdfOut,
+  });
+
+  factory PdfPreview.fromJson(Map<String, dynamic> json) => PdfPreview(
+        rows: (json['rows'] as List).map((item) => StatementRow.fromJson(item as Map<String, dynamic>)).toList(),
+        accountRef: json['account_ref'] as String? ?? '',
+        periodStart: toDay(json['period_start']),
+        periodEnd: toDay(json['period_end']),
+        matches: json['matches'] as bool?,
+        parsedIn: toDouble(json['parsed_in']),
+        parsedOut: toDouble(json['parsed_out']),
+        pdfIn: json['pdf_in'] == null ? null : toDouble(json['pdf_in']),
+        pdfOut: json['pdf_out'] == null ? null : toDouble(json['pdf_out']),
+      );
+
+  final List<StatementRow> rows;
+  final String accountRef;
+  final DateTime periodStart;
+  final DateTime periodEnd;
+
+  /// `null` quando o PDF não traz totais para conferir.
+  final bool? matches;
+  final double parsedIn;
+  final double parsedOut;
+  final double? pdfIn;
+  final double? pdfOut;
+}

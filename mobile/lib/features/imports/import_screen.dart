@@ -13,6 +13,7 @@ import '../../core/widgets/overlays.dart';
 import '../../models/pending.dart';
 import 'imports_service.dart';
 import 'mapping_sheet.dart';
+import 'pdf_review_screen.dart';
 
 /// Mesmo limite do servidor (5 MB); o servidor confere de novo.
 const maxImportBytes = 5 * 1024 * 1024;
@@ -71,7 +72,7 @@ class _ImportScreenState extends State<ImportScreen> {
   }
 
   Future<void> _pick() async {
-    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: ['ofx', 'csv', 'zip']);
+    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: ['ofx', 'csv', 'zip', 'pdf']);
 
     if (file == null || !mounted) return;
 
@@ -101,6 +102,11 @@ class _ImportScreenState extends State<ImportScreen> {
     setState(() => _uploading = true);
 
     try {
+      if (_filename!.toLowerCase().endsWith('.pdf')) {
+        await _reviewPdf(bytes);
+        return;
+      }
+
       final batch = await ImportsService.upload(
         bytes: bytes,
         filename: _filename!,
@@ -141,6 +147,29 @@ class _ImportScreenState extends State<ImportScreen> {
     }
   }
 
+  /// Extrato em PDF: lê, mostra as linhas para revisão e só então grava.
+  Future<void> _reviewPdf(Uint8List bytes) async {
+    final preview = await ImportsService.previewPdf(bytes: bytes, filename: _filename!, password: _password.text);
+
+    if (!mounted) return;
+
+    final batch = await pushPanel<ImportBatch>(context, (_) => PdfReviewScreen(preview: preview));
+
+    if (batch == null || !mounted) return;
+
+    FilePicker.clearTemporaryFiles().catchError((_) {});
+    ImportsService.refreshCount();
+
+    setState(() {
+      _result = batch;
+      _bytes = null;
+      _filename = null;
+      _passwordNeeded = false;
+      _password.clear();
+    });
+    _loadBatches();
+  }
+
   Future<void> _openMapping(List<String> headers) async {
     final mapping = await showFormSheet<CsvMapping>(context, (_) => MappingSheet(headers: headers));
 
@@ -179,7 +208,7 @@ class _ImportScreenState extends State<ImportScreen> {
 
     return FullScreenPanel(
       title: 'Importar arquivo',
-      description: 'Envie o extrato ou a fatura baixados no app do seu banco (OFX ou CSV).',
+      description: 'Envie o extrato ou a fatura baixados no app do seu banco (OFX, CSV ou, no extrato do C6, PDF).',
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [

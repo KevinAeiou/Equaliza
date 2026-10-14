@@ -92,4 +92,36 @@ void main() {
     await ScreenSecurity.enable();
     await ScreenSecurity.disable();
   });
+
+  test('PdfPreview lê as linhas, a conferência dos totais e devolve o valor com duas casas', () {
+    final preview = PdfPreview.fromJson({
+      'rows': [
+        {'date': '2026-10-02', 'description': 'IOF', 'kind': 'Outros gastos', 'amount': '0.75', 'direction': 'DEBIT'},
+        {'date': '2026-10-03', 'description': 'Pix recebido', 'kind': 'Entrada PIX', 'amount': '300.00', 'direction': 'CREDIT'},
+      ],
+      'account_ref': '2222',
+      'period_start': '2026-09-29',
+      'period_end': '2026-10-14',
+      'matches': false,
+      'parsed_in': '300.00',
+      'parsed_out': '0.75',
+      'pdf_in': '3300.00',
+      'pdf_out': null,
+    });
+
+    expect(preview.rows, hasLength(2));
+    expect(preview.matches, isFalse);
+    expect(preview.pdfIn, 3300);
+    expect(preview.pdfOut, isNull);
+    expect(preview.rows[1].isCredit, isTrue);
+    expect(preview.rows.first.toJson(), {
+      'date': '2026-10-02',
+      'description': 'IOF',
+      'kind': 'Outros gastos',
+      'amount': '0.75',
+      'direction': 'DEBIT',
+    });
+    expect(preview.rows.first.withDescription('Editado').description, 'Editado');
+    expect(PdfPreview.fromJson({'rows': [], 'matches': null, 'period_start': '2026-01-01', 'period_end': '2026-01-02', 'parsed_in': '0', 'parsed_out': '0'}).matches, isNull);
+  });
 }

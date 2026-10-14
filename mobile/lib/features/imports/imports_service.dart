@@ -55,6 +55,27 @@ abstract final class ImportsService {
         return ImportBatch.fromJson(response.data as Map<String, dynamic>);
       });
 
+  /// Extrato em PDF: o servidor lê e devolve as linhas para revisão, sem gravar nada.
+  static Future<PdfPreview> previewPdf({required Uint8List bytes, required String filename, String? password}) =>
+      guard('ler o PDF', () async {
+        final form = FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: filename),
+          if (password != null && password.isNotEmpty) 'password': password,
+        });
+        final response = await api.post('imports/preview/', data: form);
+
+        return PdfPreview.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  static Future<ImportBatch> confirmPdf(List<StatementRow> rows, String accountRef) => guard('importar o extrato', () async {
+        final response = await api.post('imports/confirm/', data: {
+          'rows': rows.map((row) => row.toJson()).toList(),
+          'account_ref': accountRef,
+        });
+
+        return ImportBatch.fromJson(response.data as Map<String, dynamic>);
+      });
+
   static Future<List<ImportBatch>> batches() => guard('listar as importações', () async {
         final response = await api.get('imports/');
 
