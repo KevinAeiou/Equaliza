@@ -1,3 +1,10 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
 import '../../core/network/api_client.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/utils/period.dart';
@@ -11,6 +18,23 @@ abstract final class FinanceService {
         return (response.data as List)
             .map((item) => FinanceEntry.fromJson(item as Map<String, dynamic>, type))
             .toList();
+      });
+
+  /// Baixa o CSV ou PDF dos lançamentos filtrados e abre a folha de compartilhamento.
+  static Future<void> export(EntryType type, PeriodFilters filters, String exportFormat) =>
+      guard('exportar ${type.plural.toLowerCase()}', () async {
+        final response = await api.get<List<int>>(
+          'finances/${type.endpoint}export/',
+          queryParameters: {...filters.toQuery(), 'export_format': exportFormat},
+          options: Options(responseType: ResponseType.bytes),
+        );
+
+        final directory = await getTemporaryDirectory();
+        final name = '${type.plural.toLowerCase()}-${DateFormat('yyyy-MM-dd').format(DateTime.now())}.$exportFormat';
+        final file = File('${directory.path}/$name');
+        await file.writeAsBytes(response.data!, flush: true);
+
+        await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
       });
 
   static Future<List<FinanceMember>> members() => guard('listar membros', () async {
