@@ -10,6 +10,8 @@ import {
 	IncomeProps,
 } from "@/src/types"
 
+export type ExportFormat = "csv" | "pdf"
+
 export type FinanceResponse<T extends FinanceEntryType> =
 	T extends "EXPENSE"
 	? ExpenseProps
@@ -51,6 +53,25 @@ const FinanceAPI = () => ({
 		})
 
 		return response.data
+	},
+
+	export: async (
+		type: FinanceEntryType,
+		params: FinanceParams,
+		exportFormat: ExportFormat,
+	): Promise<Blob> => {
+		try {
+			const response = await api<Blob>({
+				url: `finances/${getEndpoint(type)}export/`,
+				method: "GET",
+				params: { ...params, export_format: exportFormat },
+				responseType: "blob",
+			})
+
+			return response.data
+		} catch (error) {
+			throw configureError(error, "exportar finanças")
+		}
 	},
 
 	listCategories: async (): Promise<CategoryProps[]> => {

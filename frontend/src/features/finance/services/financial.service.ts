@@ -1,5 +1,5 @@
 import { CategoryProps, FinanceEntryType, FinanceMemberProps, FinanceParams } from "@/src/types"
-import { financeApi, FinanceResponse } from "../infra/finance"
+import { ExportFormat, financeApi, FinanceResponse } from "../infra/finance"
 import { FormFinanceSchemaType } from "../schemas/finance.schema"
 import { format } from "date-fns"
 import { FormFinanceFilterSchemaType } from "../schemas/filter.schema"
@@ -13,11 +13,10 @@ export class FinanceService {
 		return await financeApi.retrieve(type, id)
 	}
 
-	static async list<T extends FinanceEntryType>(
-		type: T,
+	static toParams(
 		filters: Omit<FormFinanceFilterSchemaType, "members"> & { members?: number[] }
-	): Promise<FinanceResponse<T>[]> {
-		const params: FinanceParams = {
+	): FinanceParams {
+		return {
 			from_date: filters.period.from
 				? format(filters.period.from, "yyyy-MM-dd")
 				: undefined,
@@ -34,6 +33,31 @@ export class FinanceService {
 				? filters.members
 				: undefined,
 		}
+	}
+
+	static async export(
+		type: FinanceEntryType,
+		filters: Omit<FormFinanceFilterSchemaType, "members"> & { members?: number[] },
+		exportFormat: ExportFormat,
+	): Promise<void> {
+		const blob = await financeApi.export(type, this.toParams(filters), exportFormat)
+		const name = type === "EXPENSE" ? "despesas" : "receitas"
+		const url = URL.createObjectURL(blob)
+		const link = document.createElement("a")
+
+		link.href = url
+		link.download = `${name}-${format(new Date(), "yyyy-MM-dd")}.${exportFormat}`
+		document.body.appendChild(link)
+		link.click()
+		link.remove()
+		URL.revokeObjectURL(url)
+	}
+
+	static async list<T extends FinanceEntryType>(
+		type: T,
+		filters: Omit<FormFinanceFilterSchemaType, "members"> & { members?: number[] }
+	): Promise<FinanceResponse<T>[]> {
+		const params = this.toParams(filters)
 
 		return await financeApi.list(type, params)
 	}
