@@ -341,6 +341,9 @@ export type ImportBatchProps = Schemas["ImportBatch"]
 export type CsvMappingProps = Schemas["CsvMapping"]
 export type CsvMappingPayload = Schemas["CsvMappingRequest"]
 
+export type PdfPreviewProps = Schemas["PdfPreview"]
+export type StatementRowProps = Schemas["StatementRow"]
+
 export interface PendingParams {
 	direction?: PendingDirection
 	flag?: PendingProps["flag"]

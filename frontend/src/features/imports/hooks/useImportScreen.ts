@@ -2,8 +2,17 @@ import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { isApiError } from "@/src/lib/utils"
 import { ApiError } from "@/src/types"
-import { CsvMappingPayload, CsvMappingProps, ImportBatchProps, ImportSource } from "@/src/types"
+import {
+	CsvMappingPayload,
+	CsvMappingProps,
+	ImportBatchProps,
+	ImportSource,
+	PdfPreviewProps,
+	StatementRowProps,
+} from "@/src/types"
 import { importsApi, notifyPendingChanged } from "../infra/imports"
+
+export const isPdf = (file: File) => file.name.toLowerCase().endsWith(".pdf")
 
 const errorCode = (error: ApiError) => error.originalError?.response?.data?.code
 
@@ -25,6 +34,8 @@ export const useImportScreen = () => {
 	const [result, setResult] = useState<ImportBatchProps | undefined>(undefined)
 	const [batches, setBatches] = useState<ImportBatchProps[]>([])
 	const [removing, setRemoving] = useState<ImportBatchProps | undefined>(undefined)
+	// Extrato em PDF: as linhas lidas esperam a revisão do usuário antes de serem gravadas.
+	const [preview, setPreview] = useState<PdfPreviewProps | undefined>(undefined)
 
 	const loadBatches = useCallback(() => {
 		importsApi.listBatches().then(setBatches).catch(() => setBatches([]))
@@ -48,6 +59,12 @@ export const useImportScreen = () => {
 		setUploading(true)
 
 		try {
+			if (isPdf(file)) {
+				setPreview(await importsApi.previewPdf(file, password || undefined))
+				setPasswordNeeded(false)
+				return
+			}
+
 			const batch = await importsApi.upload({
 				file,
 				source,
@@ -79,6 +96,30 @@ export const useImportScreen = () => {
 			}
 
 			toast.error(error.message)
+		} finally {
+			setUploading(false)
+		}
+	}
+
+	const finishImport = (batch: ImportBatchProps) => {
+		setResult(batch)
+		setFile(undefined)
+		setPassword("")
+		setPasswordNeeded(false)
+		setPreview(undefined)
+		notifyPendingChanged()
+		loadBatches()
+	}
+
+	const confirmPreview = async (rows: StatementRowProps[]) => {
+		if (!preview) return
+
+		setUploading(true)
+
+		try {
+			finishImport(await importsApi.confirmPdf(rows, preview.account_ref))
+		} catch (error) {
+			toast.error(isApiError(error) ? error.message : "Não foi possível importar o extrato.")
 		} finally {
 			setUploading(false)
 		}
@@ -116,6 +157,7 @@ export const useImportScreen = () => {
 		mapping, setMapping, mappings,
 		mappingHeaders, setMappingHeaders, saveMapping,
 		uploading, upload, result,
+		preview, cancelPreview: () => setPreview(undefined), confirmPreview,
 		batches, removing, setRemoving, confirmRemove,
 	}
 }

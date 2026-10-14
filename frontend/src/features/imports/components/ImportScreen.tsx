@@ -27,9 +27,10 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs"
 import { cn } from "@/src/lib/utils"
 import { ImportSource } from "@/src/types"
-import { useImportScreen } from "../hooks/useImportScreen"
+import { isPdf, useImportScreen } from "../hooks/useImportScreen"
 import { batchLabel } from "../utils"
 import { MappingDialog } from "./MappingDialog"
+import { PdfReview } from "./PdfReview"
 
 const NO_MAPPING = "NONE"
 
@@ -59,9 +60,20 @@ export const ImportScreen = () => {
 
 			<HeaderScreen
 				title="Importar arquivo"
-				subtitle="Envie o extrato ou a fatura baixados no app do seu banco (OFX ou CSV)."
+				subtitle="Envie o extrato ou a fatura baixados no app do seu banco (OFX, CSV ou, no extrato do C6, PDF)."
 			/>
 
+			{screen.preview && (
+				<PdfReview
+					key={screen.preview.rows.length + screen.preview.period_start}
+					preview={screen.preview}
+					loading={screen.uploading}
+					onConfirm={screen.confirmPreview}
+					onCancel={screen.cancelPreview}
+				/>
+			)}
+
+			{!screen.preview && (
 			<div className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-6">
 				<Tabs value={screen.source} onValueChange={(value) => screen.setSource(value as ImportSource)}>
 					<TabsList>
@@ -93,7 +105,7 @@ export const ImportScreen = () => {
 					<input
 						ref={inputRef}
 						type="file"
-						accept=".ofx,.csv,.zip,text/csv,application/zip"
+						accept=".ofx,.csv,.zip,.pdf,text/csv,application/zip,application/pdf"
 						className="hidden"
 						onChange={(event: ChangeEvent<HTMLInputElement>) => screen.chooseFile(event.target.files?.[0])}
 					/>
@@ -143,8 +155,10 @@ export const ImportScreen = () => {
 				<p className="text-xs text-muted-foreground">
 					O arquivo é lido na hora e não é guardado. Só ficam as linhas, por até 60 dias, e a descrição é
 					guardada cifrada. Apague o arquivo da pasta de downloads depois do envio.
+					{screen.file && isPdf(screen.file) && " PDF: você revisa as linhas antes de qualquer coisa ser gravada."}
 				</p>
 			</div>
+			)}
 
 			{result && (
 				<div className="flex flex-col gap-2 rounded-xl border bg-card p-4 sm:p-6" role="status">

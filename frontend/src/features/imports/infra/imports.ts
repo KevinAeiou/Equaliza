@@ -5,8 +5,10 @@ import {
 	CsvMappingProps,
 	ImportBatchProps,
 	ImportSource,
+	PdfPreviewProps,
 	PendingParams,
 	PendingProps,
+	StatementRowProps,
 	RegisterPendingPayload,
 } from "@/src/types"
 
@@ -47,6 +49,36 @@ const ImportsAPI = () => ({
 			return response.data
 		} catch (error) {
 			throw configureError(error, "enviar o arquivo")
+		}
+	},
+
+	// Extrato em PDF: o servidor lê e devolve as linhas para revisão, sem gravar nada.
+	previewPdf: async (file: File, password?: string): Promise<PdfPreviewProps> => {
+		const data = new FormData()
+
+		data.append("file", file)
+		if (password) data.append("password", password)
+
+		try {
+			const response = await api<PdfPreviewProps>({ url: "imports/preview/", method: "POST", data })
+
+			return response.data
+		} catch (error) {
+			throw configureError(error, "ler o PDF")
+		}
+	},
+
+	confirmPdf: async (rows: StatementRowProps[], accountRef: string): Promise<ImportBatchProps> => {
+		try {
+			const response = await api<ImportBatchProps>({
+				url: "imports/confirm/",
+				method: "POST",
+				data: { rows, account_ref: accountRef },
+			})
+
+			return response.data
+		} catch (error) {
+			throw configureError(error, "importar o extrato")
 		}
 	},
 
