@@ -1,6 +1,6 @@
 # Importação de extratos e faturas de cartão
 
-> **Status:** implementado em OFX e CSV (Fase 5, etapas 5.2 a 5.8 do [PLANO.md](PLANO.md)), no backend, no web e no mobile, atrás da flag `STATEMENT_IMPORT_ENABLED`. **Faltam:** a leitura do PDF do extrato do C6 (etapa 5.9) e a conferência dos modelos com arquivos reais (etapa 5.1). Os trechos abaixo que falam em "será" descrevem o desenho; o que ainda não existe está listado aqui.
+> **Status:** implementado em OFX e CSV (Fase 5, etapas 5.2 a 5.8 do [PLANO.md](PLANO.md)), no backend, no web e no mobile, atrás da flag `STATEMENT_IMPORT_ENABLED`. A leitura do PDF do extrato do C6 (etapa 5.9) também está pronta, com revisão obrigatória. **Falta:** a conferência dos modelos de CSV/OFX (Nubank e fatura do C6) com arquivos reais (etapa 5.1). Os trechos abaixo que falam em "será" descrevem o desenho; o que ainda não existe está listado aqui.
 >
 > A conexão automática com os bancos (Open Finance) ficou para o futuro (Fase 8): veja [DESPESAS-BANCARIAS.md](DESPESAS-BANCARIAS.md). A lista de Pendências definida aqui será reaproveitada por ela.
 
@@ -222,3 +222,14 @@ A tabela `PendingTransaction` é genérica de propósito: a futura conexão banc
 3. **Jurídico:** validação de LGPD e termos de uso, antes de abrir para outras pessoas.
 
 Já decidido: retenção da pendência de **60 dias**; **mesma família e categoria** para as linhas selecionadas em lote; bancos-alvo Nubank, C6 e Bradesco; aceitar vários formatos com detecção automática (OFX e CSV primeiro; PDF para o extrato do C6); créditos serão preenchidos como renda (etapa futura); o arquivo original não é guardado; a conexão bancária fica para depois.
+
+
+## 5. PDF do extrato do C6 (implementado)
+
+Layout conferido em um extrato real (2026-10): por lançamento, `Data lançamento`, `Data contábil`, `Tipo`, `Descrição` e `Valor` (`-R$ 0,04` nas saídas, `R$ 27,00` nas entradas); entre os dias, linhas `Saldo do dia`; e, no cabeçalho de cada mês, os totais de `Entradas` e `Saídas`.
+
+- **Duas etapas, sem estado:** `POST /api/imports/preview/` lê o PDF (e a senha, só em memória) e devolve as linhas, sem gravar nada; o usuário revisa, edita a descrição e remove linhas; `POST /api/imports/confirm/` grava as linhas revisadas. O servidor não guarda o arquivo nem as linhas entre as etapas, e reenviar o mesmo conteúdo não duplica.
+- **Conferência do total:** a soma das entradas e das saídas lidas é comparada com os totais do cabeçalho. Se não bater (linha perdida ou lida errado), a tela avisa e só importa com confirmação explícita.
+- **Isolamento:** o texto é extraído (pypdf) em um processo separado, com limite de memória, de CPU, de tempo e de páginas, sem poder gravar arquivos e sem herdar o ambiente do servidor; a senha vai pela entrada padrão do processo. Erros são genéricos.
+- **Privacidade:** o nome do titular, o CPF e a conta do cabeçalho são ignorados; só os 4 últimos dígitos da conta são lidos.
+- **Limite:** só o layout do C6 é reconhecido; PDF de outro banco é recusado. Um tipo de lançamento novo não quebra a leitura (fica junto da descrição).

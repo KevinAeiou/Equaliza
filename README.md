@@ -143,7 +143,7 @@ Cada membro deveria cobrir as despesas do mês na proporção da sua receita (se
 
 Em vez de digitar cada despesa, o usuário carrega o extrato do banco ou a fatura do cartão de crédito (web e mobile). A funcionalidade fica **desligada por padrão** (`STATEMENT_IMPORT_ENABLED`) e exige uma chave de cifra (`IMPORT_ENCRYPTION_KEYS`).
 
-* **Formatos:** OFX e CSV, detectados pelo conteúdo do arquivo (não pela extensão). Modelos prontos de CSV para Nubank (extrato e fatura) e C6 (fatura, que chega em **ZIP com senha**); outros bancos usam um **mapeamento de colunas** que o usuário informa uma vez e fica salvo
+* **Formatos:** OFX e CSV, detectados pelo conteúdo do arquivo (não pela extensão), e **PDF do extrato do C6** (com senha), lido em um processo isolado e com **revisão obrigatória**: as linhas e a conferência dos totais aparecem antes de qualquer gravação Modelos prontos de CSV para Nubank (extrato e fatura) e C6 (fatura, que chega em **ZIP com senha**); outros bancos usam um **mapeamento de colunas** que o usuário informa uma vez e fica salvo
 * Cada linha vira uma **pendência** na lista de **Pendências**; o usuário seleciona quais serão registradas como despesa (uma a uma ou em lote, com a mesma família e categoria) ou marcadas como lidas
 * Ao registrar, o formulário vem preenchido com valor, data e descrição, editáveis; se houver mais de uma família, ele escolhe a qual pertence
 * Linhas já importadas não se repetem se o arquivo for reenviado ou se outro arquivo se sobrepuser; o pagamento da fatura é sinalizado como provável duplicidade
@@ -151,7 +151,7 @@ Em vez de digitar cada despesa, o usuário carrega o extrato do banco ou a fatur
 * O arquivo original **não é guardado** (é lido em memória e descartado) e a descrição é cifrada no banco; ao registrar, marcar como lida ou expirar (60 dias), os dados são apagados
 * No mobile, a lista exige biometria e bloqueia capturas de tela (Android)
 
-**Ainda não feito:** leitura do PDF do extrato do C6 e conferência dos modelos de CSV/OFX com arquivos reais. Riscos, medidas de segurança e o plano completo: [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md).
+**Ainda não feito:** conferência dos modelos de CSV/OFX do Nubank e da fatura do C6 com arquivos reais (o PDF do extrato do C6 já foi conferido com um extrato real). Riscos, medidas de segurança e o plano completo: [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md).
 
 **Futuro:** conexão automática com os bancos (Open Finance) e notificação de cada transação no celular, usando a mesma lista. Veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
 
@@ -352,7 +352,7 @@ python manage.py seed_demo
 | `RECURRING_SCHEDULER_ENABLED` | Agendador interno de recorrências (**obsoleto**: use o Cron Job) | `False` |
 | `STATEMENT_IMPORT_ENABLED` | Liga a importação de extratos e faturas (sem ela, as rotas respondem 404 e o menu esconde Pendências) | `False` |
 | `IMPORT_ENCRYPTION_KEYS` | Chaves Fernet, separadas por vírgula (a primeira cifra, todas decifram). **Obrigatória com a importação ligada**; gere com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` | — |
-| `IMPORT_MAX_FILE_BYTES` / `IMPORT_MAX_ROWS` / `IMPORT_RETENTION_DAYS` | Limites do arquivo (bytes e linhas) e dias até a pendência expirar | `5242880`, `5000`, `60` |
+| `IMPORT_MAX_FILE_BYTES` / `IMPORT_MAX_ROWS` / `IMPORT_RETENTION_DAYS` / `IMPORT_PDF_MAX_PAGES` | Limites do arquivo (bytes e linhas), dias até a pendência expirar e páginas do PDF | `5242880`, `5000`, `60`, `40` |
 | `THROTTLE_RATE_IMPORT_UPLOAD` | Limite de envios de arquivo por usuário | `10/hour` |
 | `LOG_LEVEL` | Nível dos logs | `INFO` |
 
@@ -477,7 +477,7 @@ Todas as rotas ficam sob `/api/`:
 /api/reports/dashboard/summary/  /api/reports/dashboard/charts/  /api/reports/dashboard/insights/
 /api/settlements/  /api/settlements/balance/  /api/settlements/<id>/cancel/
 /api/finances/expenses/export/  /api/finances/income/export/   (?export_format=csv|pdf)
-/api/imports/  /api/imports/csv-mappings/  /api/pending-transactions/  /api/pending-transactions/<id>/import/  /api/pending-transactions/bulk/
+/api/imports/  /api/imports/preview/  /api/imports/confirm/  /api/imports/csv-mappings/  /api/pending-transactions/  /api/pending-transactions/<id>/import/  /api/pending-transactions/bulk/
 /api/health/
 /api/schema/  /api/docs/
 ```
@@ -515,7 +515,7 @@ As fases planejadas estão detalhadas em [docs/PLANO.md](docs/PLANO.md). Em resu
 * [x] Acerto de contas entre membros
 * [ ] Orçamentos por categoria
 * [ ] Notificações
-* [x] Importação de extratos e faturas de cartão, com lista de Pendências (OFX e CSV; falta o PDF do extrato do C6)
+* [x] Importação de extratos e faturas de cartão, com lista de Pendências (OFX, CSV e PDF do extrato do C6)
 * [ ] Rendas a partir de créditos importados
 * [ ] Conexão automática com os bancos (Open Finance) e notificação de transações (futuro)
 * [ ] Metas financeiras

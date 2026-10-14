@@ -184,7 +184,7 @@ O usuário carrega um **extrato bancário** ou uma **fatura de cartão** (OFX ou
 | 5.8 | Testes de segurança (arquivo malicioso, reenvio, IDOR, expurgo, cifragem, logs), `seed_demo`, README e passada manual | 2 dias |
 | 5.9 | **[B][F][M]** Leitura de PDF do **extrato do C6** (protegido por senha, a senha pedida a cada envio e usada só em memória), em processo isolado com limites, e tela de revisão obrigatória antes de gravar (com conferência do total, quando o PDF trouxer saldo). Outros bancos só se a 5.1 indicar | 4–5 dias |
 
-**Andamento (2026-10):** 5A e as etapas 5.2 a 5.8 estão feitas (backend, web e mobile, atrás de `STATEMENT_IMPORT_ENABLED`). Faltam a **5.1** (arquivos reais: o sinal do C6 e do Nubank na fatura e o `invert_sign` do OFX estão como suposição) e a **5.9** (PDF do extrato do C6). Na 5.8 falta só a passada manual das telas web e mobile; o backend foi percorrido de ponta a ponta com `curl`.
+**Andamento (2026-10):** 5A e as etapas 5.2 a 5.9 estão feitas (backend, web e mobile, atrás de `STATEMENT_IMPORT_ENABLED`). Falta a **5.1** (arquivos reais do Nubank e da fatura do C6: o sinal e o `invert_sign` do OFX estão como suposição; o extrato em PDF do C6 já foi conferido com um extrato real). Na 5.8 falta só a passada manual das telas web e mobile; o backend foi percorrido de ponta a ponta com `curl`.
 
 **Pronto quando:**
 - enviar um extrato e uma fatura de teste (OFX e CSV) cria as pendências no web e no mobile;
