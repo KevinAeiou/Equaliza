@@ -591,6 +591,30 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/finances/expenses/export/:
+    get:
+      operationId: finances_expenses_export_retrieve
+      parameters:
+      - in: query
+        name: export_format
+        schema:
+          type: string
+          enum:
+          - csv
+          - pdf
+        required: true
+      tags:
+      - finances
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/finances/income/:
     get:
       operationId: finances_income_list
@@ -769,6 +793,30 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/finances/income/export/:
+    get:
+      operationId: finances_income_export_retrieve
+      parameters:
+      - in: query
+        name: export_format
+        schema:
+          type: string
+          enum:
+          - csv
+          - pdf
+        required: true
+      tags:
+      - finances
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/finances/members/:
     get:
       operationId: finances_members_list

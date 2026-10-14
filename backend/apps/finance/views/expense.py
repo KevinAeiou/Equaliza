@@ -17,6 +17,8 @@ from apps.finance.views.financial import FinancialViewSet
 )
 class ExpenseViewSet(FinancialViewSet):
     queryset = Expense.objects.none()  # só para o schema; get_queryset define o real
+    export_title = "Despesas"
+    export_name = "despesas"
     service = ExpenseService
     create_serializer_class = CreateExpenseSerializer
     update_serializer_class = UpdateExpenseSerializer

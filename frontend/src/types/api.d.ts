@@ -164,6 +164,22 @@ export interface paths {
         patch: operations["finances_expenses_partial_update"];
         trace?: never;
     };
+    "/api/finances/expenses/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["finances_expenses_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/finances/income/": {
         parameters: {
             query?: never;
@@ -194,6 +210,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["finances_income_partial_update"];
+        trace?: never;
+    };
+    "/api/finances/income/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["finances_income_export_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/finances/members/": {
@@ -1741,6 +1773,27 @@ export interface operations {
             };
         };
     };
+    finances_expenses_export_retrieve: {
+        parameters: {
+            query: {
+                export_format: "csv" | "pdf";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+        };
+    };
     finances_income_list: {
         parameters: {
             query?: {
@@ -1889,6 +1942,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ListIncome"];
+                };
+            };
+        };
+    };
+    finances_income_export_retrieve: {
+        parameters: {
+            query: {
+                export_format: "csv" | "pdf";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
                 };
             };
         };

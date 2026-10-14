@@ -1,10 +1,15 @@
+from django.http import HttpResponse
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
+from rest_framework import serializers, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.core.permissions import IsFamilyMember, IsRecordOwner
 from apps.finance.filters import FinancialFilter
+from apps.finance.services.export_financial import ExportFinancialService
 
 
 # CRUD de receitas e despesas; as subclasses definem o service e os serializers.
@@ -24,6 +29,8 @@ class FinancialViewSet(viewsets.ModelViewSet):
     ]
 
     lookup_field = "pk"
+    export_title = "Lançamentos"
+    export_name = "lancamentos"
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -73,3 +80,32 @@ class FinancialViewSet(viewsets.ModelViewSet):
         self.service.delete(self.get_object())
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # Usa `export_format` porque `format` é reservado pelo DRF para negociação de conteúdo.
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("export_format", OpenApiTypes.STR, enum=["csv", "pdf"], required=True),
+        ],
+        responses={(200, "application/octet-stream"): OpenApiTypes.BINARY},
+    )
+    @action(detail=False, methods=["get"], pagination_class=None)
+    def export(self, request):
+        export_format = request.query_params.get("export_format")
+
+        if export_format not in ("csv", "pdf"):
+            raise serializers.ValidationError({"export_format": "Use csv ou pdf."})
+
+        queryset = self.filter_queryset(self.get_queryset())
+        filename = f"{self.export_name}-{timezone.localdate():%Y-%m-%d}.{export_format}"
+
+        if export_format == "csv":
+            content = ExportFinancialService.to_csv(queryset)
+            content_type = "text/csv; charset=utf-8"
+        else:
+            content = ExportFinancialService.to_pdf(queryset, self.export_title)
+            content_type = "application/pdf"
+
+        response = HttpResponse(content, content_type=content_type)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+        return response
