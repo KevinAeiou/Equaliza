@@ -127,14 +127,75 @@ A funcionalidade central do produto. Hoje o "Para equilibrar" é calculado no cl
 
 Dependência: o item 1 é independente. O item 5 exige conta e credenciais no Firebase; fazer por último.
 
-## Fase 5: Exportação, importação e anexos (5–7 dias)
+## Fase 5: Exportação e importação de extratos (~29–30 dias)
 
-1. **[B][F][M]** Exportar CSV e PDF dos lançamentos, respeitando os filtros atuais.
-2. **[B]** Importar extrato CSV e OFX em dois passos: prévia com categorias sugeridas e depois confirmação. Detectar duplicados por data, valor e descrição.
-3. **[B]** Anexos: campo de arquivo no lançamento, armazenamento em S3 compatível (ou disco no Render, com a limitação de ser efêmero). Limite de tamanho e tipos permitidos.
-4. **[M]** Foto do comprovante direto na tela de lançamento.
+Três blocos: **5A** exportação (rápido e independente), **5B** importação de extratos e faturas de cartão (o bloco grande) e **5C** rendas a partir de créditos (futuro).
 
-Antes de começar, decidir onde guardar os arquivos: isso muda a infraestrutura.
+### 5A: Exportação (2–3 dias)
+
+**[B][F][M]** Exportar CSV e PDF dos lançamentos, respeitando os filtros atuais. Na exportação para planilha, neutralizar valores iniciados por `=`, `+`, `-` ou `@` (injeção de fórmula).
+
+Comprovantes de pagamento (anexos e foto do comprovante) **não fazem parte do plano**: não será necessário informá-los.
+
+### 5B: Importação de extratos e faturas de cartão (~27 dias)
+
+O usuário carrega um **extrato bancário** ou uma **fatura de cartão** (OFX ou CSV). Cada linha vira uma **pendência**, e ele decide quais serão vinculadas a uma família (registrando a despesa, com o formulário pré-preenchido) e quais serão marcadas como lidas e removidas da lista. Web e mobile. Análise completa, riscos e medidas de segurança em [IMPORTACAO-EXTRATOS.md](IMPORTACAO-EXTRATOS.md).
+
+**Dependências:** só as Fases 0 e 1 (rotas autenticadas por padrão e OpenAPI). Não depende de push, Firebase nem agregador.
+
+#### Limites assumidos
+
+- Bancos-alvo: **Nubank, C6 Bank e Bradesco**. O que cada um exporta (confirmado pelo usuário): **Nubank**, extrato em OFX, CSV e PDF e fatura em OFX ou CSV; **C6**, extrato só em PDF e fatura em PDF, CSV ou XLSX, ambos com senha; **Bradesco**, a confirmar (fontes públicas indicam OFX para o extrato).
+- A primeira entrega aceita **OFX e CSV**, e o sistema detecta o formato (e o banco, no CSV) pelo conteúdo do arquivo. A fatura do C6 chega como **ZIP com senha** (confirmado); o sistema abre o ZIP em memória e lê o CSV de dentro.
+- O **extrato do C6 só existe em PDF**, então a leitura de PDF (etapa 5.9) é necessária, por banco e com revisão obrigatória antes de gravar.
+- Senhas de arquivo: informadas no envio, usadas só em memória, nunca guardadas nem registradas em log.
+- O arquivo original **não é guardado**: é processado em memória e descartado.
+- Toda linha entra na lista, débito ou crédito. Transferências entre contas próprias, estornos e o pagamento da fatura (que duplica as compras) também entram; o sistema só sinaliza e o usuário decide.
+- Não há importação automática: o usuário baixa e envia o arquivo.
+
+#### Decisões já tomadas
+
+| Tema | Decisão |
+| --- | --- |
+| Fontes | Extrato bancário (`STATEMENT`) e fatura de cartão (`CARD_INVOICE`). |
+| Tipos de linha | Todos entram na lista: débito, crédito, Pix, transferência. |
+| Créditos | Serão preenchidos como **renda**, mas só na 5C. Até lá, só podem ser marcados como lidos. |
+| Dono da pendência | O usuário. Só ao registrar ela passa a uma família. |
+| Família | Se houver mais de uma, começa pela família ativa e o usuário pode trocar. |
+| Campos editáveis | Valor, data, descrição, categoria e família. A categoria continua obrigatória. |
+| Ações em lote | Registrar e marcar como lida várias linhas de uma vez, com a **mesma família e categoria** para todas as linhas selecionadas (cada linha continua editável depois). |
+| Formato do arquivo | O usuário só envia o arquivo; o sistema detecta OFX ou CSV pelo conteúdo (não pela extensão) e, no CSV, o modelo do banco pelo cabeçalho. CSV desconhecido cai no mapeamento de colunas. |
+| Marcar como lida | Sai da lista e apaga descrição e contraparte (fica só o hash do id). |
+| Duplicidade | Pelo id da transação no arquivo (ou hash de data, valor, descrição e ordem); aviso de possível duplicidade com lançamento manual. |
+| Fatura | Vale a data da compra. Cada parcela vira uma despesa avulsa (vínculo na Fase 6). |
+| Retenção | Pendência não tratada expira em **60 dias** (decidido). |
+
+#### Etapas (um PR pequeno por etapa, com testes)
+
+| # | Entrega | Estimativa |
+| --- | --- | --- |
+| 5.1 | Reunir arquivos reais do Nubank e do C6 (fora do repositório; extrato e fatura), confirmar o que o Bradesco exporta, conferir o CSV da fatura do C6 (o ZIP usa ZipCrypto e o cabeçalho já é conhecido; falta ver separador, sinal, estornos, parcelas e compras internacionais), definir os modelos de CSV e criar arquivos sintéticos para os testes | 1 dia |
+| 5.2 | **[B]** App `imports`: `ImportBatch`, `PendingTransaction`, criptografia de campo, limites de arquivo, deduplicação, expurgo agendado | 3 dias |
+| 5.3 | **[B]** Parser de OFX (conta e cartão), seguro contra XML malicioso | 2 dias |
+| 5.4 | **[B]** Parser de CSV com modelos por banco (Nubank e C6 primeiro) e `CsvMapping` salvo; detecção automática de formato (OFX/CSV) e de banco; abertura em memória do ZIP com senha da fatura do C6 (e XLSX só se necessário), com limites contra bomba de compressão | 4 dias |
+| 5.5 | **[B]** Endpoints: enviar arquivo, listar lotes, listar pendências, detalhe, `import`, `bulk` e remover lote; OpenAPI e `make gen_api` | 3 dias |
+| 5.6 | **[F]** Página de importação, página "Pendências" (contador no menu, filtros, seleção em lote) e formulário de despesa com valores iniciais | 4 dias |
+| 5.7 | **[M]** Telas equivalentes: seletor de arquivos, Pendências, formulário pré-preenchido, biometria e bloqueio de captura | 4 dias |
+| 5.8 | Testes de segurança (arquivo malicioso, reenvio, IDOR, expurgo, cifragem, logs), `seed_demo`, README e passada manual | 2 dias |
+| 5.9 | **[B][F][M]** Leitura de PDF do **extrato do C6** (protegido por senha, a senha pedida a cada envio e usada só em memória), em processo isolado com limites, e tela de revisão obrigatória antes de gravar (com conferência do total, quando o PDF trouxer saldo). Outros bancos só se a 5.1 indicar | 4–5 dias |
+
+**Pronto quando:**
+- enviar um extrato e uma fatura de teste (OFX e CSV) cria as pendências no web e no mobile;
+- reenviar o mesmo arquivo, ou um que se sobreponha, não duplica linhas;
+- registrar um débito cria a despesa na família escolhida (também em lote) e a pendência sai da lista; marcar como lida apaga os dados sensíveis;
+- um crédito só pode ser marcado como lido;
+- um arquivo malicioso ou grande demais é recusado sem estourar a memória;
+- um usuário não enxerga nem importa a pendência de outro;
+- o arquivo original e a descrição não aparecem em claro no banco nem nos logs.
+
+### 5C: Rendas a partir de créditos (futuro, sem prazo)
+
+Fica registrado e não entra na entrega atual. Créditos (salário, Pix e transferências recebidas) já estarão na lista; esta etapa adiciona "Registrar como renda", com o formulário de renda pré-preenchido (valor, data, descrição, categoria de receita e família), no mesmo fluxo e com a mesma retenção. O `import` deixa de responder 409 para crédito. Depende da 5B.
 
 ## Fase 6: Contas, cartão e parcelamento (7–10 dias)
 
@@ -154,11 +215,22 @@ Mudança de modelo de dados, a mais arriscada. Deixar para depois da estabiliza�
 - **Refatorar os widgets grandes do mobile** (`insights_widgets`, `finance_screen`, `form_fields`, `overlays`) e adotar Riverpod ou Bloc. Pode ocorrer em paralelo à Fase 3 ou 4 no mobile, quando mexer nessas telas.
 - **Tags e lançamentos divididos:** depois da Fase 6, pois toca o mesmo modelo.
 
+## Fase 8: Conexão automática com os bancos e notificações (futuro, sem prazo)
+
+Fica para depois da Fase 5. Em vez de enviar arquivos, o usuário conecta os bancos (Open Finance, por um agregador) e as transações chegam sozinhas na **mesma lista de Pendências**, com aviso no celular. Análise de viabilidade, riscos e medidas em [DESPESAS-BANCARIAS.md](DESPESAS-BANCARIAS.md).
+
+- **Pré-requisitos:** Fase 5B pronta e, para o push, a Fase 4 (itens 3 e 5: serviço `notify`, token FCM, conta no Firebase).
+- **Agregador (pesquisa de 2026-10):** para uso pessoal, a opção gratuita encontrada é o **Meu Pluggy** (5 conexões por titular, sincronização a cada 24 horas, só para os dados do próprio usuário). Os planos empresariais custam a partir de R$ 2.500/mês. Confirmar termos antes de decidir.
+- **Reaproveita:** `PendingTransaction` (com `source = BANK_CONNECTION`), os endpoints e as telas da 5B.
+- **Acrescenta:** conexão e revogação, webhook assinado, sincronização, e notificação de **toda** transação (débito, crédito, Pix, transferência), privada por padrão, com deep link só com o id.
+
 ## Ordem e dependências
 
 ```
 Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4 → Fase 5 → Fase 6
                      └─ (refatoração protege 3–6)      └─ Fase 7 em paralelo
+                                  └─ 5B (importação de extratos; só Fases 0 e 1) → 5C (rendas)
+                                                      └─ Fase 8 (conexão bancária + push; depende da 5B e da Fase 4)
 ```
 
 - A Fase 0 vem antes de tudo: os itens de segurança são pequenos e o CI protege o resto.
@@ -175,3 +247,15 @@ Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4 → Fase 5 → Fase 6
 
 - Lista de rotas que devem continuar públicas.
 - Tempo de vida dos tokens de acesso e de refresh.
+
+## Pontos a decidir antes da Fase 5B
+
+- Quais bancos e cartões o usuário usa e que arquivos (OFX ou CSV) cada um exporta.
+- O que o Bradesco exporta (extrato e fatura), a confirmar pelo usuário.
+- Como aparecem estorno, pagamento da fatura, parcelas e compra internacional no CSV do C6, e o separador real do arquivo (o cabeçalho já é conhecido; ver [IMPORTACAO-EXTRATOS.md](IMPORTACAO-EXTRATOS.md)).
+- Validação jurídica (LGPD, termos de uso) antes de abrir para outras pessoas.
+
+## Pontos a decidir antes da Fase 8
+
+- Agregador (o Meu Pluggy é a opção gratuita para uso pessoal; confirmar termos).
+- Conteúdo do push: privado por padrão com opção detalhada (recomendado) ou sempre detalhado.
