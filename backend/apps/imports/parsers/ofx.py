@@ -11,7 +11,9 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 from apps.imports.enums import Direction, ImportSource
+from apps.imports.parsers.errors import ParseError
 from apps.imports.parsers.flags import detect_flag
+from apps.imports.parsers.text import decode_text
 from apps.imports.services.create_batch import ParsedRow
 
 MAX_TAGS = 200_000
@@ -22,24 +24,13 @@ BASIC_ENTITIES = {"&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&apos;
 ENTITY = re.compile(r"&(?:amp|lt|gt|quot|apos);")
 
 
-class OfxParseError(ValueError):
-    """Mensagem genérica de propósito: nunca inclui trechos do arquivo."""
+OfxParseError = ParseError
 
 
 @dataclass
 class ParseResult:
     rows: list = field(default_factory=list)
     source_hint: str | None = None
-
-
-def decode(content):
-    if b"\x00" in content:
-        raise OfxParseError("Arquivo OFX inválido.")
-
-    try:
-        return content.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        return content.decode("cp1252", errors="replace")
 
 
 def looks_like_ofx(content):
@@ -87,7 +78,7 @@ def parse_ofx(content, invert_sign=False, max_rows=None):
 
     `invert_sign` vale para os emissores que registram a compra no cartão como valor positivo.
     """
-    text = decode(content)
+    text = decode_text(content)
     start = text.upper().find("<OFX>")
 
     if start < 0:
