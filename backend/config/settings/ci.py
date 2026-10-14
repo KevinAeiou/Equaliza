@@ -14,3 +14,6 @@ DATABASES = {
         "NAME": ":memory:",
     }
 }
+
+# Chave de teste (Fernet); nunca usar fora do CI.
+IMPORT_ENCRYPTION_KEYS = ["Zm9vYmFyZm9vYmFyZm9vYmFyZm9vYmFyZm9vYmFyMTI="]

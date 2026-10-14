@@ -64,6 +64,7 @@ LOCAL_APPS = [
     "apps.reports",
     "apps.invitations",
     "apps.settlements",
+    "apps.imports",
 ]
 
 THIRD_PARTY_APPS = [
@@ -231,3 +232,12 @@ SIMPLE_JWT = {
 RECURRING_SCHEDULER_ENABLED = env.bool("RECURRING_SCHEDULER_ENABLED", default=False)
 RECURRING_SCHEDULER_INTERVAL = env.int("RECURRING_SCHEDULER_INTERVAL", default=3600)
 RECURRING_SCHEDULER_INITIAL_DELAY = env.int("RECURRING_SCHEDULER_INITIAL_DELAY", default=30)
+
+
+# Importação de extratos e faturas (Fase 5B). Desligada por padrão.
+STATEMENT_IMPORT_ENABLED = env.bool("STATEMENT_IMPORT_ENABLED", default=False)
+# Chaves Fernet separadas por vírgula; a primeira cifra, todas decifram (permite rotacionar).
+IMPORT_ENCRYPTION_KEYS = env.list("IMPORT_ENCRYPTION_KEYS", default=[])
+IMPORT_MAX_FILE_BYTES = env.int("IMPORT_MAX_FILE_BYTES", default=5 * 1024 * 1024)
+IMPORT_MAX_ROWS = env.int("IMPORT_MAX_ROWS", default=5000)
+IMPORT_RETENTION_DAYS = env.int("IMPORT_RETENTION_DAYS", default=60)
