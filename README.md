@@ -137,6 +137,23 @@ Cada membro deveria cobrir as despesas do mês na proporção da sua receita (se
 
 ---
 
+## 🏦 Importação de extratos e faturas *(planejado)*
+
+Em vez de digitar cada despesa, o usuário carrega o extrato do banco ou a fatura do cartão de crédito (OFX, CSV ou, no caso do extrato do C6, PDF; arquivos com senha são aceitos):
+
+* Cada linha do arquivo vira uma **pendência** na lista de **Pendências** (web e mobile)
+* O usuário seleciona quais linhas serão vinculadas a uma família (uma a uma ou em lote) ou marcadas como lidas, que saem da lista
+* Ao registrar uma despesa, o formulário já vem preenchido com valor, data e descrição; se houver mais de uma família, ele escolhe a qual pertence e pode editar valor, data, descrição e categoria
+* Linhas já importadas não se repetem se o arquivo for reenviado
+* Créditos (transferências recebidas) serão preenchidos como **renda**, em uma etapa futura; até lá só podem ser marcados como lidos
+* O arquivo original não é guardado, e os dados são cifrados e apagados ao serem tratados ou ao expirarem
+
+Riscos, medidas de segurança e o que é ou não viável: [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md).
+
+**Futuro:** conexão automática com os bancos (Open Finance) e notificação de cada transação no celular, usando a mesma lista. Veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
+
+---
+
 ## 👤 Perfil
 
 * Alteração do nome
@@ -436,6 +453,8 @@ O Equaliza utiliza diversas práticas para proteger os dados dos usuários:
 * Proteção contra acesso não autorizado
 * Em produção, a aplicação não inicia sem `SECRET_KEY` e `ALLOWED_HOSTS`
 
+Para a importação de extratos (planejada), as medidas previstas incluem: arquivo processado em memória e nunca guardado, limites de tamanho, parser seguro contra XML malicioso, criptografia de campo, retenção curta com expurgo e acesso restrito ao dono da pendência. Detalhes em [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md). Para a futura conexão bancária, veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
+
 ---
 
 # 📡 API
@@ -481,11 +500,14 @@ O Equaliza foi criado para facilitar o gerenciamento financeiro familiar atravé
 
 # 🚧 Roadmap
 
-As fases planejadas estão detalhadas em [PLANO.md](PLANO.md). Em resumo:
+As fases planejadas estão detalhadas em [docs/PLANO.md](docs/PLANO.md). Em resumo:
 
 * [x] Acerto de contas entre membros
 * [ ] Orçamentos por categoria
 * [ ] Notificações
+* [ ] Importação de extratos e faturas de cartão, com lista de Pendências
+* [ ] Rendas a partir de créditos importados
+* [ ] Conexão automática com os bancos (Open Finance) e notificação de transações (futuro)
 * [ ] Metas financeiras
 * [ ] Parcelamento de despesas
 * [ ] Exportação para Excel e PDF
