@@ -12,6 +12,9 @@ from apps.families.enums import FamilyRole
 from apps.families.models import Family, FamilyMember
 from apps.finance.enums import CategoryType
 from apps.finance.models import Expense, FinancialCategory, Income
+from apps.imports.enums import Direction, ImportFormat, ImportSource, PendingFlag
+from apps.imports.parsed import ParsedRow
+from apps.imports.services import CreateImportBatchService
 from apps.invitations.models import Invitation
 from apps.settlements.enums import SettlementStatus
 from apps.settlements.models import Settlement
@@ -45,6 +48,21 @@ MONTHLY_EXPENSES = [
     ("Saúde", "Plano de saúde", 20, 640, 640, "bruno"),
     ("Pets", "Ração e petshop", 22, 150, 260, "carla"),
 ]
+# Linhas de exemplo de um extrato e de uma fatura para a lista de Pendências da Ana:
+# (dias antes de hoje, direção, valor, descrição, tipo do banco, sinalizador)
+DEMO_STATEMENT = [
+    (3, Direction.DEBIT, "86.40", "Compra no débito - Supermercado Central", "DEBIT", ""),
+    (4, Direction.DEBIT, "32.00", "Pix enviado - Padaria do Bairro", "PIX", ""),
+    (6, Direction.DEBIT, "1250.00", "Pagamento de fatura", "DEBIT", PendingFlag.CARD_PAYMENT),
+    (8, Direction.CREDIT, "6800.00", "Transferência recebida - Salário", "CREDIT", ""),
+    (9, Direction.DEBIT, "119.90", "Débito automático - Internet", "DEBIT", ""),
+]
+DEMO_INVOICE = [
+    (10, Direction.DEBIT, "214.30", "FARMACIA SAUDE (1/1)", "Saúde", ""),
+    (12, Direction.DEBIT, "389.90", "LOJA DE ELETRO (2/6)", "Eletrônicos", ""),
+    (14, Direction.DEBIT, "58.00", "RESTAURANTE SABOR", "Restaurantes", ""),
+    (15, Direction.CREDIT, "40.00", "ESTORNO LOJA", "Estorno", ""),
+]
 # (categoria, descrições possíveis, ocorrências no mês, valor mínimo, valor máximo)
 VARIABLE_EXPENSES = [
     ("Alimentação", ["Supermercado", "Feira", "Padaria", "Açougue"], 7, 60, 480),
@@ -62,7 +80,7 @@ def add_months(month: date, months: int) -> date:
 
 
 class Command(BaseCommand):
-    help = "Povoa o banco com uma família de demonstração, 6 meses de receitas e despesas e acertos entre membros."
+    help = "Povoa o banco com uma família de demonstração, 6 meses de receitas e despesas, acertos entre membros e pendências de importação."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -86,11 +104,17 @@ class Command(BaseCommand):
             incomes, expenses = self.create_entries(family, users, categories)
             invitations = self.create_invitations(family, users)
             settlements = self.create_settlements(family, users)
+            pending = self.create_pending(users["ana"])
 
         self.stdout.write(self.style.SUCCESS(
             f"{FAMILY_NAME}: {len(users)} membros, {incomes} receitas, {expenses} despesas, "
-            f"{invitations} convites e {settlements} acertos."
+            f"{invitations} convites, {settlements} acertos e {pending} pendências de importação."
         ))
+
+        if not pending:
+            self.stdout.write(self.style.WARNING(
+                "Pendências não criadas: defina IMPORT_ENCRYPTION_KEYS (veja o .env.example) e ligue STATEMENT_IMPORT_ENABLED."
+            ))
         self.stdout.write(f"Senha de todos os usuários: {PASSWORD}")
 
         for email, *_ in MEMBERS:
@@ -310,6 +334,37 @@ class Command(BaseCommand):
             count += 1
 
         return count
+
+    def create_pending(self, owner):
+        """Um extrato e uma fatura de exemplo na lista de Pendências da Ana (precisa da chave de cifra)."""
+        if not settings.IMPORT_ENCRYPTION_KEYS:
+            return 0
+
+        today = date.today()
+        total = 0
+
+        for source, file_format, lines in (
+            (ImportSource.STATEMENT, ImportFormat.OFX, DEMO_STATEMENT),
+            (ImportSource.CARD_INVOICE, ImportFormat.CSV, DEMO_INVOICE),
+        ):
+            rows = [
+                ParsedRow(
+                    direction=direction,
+                    amount=Decimal(amount),
+                    occurred_at=today - timedelta(days=days),
+                    description=description,
+                    kind=kind if source == ImportSource.STATEMENT else "",
+                    source_category=kind if source == ImportSource.CARD_INVOICE else "",
+                    account_ref="1234",
+                    flag=flag,
+                )
+                for days, direction, amount, description, kind, flag in lines
+            ]
+            # O conteúdo é só um rótulo para o hash do lote; os dados de demonstração não vêm de arquivo.
+            batch = CreateImportBatchService.execute(owner, source, file_format, f"demo-{source}".encode(), rows)
+            total += batch.rows_new
+
+        return total
 
     def amount(self, low, high):
         if low == high:

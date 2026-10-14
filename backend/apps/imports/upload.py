@@ -11,8 +11,13 @@ class LimitedMemoryUploadHandler(MemoryFileUploadHandler):
 
     def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         self.received = 0
+        result = super().handle_raw_input(input_data, META, content_length, boundary, encoding)
 
-        return super().handle_raw_input(input_data, META, content_length, boundary, encoding)
+        # O handler do Django só se ativa até FILE_UPLOAD_MAX_MEMORY_SIZE (2,5 MB por padrão) e,
+        # acima disso, deixaria o arquivo sem handler. Aqui o limite é o IMPORT_MAX_FILE_BYTES.
+        self.activated = True
+
+        return result
 
     def receive_data_chunk(self, raw_data, start):
         self.received += len(raw_data)

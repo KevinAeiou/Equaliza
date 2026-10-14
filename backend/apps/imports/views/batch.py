@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.parsers import MultiPartParser
@@ -9,7 +9,7 @@ from rest_framework.throttling import ScopedRateThrottle
 
 from apps.imports.enums import PendingStatus
 from apps.imports.exceptions import FileTooLarge
-from apps.imports.models import ImportBatch
+from apps.imports.models import ImportBatch, PendingTransaction
 from apps.imports.permissions import StatementImportEnabled
 from apps.imports.serializers import ImportBatchSerializer, UploadSerializer
 from apps.imports.services import UploadImportService
@@ -47,9 +47,15 @@ class ImportBatchViewSet(
         super().initial(request, *args, **kwargs)
 
     def get_queryset(self):
-        return ImportBatch.objects.filter(owner=self.request.user).annotate(
+        queryset = ImportBatch.objects.filter(owner=self.request.user).annotate(
             pending_count=Count("transactions", filter=Q(transactions__status=PendingStatus.PENDING))
         )
+
+        # Um reenvio sem linhas novas cria um lote vazio: não há o que mostrar nem remover.
+        if self.action == "list":
+            queryset = queryset.filter(Exists(PendingTransaction.objects.filter(batch=OuterRef("pk"))))
+
+        return queryset
 
     def get_serializer_class(self):
         return UploadSerializer if self.action == "create" else ImportBatchSerializer

@@ -71,6 +71,7 @@ Perfis disponíveis:
 * Categorias
 * Pesquisa
 * Filtros
+* Exportação em CSV e PDF (web e mobile), respeitando os filtros ativos
 
 ---
 
@@ -82,6 +83,7 @@ Perfis disponíveis:
 * Categorias
 * Pesquisa
 * Filtros
+* Exportação em CSV e PDF (web e mobile), respeitando os filtros ativos
 
 ---
 
@@ -137,18 +139,19 @@ Cada membro deveria cobrir as despesas do mês na proporção da sua receita (se
 
 ---
 
-## 🏦 Importação de extratos e faturas *(planejado)*
+## 🏦 Importação de extratos e faturas
 
-Em vez de digitar cada despesa, o usuário carrega o extrato do banco ou a fatura do cartão de crédito (OFX, CSV ou, no caso do extrato do C6, PDF; arquivos com senha são aceitos):
+Em vez de digitar cada despesa, o usuário carrega o extrato do banco ou a fatura do cartão de crédito (web e mobile). A funcionalidade fica **desligada por padrão** (`STATEMENT_IMPORT_ENABLED`) e exige uma chave de cifra (`IMPORT_ENCRYPTION_KEYS`).
 
-* Cada linha do arquivo vira uma **pendência** na lista de **Pendências** (web e mobile)
-* O usuário seleciona quais linhas serão vinculadas a uma família (uma a uma ou em lote) ou marcadas como lidas, que saem da lista
-* Ao registrar uma despesa, o formulário já vem preenchido com valor, data e descrição; se houver mais de uma família, ele escolhe a qual pertence e pode editar valor, data, descrição e categoria
-* Linhas já importadas não se repetem se o arquivo for reenviado
-* Créditos (transferências recebidas) serão preenchidos como **renda**, em uma etapa futura; até lá só podem ser marcados como lidos
-* O arquivo original não é guardado, e os dados são cifrados e apagados ao serem tratados ou ao expirarem
+* **Formatos:** OFX e CSV, detectados pelo conteúdo do arquivo (não pela extensão). Modelos prontos de CSV para Nubank (extrato e fatura) e C6 (fatura, que chega em **ZIP com senha**); outros bancos usam um **mapeamento de colunas** que o usuário informa uma vez e fica salvo
+* Cada linha vira uma **pendência** na lista de **Pendências**; o usuário seleciona quais serão registradas como despesa (uma a uma ou em lote, com a mesma família e categoria) ou marcadas como lidas
+* Ao registrar, o formulário vem preenchido com valor, data e descrição, editáveis; se houver mais de uma família, ele escolhe a qual pertence
+* Linhas já importadas não se repetem se o arquivo for reenviado ou se outro arquivo se sobrepuser; o pagamento da fatura é sinalizado como provável duplicidade
+* Créditos (transferências recebidas) só podem ser marcados como lidos por enquanto; virar renda é uma etapa futura
+* O arquivo original **não é guardado** (é lido em memória e descartado) e a descrição é cifrada no banco; ao registrar, marcar como lida ou expirar (60 dias), os dados são apagados
+* No mobile, a lista exige biometria e bloqueia capturas de tela (Android)
 
-Riscos, medidas de segurança e o que é ou não viável: [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md).
+**Ainda não feito:** leitura do PDF do extrato do C6 e conferência dos modelos de CSV/OFX com arquivos reais. Riscos, medidas de segurança e o plano completo: [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md).
 
 **Futuro:** conexão automática com os bancos (Open Finance) e notificação de cada transação no celular, usando a mesma lista. Veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
 
@@ -347,6 +350,10 @@ python manage.py seed_demo
 | `NUM_PROXIES` | Proxies confiáveis à frente da API (para identificar o IP) | — |
 | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `DEFAULT_FROM_EMAIL` | Envio de e-mails | console |
 | `RECURRING_SCHEDULER_ENABLED` | Agendador interno de recorrências (**obsoleto**: use o Cron Job) | `False` |
+| `STATEMENT_IMPORT_ENABLED` | Liga a importação de extratos e faturas (sem ela, as rotas respondem 404 e o menu esconde Pendências) | `False` |
+| `IMPORT_ENCRYPTION_KEYS` | Chaves Fernet, separadas por vírgula (a primeira cifra, todas decifram). **Obrigatória com a importação ligada**; gere com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` | — |
+| `IMPORT_MAX_FILE_BYTES` / `IMPORT_MAX_ROWS` / `IMPORT_RETENTION_DAYS` | Limites do arquivo (bytes e linhas) e dias até a pendência expirar | `5242880`, `5000`, `60` |
+| `THROTTLE_RATE_IMPORT_UPLOAD` | Limite de envios de arquivo por usuário | `10/hour` |
 | `LOG_LEVEL` | Nível dos logs | `INFO` |
 
 ---
@@ -453,7 +460,7 @@ O Equaliza utiliza diversas práticas para proteger os dados dos usuários:
 * Proteção contra acesso não autorizado
 * Em produção, a aplicação não inicia sem `SECRET_KEY` e `ALLOWED_HOSTS`
 
-Para a importação de extratos (planejada), as medidas previstas incluem: arquivo processado em memória e nunca guardado, limites de tamanho, parser seguro contra XML malicioso, criptografia de campo, retenção curta com expurgo e acesso restrito ao dono da pendência. Detalhes em [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md). Para a futura conexão bancária, veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
+Na importação de extratos: arquivo lido em memória e nunca guardado (nem em arquivo temporário), limites de tamanho, de linhas e de compressão, parser de OFX próprio que nunca resolve DTD nem entidades externas, ZIP com senha aberto em memória, senhas e conteúdo fora dos logs, descrição cifrada no banco, retenção de 60 dias com expurgo diário, erros genéricos e acesso restrito ao dono da pendência. Detalhes em [docs/IMPORTACAO-EXTRATOS.md](docs/IMPORTACAO-EXTRATOS.md). Para a futura conexão bancária, veja [docs/DESPESAS-BANCARIAS.md](docs/DESPESAS-BANCARIAS.md).
 
 ---
 
@@ -469,6 +476,8 @@ Todas as rotas ficam sob `/api/`:
 /api/finances/expenses/  /api/finances/income/  /api/finances/recurring/  /api/finances/categories/
 /api/reports/dashboard/summary/  /api/reports/dashboard/charts/  /api/reports/dashboard/insights/
 /api/settlements/  /api/settlements/balance/  /api/settlements/<id>/cancel/
+/api/finances/expenses/export/  /api/finances/income/export/   (?export_format=csv|pdf)
+/api/imports/  /api/imports/csv-mappings/  /api/pending-transactions/  /api/pending-transactions/<id>/import/  /api/pending-transactions/bulk/
 /api/health/
 /api/schema/  /api/docs/
 ```
@@ -482,6 +491,7 @@ Sem autenticação ficam apenas: `login`, `register`, `password-reset`, `passwor
 * **Backend** (Render) e **frontend** (Vercel): o deploy é disparado ao criar uma tag `v*` e só roda se o CI passar.
 * **Mobile**: a tag `mobile-v*` gera o APK e o publica em uma release do GitHub.
 * **Recorrências**: um Cron Job do Render (`render.yaml`) executa `python manage.py generate_recurring` todos os dias; as vencidas também são lançadas ao listar receitas e despesas. O agendador interno em thread (`RECURRING_SCHEDULER_ENABLED`) está obsoleto e será removido.
+* **Expurgo das pendências**: um segundo Cron Job (`python manage.py purge_pending_imports`) expira as pendências vencidas e apaga os dados sensíveis; ele precisa da mesma `IMPORT_ENCRYPTION_KEYS` do web service.
 * O health check do serviço web pode apontar para `/api/health/`.
 
 ---
@@ -505,12 +515,12 @@ As fases planejadas estão detalhadas em [docs/PLANO.md](docs/PLANO.md). Em resu
 * [x] Acerto de contas entre membros
 * [ ] Orçamentos por categoria
 * [ ] Notificações
-* [ ] Importação de extratos e faturas de cartão, com lista de Pendências
+* [x] Importação de extratos e faturas de cartão, com lista de Pendências (OFX e CSV; falta o PDF do extrato do C6)
 * [ ] Rendas a partir de créditos importados
 * [ ] Conexão automática com os bancos (Open Finance) e notificação de transações (futuro)
 * [ ] Metas financeiras
 * [ ] Parcelamento de despesas
-* [ ] Exportação para Excel e PDF
+* [x] Exportação para planilha (CSV) e PDF
 * [x] Dashboard com insights
 * [x] Finanças recorrentes
 * [x] Aplicativo mobile

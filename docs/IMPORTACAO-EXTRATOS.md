@@ -1,6 +1,6 @@
 # Importação de extratos e faturas de cartão
 
-> **Status:** em planejamento (Fase 5, etapa 5B, do [PLANO.md](PLANO.md)). Nada deste documento está implementado.
+> **Status:** implementado em OFX e CSV (Fase 5, etapas 5.2 a 5.8 do [PLANO.md](PLANO.md)), no backend, no web e no mobile, atrás da flag `STATEMENT_IMPORT_ENABLED`. **Faltam:** a leitura do PDF do extrato do C6 (etapa 5.9) e a conferência dos modelos com arquivos reais (etapa 5.1). Os trechos abaixo que falam em "será" descrevem o desenho; o que ainda não existe está listado aqui.
 >
 > A conexão automática com os bancos (Open Finance) ficou para o futuro (Fase 8): veja [DESPESAS-BANCARIAS.md](DESPESAS-BANCARIAS.md). A lista de Pendências definida aqui será reaproveitada por ela.
 

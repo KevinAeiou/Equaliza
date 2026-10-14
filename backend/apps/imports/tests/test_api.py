@@ -81,6 +81,21 @@ class ImportApiTests(APITestCase):
         self.assertEqual((response.data["rows_new"], response.data["rows_duplicated"]), (0, 3))
         self.assertEqual(self.pending().count(), 3)
 
+    def test_resending_a_file_leaves_no_empty_batch_in_the_history(self):
+        self.upload()
+        self.upload()
+
+        listing = self.client.get("/api/imports/")
+
+        self.assertEqual([batch["rows_new"] for batch in listing.data], [3])
+        self.assertEqual(ImportBatch.objects.count(), 2)
+
+        from apps.imports.services import PurgePendingService
+
+        PurgePendingService.execute()
+
+        self.assertEqual(ImportBatch.objects.count(), 1)
+
     def test_upload_c6_zip_with_password(self):
         content = zipcrypto_zip("fatura.csv", C6_CARD, "123456")
 
