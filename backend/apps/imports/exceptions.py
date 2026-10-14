@@ -3,9 +3,16 @@ from rest_framework.exceptions import APIException
 
 
 class ImportRejected(APIException):
+    """O corpo leva `code`, para o cliente distinguir os casos (senha ausente ou errada, mapeamento...)."""
+
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = "import_rejected"
     default_detail = "Não foi possível processar o arquivo."
+
+    def __init__(self, detail=None, code=None):
+        super().__init__(
+            detail={"detail": str(detail or self.default_detail), "code": code or self.default_code}
+        )
 
 
 class FileTooLarge(ImportRejected):
@@ -35,7 +42,8 @@ class MappingNeeded(ImportRejected):
     default_code = "needs_mapping"
 
     def __init__(self, headers):
-        super().__init__(detail={"detail": "Informe o mapeamento das colunas.", "headers": headers})
+        super().__init__("Informe o mapeamento das colunas.")
+        self.detail["headers"] = headers
 
 
 class PendingConflict(APIException):

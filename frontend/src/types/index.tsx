@@ -333,8 +333,31 @@ export interface FinanceMemberProps {
 
 export type MemberProps = Schemas["ListFamilyMember"]
 
+// Importação de extratos e faturas (Fase 5B).
+export type ImportSource = Schemas["SourceEnum"]
+export type PendingProps = Schemas["Pending"]
+export type PendingDirection = PendingProps["direction"]
+export type ImportBatchProps = Schemas["ImportBatch"]
+export type CsvMappingProps = Schemas["CsvMapping"]
+export type CsvMappingPayload = Schemas["CsvMappingRequest"]
+
+export interface PendingParams {
+	direction?: PendingDirection
+	flag?: PendingProps["flag"]
+	batch?: number
+}
+
+export interface RegisterPendingPayload {
+	family: number
+	category: number
+	amount?: string
+	date?: string
+	description?: string
+}
+
 export type ErrorResponse = {
 	detail?: string
+	code?: string
 } & Record<string, string | string[] | undefined>
 
 export const userInitialState = {} as UserProps

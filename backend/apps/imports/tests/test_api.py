@@ -88,8 +88,8 @@ class ImportApiTests(APITestCase):
         wrong = self.upload(content, "CARD_INVOICE", "f.zip", password="000000")
         ok = self.upload(content, "CARD_INVOICE", "f.zip", password="123456")
 
-        self.assertEqual((missing.status_code, missing.data["detail"].code), (400, "password_required"))
-        self.assertEqual(wrong.data["detail"].code, "wrong_password")
+        self.assertEqual((missing.status_code, missing.data["code"]), (400, "password_required"))
+        self.assertEqual(wrong.data["code"], "wrong_password")
         self.assertEqual((ok.status_code, ok.data["rows_new"]), (201, 3))
         self.assertNotIn("123456", str(ok.data))
 
@@ -100,6 +100,7 @@ class ImportApiTests(APITestCase):
         mismatch = self.upload(OFX, "CARD_INVOICE")
 
         self.assertEqual(unknown.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(unknown.data["code"], "needs_mapping")
         self.assertEqual(unknown.data["headers"], ["Dia", "Quanto", "Historico"])
         self.assertEqual(garbage.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(pdf.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)

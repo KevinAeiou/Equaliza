@@ -15,7 +15,8 @@ import {
 import { getFamilyMonogram } from "@/src/features/dashboard/utils"
 import { cn } from "@/src/lib/utils"
 
-import { isActiveLink, NAV_LINKS } from "../menuNavigation"
+import { isActiveLink, isLinkVisible, NAV_LINKS, PendingBadge } from "../menuNavigation"
+import { usePendingCount } from "@/src/features/imports/hooks/usePendingCount"
 import { useMenuNavigation } from "@/src/components/menuNavigation/useMenuNavigation"
 import { useUserNavigation } from "../userNavigation/useUserNavigation"
 import { useSheetNavigation } from "./useSheetNavigation"
@@ -51,6 +52,7 @@ export const SheetNavigation = () => {
 	} = useSheetNavigation()
 
 	const pathname = usePathname()
+	const pendingCount = usePendingCount()
 
 	const rowClassName = "flex h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors"
 
@@ -94,7 +96,7 @@ export const SheetNavigation = () => {
 						<nav aria-label="Navegação principal" className="flex flex-col gap-1">
 							<SectionTitle>Navegação</SectionTitle>
 
-							{NAV_LINKS.filter((link) => !link.adminOnly || isAdmin).map(({ href, label, icon: Icon }) => {
+							{NAV_LINKS.filter((link) => isLinkVisible(link, isAdmin, pendingCount)).map(({ href, label, icon: Icon, pending }) => {
 								const active = isActiveLink(pathname, href)
 
 								return (
@@ -110,6 +112,7 @@ export const SheetNavigation = () => {
 									>
 										<Icon className={cn("size-4", active && "text-income")} />
 										{label}
+										{pending && <PendingBadge count={pendingCount} />}
 									</Link>
 								)
 							})}
