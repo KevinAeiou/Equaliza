@@ -1,6 +1,12 @@
 import Link from "next/link"
-import { ChevronRight, Plus, Repeat } from "lucide-react"
-import { Button } from "@/src/components/ui/button"
+import { ChevronRight, Download, Plus, Repeat } from "lucide-react"
+import { Button, buttonVariants } from "@/src/components/ui/button"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu"
 import { FilterButton } from "@/src/components/filters"
 import { HeaderScreen } from "@/src/components/headerScreen"
 import { ActiveFilters } from "../../dashboard/components/ActiveFilters"
@@ -13,6 +19,7 @@ import { FinanceTabs } from "./FinanceTabs"
 
 export const FinanceScreen = () => {
 	const {
+		exporting, handleExport,
 		type,
 		open, setOpen,
 		refresh, setRefresh,
@@ -43,6 +50,24 @@ export const FinanceScreen = () => {
 						onClick={() => setShowFilter((prev) => !prev)}
 						compact
 					/>
+
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							disabled={exporting}
+							className={buttonVariants({ variant: "outline", className: "h-10 gap-2" })}
+						>
+							<Download className="size-4" />
+							Exportar
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem onSelect={() => handleExport("csv")}>
+								Planilha (CSV)
+							</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => handleExport("pdf")}>
+								Documento (PDF)
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 
 					<Button
 						onClick={() => setOpen(true)}

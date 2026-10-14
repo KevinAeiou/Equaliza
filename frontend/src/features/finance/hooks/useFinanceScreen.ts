@@ -1,4 +1,6 @@
 import { FinanceEntryType, SelectOption } from "@/src/types"
+import { toast } from "sonner"
+import { ExportFormat } from "../infra/finance"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FormFinanceFilterSchemaType, getDefaultValues } from "../schemas/filter.schema"
@@ -42,7 +44,22 @@ export const useFinanceScreen = () => {
 		}))
 	}
 
+	const [exporting, setExporting] = useState<boolean>(false)
+
+	const handleExport = async (exportFormat: ExportFormat) => {
+		setExporting(true)
+
+		try {
+			await FinanceService.export(type, filters, exportFormat)
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Não foi possível exportar.")
+		} finally {
+			setExporting(false)
+		}
+	}
+
 	return {
+		exporting, handleExport,
 		type,
 		open, setOpen,
 		refresh, setRefresh,
