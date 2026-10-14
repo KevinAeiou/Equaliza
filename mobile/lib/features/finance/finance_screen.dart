@@ -140,6 +140,14 @@ class _FinanceScreenState extends State<FinanceScreen> {
     if (result == FinanceResult.delete && entry != null) _delete(entry);
   }
 
+  Future<void> _export(String exportFormat) async {
+    try {
+      await FinanceService.export(_type, _filters, exportFormat);
+    } on ApiException catch (error) {
+      if (mounted) showMessage(context, error.message);
+    }
+  }
+
   Future<void> _delete(FinanceEntry entry) async {
     final confirmed = await showConfirmDialog(
       context,
@@ -182,6 +190,15 @@ class _FinanceScreenState extends State<FinanceScreen> {
               Expanded(child: PeriodNavigator(filters: _filters, onChanged: (filters) => _apply(filters: filters))),
               const SizedBox(width: 8),
               FilterIconButton(activeCount: _filters.categories.length + _filters.members.length, onPressed: _openFilters),
+              PopupMenuButton<String>(
+                tooltip: 'Exportar',
+                icon: const Icon(LucideIcons.download),
+                onSelected: _export,
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: 'csv', child: Text('Planilha (CSV)')),
+                  PopupMenuItem(value: 'pdf', child: Text('Documento (PDF)')),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 8),
