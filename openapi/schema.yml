@@ -1118,6 +1118,27 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/imports/confirm/:
+    post:
+      operationId: imports_confirm_create
+      description: Grava as linhas já revisadas de um PDF como pendências.
+      tags:
+      - imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdfConfirmRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+          description: ''
   /api/imports/csv-mappings/:
     get:
       operationId: imports_csv_mappings_list
@@ -1187,6 +1208,28 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/imports/preview/:
+    post:
+      operationId: imports_preview_create
+      description: Lê o extrato em PDF (do C6) e devolve as linhas para revisão. Nada
+        é gravado.
+      tags:
+      - imports
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PdfPreviewRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdfPreview'
+          description: ''
   /api/invitations/:
     get:
       operationId: invitations_list
@@ -3392,6 +3435,81 @@ components:
           nullable: true
         is_active:
           type: boolean
+    PdfConfirmRequest:
+      type: object
+      properties:
+        account_ref:
+          oneOf:
+          - type: string
+            pattern: ^\d{0,4}$
+          - type: string
+            maxLength: 0
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementRowRequest'
+      required:
+      - rows
+    PdfPreview:
+      type: object
+      description: Linhas lidas do PDF para revisão; nada foi gravado. `matches` é
+        nulo se o PDF não traz totais.
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementRow'
+        account_ref:
+          type: string
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        matches:
+          type: boolean
+          nullable: true
+        parsed_in:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        parsed_out:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        pdf_in:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        pdf_out:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - account_ref
+      - matches
+      - parsed_in
+      - parsed_out
+      - pdf_in
+      - pdf_out
+      - period_end
+      - period_start
+      - rows
+    PdfPreviewRequestRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+      required:
+      - file
     Pending:
       type: object
       properties:
@@ -3649,6 +3767,52 @@ components:
       description: |-
         * `STATEMENT` - Extrato bancário
         * `CARD_INVOICE` - Fatura de cartão
+    StatementRow:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+          maxLength: 500
+        kind:
+          type: string
+          maxLength: 60
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        direction:
+          $ref: '#/components/schemas/DirectionEnum'
+      required:
+      - amount
+      - date
+      - description
+      - direction
+    StatementRowRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+          maxLength: 500
+        kind:
+          type: string
+          maxLength: 60
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        direction:
+          $ref: '#/components/schemas/DirectionEnum'
+      required:
+      - amount
+      - date
+      - description
+      - direction
     Suggestion:
       type: object
       properties:

@@ -326,6 +326,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/imports/confirm/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Grava as linhas já revisadas de um PDF como pendências. */
+        post: operations["imports_confirm_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/imports/csv-mappings/": {
         parameters: {
             query?: never;
@@ -353,6 +370,23 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["imports_csv_mappings_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/preview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Lê o extrato em PDF (do C6) e devolve as linhas para revisão. Nada é gravado. */
+        post: operations["imports_preview_create"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1364,6 +1398,33 @@ export interface components {
             end_date?: string | null;
             is_active?: boolean;
         };
+        PdfConfirmRequest: {
+            account_ref?: string;
+            rows: components["schemas"]["StatementRowRequest"][];
+        };
+        /** @description Linhas lidas do PDF para revisão; nada foi gravado. `matches` é nulo se o PDF não traz totais. */
+        PdfPreview: {
+            rows: components["schemas"]["StatementRow"][];
+            account_ref: string;
+            /** Format: date */
+            period_start: string;
+            /** Format: date */
+            period_end: string;
+            matches: boolean | null;
+            /** Format: decimal */
+            parsed_in: string;
+            /** Format: decimal */
+            parsed_out: string;
+            /** Format: decimal */
+            pdf_in: string | null;
+            /** Format: decimal */
+            pdf_out: string | null;
+        };
+        PdfPreviewRequestRequest: {
+            /** Format: binary */
+            file: string;
+            password?: string;
+        };
         Pending: {
             readonly id: number;
             readonly batch: number;
@@ -1465,6 +1526,24 @@ export interface components {
          * @enum {string}
          */
         SourceEnum: "STATEMENT" | "CARD_INVOICE";
+        StatementRow: {
+            /** Format: date */
+            date: string;
+            description: string;
+            kind?: string;
+            /** Format: decimal */
+            amount: string;
+            direction: components["schemas"]["DirectionEnum"];
+        };
+        StatementRowRequest: {
+            /** Format: date */
+            date: string;
+            description: string;
+            kind?: string;
+            /** Format: decimal */
+            amount: string;
+            direction: components["schemas"]["DirectionEnum"];
+        };
         Suggestion: {
             payer: number;
             payer_name: string;
@@ -2600,6 +2679,29 @@ export interface operations {
             };
         };
     };
+    imports_confirm_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PdfConfirmRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+        };
+    };
     imports_csv_mappings_list: {
         parameters: {
             query?: {
@@ -2667,6 +2769,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    imports_preview_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["PdfPreviewRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PdfPreview"];
+                };
             };
         };
     };

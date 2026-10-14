@@ -2,7 +2,9 @@ import re
 
 from apps.imports.enums import PendingFlag
 
-CARD_PAYMENT = re.compile(r"pag(?:to|amento)?\.?\s+(?:de\s+)?fatura|fatura\s+(?:de\s+)?cart", re.IGNORECASE)
+CARD_PAYMENT = re.compile(
+    r"(?:pag(?:to|amento)?|pgto)\.?\s+(?:de\s+)?fat(?:ura)?\b|fatura\s+(?:de\s+)?cart", re.IGNORECASE
+)
 
 
 def detect_flag(description):

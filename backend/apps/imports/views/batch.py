@@ -2,7 +2,8 @@ from django.db import transaction
 from django.db.models import Count, Exists, OuterRef, Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
-from rest_framework.parsers import MultiPartParser
+from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -11,8 +12,14 @@ from apps.imports.enums import PendingStatus
 from apps.imports.exceptions import FileTooLarge
 from apps.imports.models import ImportBatch, PendingTransaction
 from apps.imports.permissions import StatementImportEnabled
-from apps.imports.serializers import ImportBatchSerializer, UploadSerializer
-from apps.imports.services import UploadImportService
+from apps.imports.serializers import (
+    ImportBatchSerializer,
+    PdfConfirmSerializer,
+    PdfPreviewRequestSerializer,
+    PdfPreviewSerializer,
+    UploadSerializer,
+)
+from apps.imports.services import PdfStatementService, UploadImportService
 from apps.imports.upload import MULTIPART_OVERHEAD, LimitedMemoryUploadHandler
 from django.conf import settings
 
@@ -32,10 +39,10 @@ class ImportBatchViewSet(
 
     def get_throttles(self):
         # Só o envio de arquivo é limitado; listar e remover seguem livres.
-        return [ScopedRateThrottle()] if self.action == "create" else []
+        return [ScopedRateThrottle()] if self.action in ("create", "preview") else []
 
     def initial(self, request, *args, **kwargs):
-        if self.action == "create":
+        if self.action in ("create", "preview"):
             # O arquivo fica só em memória: nunca em arquivo temporário no disco.
             length = int(request.META.get("CONTENT_LENGTH") or 0)
 
@@ -74,6 +81,54 @@ class ImportBatchViewSet(
             password=data.get("password"),
             layout=mapping.to_layout() if mapping else None,
         )
+        batch.pending_count = batch.rows_new
+
+        return Response(ImportBatchSerializer(batch).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(request={"multipart/form-data": PdfPreviewRequestSerializer}, responses={200: PdfPreviewSerializer})
+    @action(detail=False, methods=["post"])
+    def preview(self, request):
+        """Lê o extrato em PDF (do C6) e devolve as linhas para revisão. Nada é gravado."""
+        serializer = PdfPreviewRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        result = PdfStatementService.preview(data["file"], data.get("password"))
+
+        return Response(
+            PdfPreviewSerializer(
+                {
+                    "rows": [
+                        {
+                            "date": row.occurred_at,
+                            "description": row.description,
+                            "kind": row.kind,
+                            "amount": row.amount,
+                            "direction": row.direction,
+                        }
+                        for row in result.rows
+                    ],
+                    "account_ref": result.account_ref,
+                    "period_start": result.period_start,
+                    "period_end": result.period_end,
+                    "matches": result.matches,
+                    "parsed_in": result.parsed_in,
+                    "parsed_out": result.parsed_out,
+                    "pdf_in": result.pdf_in,
+                    "pdf_out": result.pdf_out,
+                }
+            ).data
+        )
+
+    @extend_schema(request=PdfConfirmSerializer, responses={201: ImportBatchSerializer})
+    @action(detail=False, methods=["post"], parser_classes=[JSONParser])
+    def confirm(self, request):
+        """Grava as linhas já revisadas de um PDF como pendências."""
+        serializer = PdfConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        batch = PdfStatementService.confirm(request.user, data["rows"], data.get("account_ref", ""))
         batch.pending_count = batch.rows_new
 
         return Response(ImportBatchSerializer(batch).data, status=status.HTTP_201_CREATED)

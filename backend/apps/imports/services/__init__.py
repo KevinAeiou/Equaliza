@@ -2,6 +2,7 @@ from .create_batch import ParsedRow, UploadRejected, CreateImportBatchService, v
 from .resolve_pending import ResolvePendingService
 from .purge_pending import PurgePendingService
 from .register_pending import RegisterPendingService
+from .pdf_statement import PdfStatementService
 from .upload_import import UploadImportService
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     "ResolvePendingService",
     "PurgePendingService",
     "RegisterPendingService",
+    "PdfStatementService",
     "UploadImportService",
 ]

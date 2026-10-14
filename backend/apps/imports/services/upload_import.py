@@ -2,23 +2,10 @@ import logging
 
 from django.conf import settings
 
-from apps.imports.exceptions import (
-    FileTooLarge,
-    ImportRejected,
-    MappingNeeded,
-    PasswordNeeded,
-    UnsupportedFile,
-    WrongFilePassword,
-)
-from apps.imports.parsers import (
-    NeedsMapping,
-    ParseError,
-    PasswordRequired,
-    UnsupportedFormat,
-    WrongPassword,
-    parse_upload,
-)
-from apps.imports.services.create_batch import CreateImportBatchService, UploadRejected
+from apps.imports.exceptions import FileTooLarge
+from apps.imports.parsers import ParseError, parse_upload
+from apps.imports.services.create_batch import CreateImportBatchService
+from apps.imports.services.translate import api_errors
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +20,7 @@ class UploadImportService:
 
         content = uploaded_file.read()
 
-        try:
+        with api_errors():
             file_format, rows, hint = parse_upload(
                 content, password=password or None, layout=layout, max_rows=settings.IMPORT_MAX_ROWS
             )
@@ -42,16 +29,6 @@ class UploadImportService:
                 raise ParseError("O tipo do arquivo não confere com o escolhido.")
 
             batch = CreateImportBatchService.execute(owner, source, file_format, content, rows)
-        except PasswordRequired:
-            raise PasswordNeeded() from None
-        except WrongPassword:
-            raise WrongFilePassword() from None
-        except NeedsMapping as error:
-            raise MappingNeeded(error.headers) from None
-        except UnsupportedFormat:
-            raise UnsupportedFile() from None
-        except (ParseError, UploadRejected) as error:
-            raise ImportRejected(detail=str(error)) from None
 
         logger.info("Importação concluída: lote=%s novas=%s repetidas=%s", batch.pk, batch.rows_new, batch.rows_duplicated)
 

@@ -22,7 +22,7 @@ def parse_upload(content, password=None, layout=None, max_rows=None):
         return ImportFormat.OFX, result.rows, result.source_hint
 
     if content.lstrip()[:5] == b"%PDF-":
-        raise UnsupportedFormat("PDF ainda não é aceito.")
+        raise UnsupportedFormat("PDF precisa de revisão antes de gravar: use a importação de PDF.")
 
     used, rows = parse_csv(content, layout=layout, max_rows=max_rows)
 
