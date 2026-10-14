@@ -2,13 +2,19 @@ import 'package:dio/dio.dart';
 
 /// Erro da API com a mensagem já pronta para exibir ao usuário.
 class ApiException implements Exception {
-  const ApiException(this.message, {this.status, this.fieldErrors = const {}});
+  const ApiException(this.message, {this.status, this.fieldErrors = const {}, this.code, this.headers = const []});
 
   final String message;
   final int? status;
 
   /// Mensagens de validação por campo (`{"email": ["..."]}`).
   final Map<String, String> fieldErrors;
+
+  /// Código de máquina enviado pela API em alguns erros (ex.: `password_required`).
+  final String? code;
+
+  /// Nomes das colunas de um CSV não reconhecido (`needs_mapping`).
+  final List<String> headers;
 
   /// Converte um erro do Dio seguindo a mesma regra do `configureError` do web:
   /// `detail` primeiro, depois a primeira mensagem de campo.
@@ -35,8 +41,13 @@ class ApiException implements Exception {
 
     final fieldErrors = <String, String>{};
     String? message;
+    String? code;
+    var headers = const <String>[];
 
     if (data is Map) {
+      code = data['code'] as String?;
+      if (data['headers'] is List) headers = (data['headers'] as List).map((item) => item.toString()).toList();
+
       final detail = data['detail'];
 
       if (detail is String) message = detail;
@@ -49,7 +60,7 @@ class ApiException implements Exception {
                 ? value
                 : null;
 
-        if (text == null || entry.key == 'detail') continue;
+        if (text == null || entry.key == 'detail' || entry.key == 'code') continue;
 
         fieldErrors[entry.key.toString()] = text;
         message ??= text;
@@ -60,6 +71,8 @@ class ApiException implements Exception {
       message ?? 'Falha ao $action.',
       status: response.statusCode,
       fieldErrors: fieldErrors,
+      code: code,
+      headers: headers,
     );
   }
 

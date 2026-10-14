@@ -11,6 +11,8 @@ import '../dashboard/dashboard_screen.dart';
 import '../family/family_screen.dart';
 import '../finance/finance_screen.dart';
 import '../../models/finance.dart';
+import '../imports/imports_service.dart';
+import '../imports/pending_screen.dart';
 import '../invitation/invitation_screen.dart';
 import '../settlement/settlement_screen.dart';
 import '../member/member_screen.dart';
@@ -30,6 +32,13 @@ class _HomeShellState extends State<HomeShell> {
   late AppSection _section = AppScope.read(context).session.user.currentFamily == null
       ? AppSection.family
       : AppSection.dashboard;
+
+  @override
+  void initState() {
+    super.initState();
+    // Decide se o item Pendências aparece no menu (a API responde 404 com a importação desligada).
+    ImportsService.refreshCount();
+  }
 
   EntryType _financeType = EntryType.expense;
   String? _settlementMonth;
@@ -78,6 +87,7 @@ class _HomeShellState extends State<HomeShell> {
     return switch (_section) {
       AppSection.dashboard => DashboardScreen(key: key),
       AppSection.finance => FinanceScreen(key: key, initialType: _financeType),
+      AppSection.pending => PendingScreen(key: key),
       AppSection.settlement => SettlementScreen(key: key, initialMonth: _settlementMonth, initialPayTo: _settlementPayTo),
       AppSection.category => CategoryScreen(key: key),
       AppSection.member => MemberScreen(key: key),

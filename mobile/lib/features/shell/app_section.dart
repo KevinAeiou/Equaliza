@@ -7,19 +7,23 @@ import '../../models/finance.dart';
 enum AppSection {
   dashboard('Dashboard', LucideIcons.house),
   finance('Finanças', LucideIcons.wallet),
+  pending('Pendências', LucideIcons.inbox, needsImport: true),
   settlement('Acertos', LucideIcons.handCoins),
   category('Categorias', LucideIcons.tags, adminOnly: true),
   member('Membros', LucideIcons.users, adminOnly: true),
   invitation('Convites', LucideIcons.mail, adminOnly: true),
   family('Famílias', LucideIcons.usersRound);
 
-  const AppSection(this.label, this.icon, {this.adminOnly = false});
+  const AppSection(this.label, this.icon, {this.adminOnly = false, this.needsImport = false});
 
   final String label;
   final IconData icon;
 
   /// Exige responsável ou administrador (o backend também protege).
   final bool adminOnly;
+
+  /// Só aparece com a importação de extratos ligada no servidor e mostra o contador de pendências.
+  final bool needsImport;
 }
 
 /// Troca de seção; [entryType] escolhe a aba ao abrir Finanças e [month] (`AAAA-MM`) e [payTo] abrem

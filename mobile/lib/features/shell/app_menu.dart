@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/basics.dart';
 import '../../core/widgets/brand.dart';
 import '../../core/widgets/overlays.dart';
+import '../imports/imports_service.dart';
 import '../settings/profile_sheet.dart';
 import '../settings/settings_screen.dart';
 import 'app_section.dart';
@@ -33,7 +34,6 @@ class AppMenu extends StatelessWidget {
     final colors = context.colors;
     final session = AppScope.of(context).session;
     final user = session.user;
-    final sections = AppSection.values.where((section) => !section.adminOnly || user.isAdmin);
 
     // O menu é fechado antes de abrir perfil ou configurações; o contexto do
     // Navigator continua válido depois disso.
@@ -72,13 +72,24 @@ class AppMenu extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                 children: [
                   const _SectionTitle('Navegação'),
-                  for (final section in sections)
-                    _MenuRow(
-                      icon: section.icon,
-                      label: section.label,
-                      active: section == current,
-                      onTap: () => onNavigate(section),
+                  ValueListenableBuilder<int?>(
+                    valueListenable: pendingCount,
+                    builder: (context, pending, _) => Column(
+                      children: [
+                        for (final section in AppSection.values)
+                          if ((!section.adminOnly || user.isAdmin) && (!section.needsImport || pending != null))
+                            _MenuRow(
+                              icon: section.icon,
+                              label: section.label,
+                              active: section == current,
+                              trailing: section.needsImport && pending != null && pending > 0
+                                  ? Pill(label: pending > 99 ? '99+' : '$pending', background: colors.income, foreground: Colors.white)
+                                  : null,
+                              onTap: () => onNavigate(section),
+                            ),
+                      ],
                     ),
+                  ),
                   const SizedBox(height: 24),
                   const _SectionTitle('Família'),
                   if (user.families.isEmpty)
