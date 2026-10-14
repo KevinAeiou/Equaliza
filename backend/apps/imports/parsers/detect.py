@@ -3,7 +3,7 @@ from apps.imports.parsers.archive import is_zip, read_single_csv
 from apps.imports.parsers.csv_parser import parse_csv
 from apps.imports.parsers.errors import UnsupportedFormat
 from apps.imports.parsers.ofx import looks_like_ofx, parse_ofx
-from apps.imports.services.create_batch import validate_upload
+from apps.imports.parsed import validate_upload
 
 
 def parse_upload(content, password=None, layout=None, max_rows=None):

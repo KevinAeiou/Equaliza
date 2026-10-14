@@ -31,9 +31,10 @@ class FinancialService:
         )
 
     @classmethod
-    def create(cls, user, data):
+    def create(cls, user, data, family=None):
+        # `family` permite registrar em outra família do usuário (ex.: ao importar um extrato).
         return cls.model.objects.create(
-            created_by=user, updated_by=user, family=user.current_family, **data
+            created_by=user, updated_by=user, family=family or user.current_family, **data
         )
 
     @classmethod

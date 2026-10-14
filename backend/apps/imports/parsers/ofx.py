@@ -14,7 +14,7 @@ from apps.imports.enums import Direction, ImportSource
 from apps.imports.parsers.errors import ParseError
 from apps.imports.parsers.flags import detect_flag
 from apps.imports.parsers.text import decode_text
-from apps.imports.services.create_batch import ParsedRow
+from apps.imports.parsed import ParsedRow
 
 MAX_TAGS = 200_000
 MAX_VALUE_LENGTH = 500

@@ -1035,6 +1035,158 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/imports/:
+    get:
+      operationId: imports_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Um número de página dentro do conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a serem retornados por página.
+        schema:
+          type: integer
+      tags:
+      - imports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImportBatchList'
+          description: ''
+    post:
+      operationId: imports_create
+      tags:
+      - imports
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+          description: ''
+  /api/imports/{id}/:
+    get:
+      operationId: imports_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este import batch.
+        required: true
+      tags:
+      - imports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+          description: ''
+    delete:
+      operationId: imports_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este import batch.
+        required: true
+      tags:
+      - imports
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/imports/csv-mappings/:
+    get:
+      operationId: imports_csv_mappings_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Um número de página dentro do conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a serem retornados por página.
+        schema:
+          type: integer
+      tags:
+      - imports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCsvMappingList'
+          description: ''
+    post:
+      operationId: imports_csv_mappings_create
+      tags:
+      - imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CsvMappingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CsvMappingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CsvMappingRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsvMapping'
+          description: ''
+  /api/imports/csv-mappings/{id}/:
+    delete:
+      operationId: imports_csv_mappings_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este csv mapping.
+        required: true
+      tags:
+      - imports
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/invitations/:
     get:
       operationId: invitations_list
@@ -1257,6 +1409,155 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Detail'
+          description: ''
+  /api/pending-transactions/:
+    get:
+      operationId: pending_transactions_list
+      parameters:
+      - in: query
+        name: batch
+        schema:
+          type: integer
+      - in: query
+        name: direction
+        schema:
+          type: string
+          enum:
+          - CREDIT
+          - DEBIT
+        description: |-
+          * `DEBIT` - Débito
+          * `CREDIT` - Crédito
+      - in: query
+        name: flag
+        schema:
+          type: string
+          enum:
+          - CARD_PAYMENT
+          - POSSIBLE_DUPLICATE
+        description: |-
+          * `CARD_PAYMENT` - Provável pagamento de fatura
+          * `POSSIBLE_DUPLICATE` - Possível duplicidade
+      - name: page
+        required: false
+        in: query
+        description: Um número de página dentro do conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a serem retornados por página.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - DISMISSED
+          - EXPIRED
+          - IMPORTED
+          - PENDING
+        description: |-
+          * `PENDING` - Pendente
+          * `IMPORTED` - Registrada
+          * `DISMISSED` - Lida
+          * `EXPIRED` - Expirada
+      tags:
+      - pending-transactions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPendingList'
+          description: ''
+  /api/pending-transactions/{id}/:
+    get:
+      operationId: pending_transactions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este pending transaction.
+        required: true
+      tags:
+      - pending-transactions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingDetail'
+          description: ''
+  /api/pending-transactions/{id}/import/:
+    post:
+      operationId: pending_transactions_import_create
+      description: Registra a pendência como despesa; valor, data e descrição podem
+        ser ajustados.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Um valor inteiro único que identifica este pending transaction.
+        required: true
+      tags:
+      - pending-transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPendingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterPendingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterPendingRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListExpense'
+          description: ''
+  /api/pending-transactions/bulk/:
+    post:
+      operationId: pending_transactions_bulk_create
+      description: Registra ou marca como lidas várias pendências de uma vez (mesma
+        família e categoria).
+      tags:
+      - pending-transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkPendingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BulkPendingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BulkPendingRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResult'
           description: ''
   /api/profile/:
     put:
@@ -1586,6 +1887,14 @@ components:
           $ref: '#/components/schemas/AcceptInvitationData'
       required:
       - data
+    ActionEnum:
+      enum:
+      - import
+      - dismiss
+      type: string
+      description: |-
+        * `import` - import
+        * `dismiss` - dismiss
     AvatarEnum:
       enum:
       - avatar-1
@@ -1672,6 +1981,35 @@ components:
       - previous_balance
       - quota
       - settled
+    BlankEnum:
+      enum:
+      - ''
+    BulkPendingRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          maxItems: 500
+          minItems: 1
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        family:
+          type: integer
+        category:
+          type: integer
+      required:
+      - action
+      - ids
+    BulkResult:
+      type: object
+      properties:
+        processed:
+          type: integer
+      required:
+      - processed
     CategoryComparison:
       type: object
       properties:
@@ -1815,6 +2153,79 @@ components:
       - amount
       - month
       - receiver
+    CsvMapping:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        delimiter:
+          oneOf:
+          - $ref: '#/components/schemas/DelimiterEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_column:
+          type: string
+          maxLength: 100
+        amount_column:
+          type: string
+          maxLength: 100
+        description_column:
+          type: string
+          maxLength: 100
+        date_format:
+          $ref: '#/components/schemas/DateFormatEnum'
+        decimal_separator:
+          $ref: '#/components/schemas/DecimalSeparatorEnum'
+        debit_is_negative:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount_column
+      - created_at
+      - date_column
+      - description_column
+      - id
+      - name
+    CsvMappingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        delimiter:
+          oneOf:
+          - $ref: '#/components/schemas/DelimiterEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_column:
+          type: string
+          minLength: 1
+          maxLength: 100
+        amount_column:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description_column:
+          type: string
+          minLength: 1
+          maxLength: 100
+        date_format:
+          $ref: '#/components/schemas/DateFormatEnum'
+        decimal_separator:
+          $ref: '#/components/schemas/DecimalSeparatorEnum'
+        debit_is_negative:
+          type: boolean
+      required:
+      - amount_column
+      - date_column
+      - description_column
+      - name
     CustomTokenObtainPairRequest:
       type: object
       description: Serializador para obter um par de token e dados do usuário que
@@ -1913,6 +2324,31 @@ components:
       - expense
       - income
       - members
+    DateFormatEnum:
+      enum:
+      - '%d/%m/%Y'
+      - '%Y-%m-%d'
+      - '%d-%m-%Y'
+      type: string
+      description: |-
+        * `%d/%m/%Y` - dd/mm/aaaa
+        * `%Y-%m-%d` - aaaa-mm-dd
+        * `%d-%m-%Y` - dd-mm-aaaa
+    DecimalSeparatorEnum:
+      enum:
+      - COMMA
+      - DOT
+      type: string
+      description: |-
+        * `COMMA` - 1.234,56
+        * `DOT` - 1,234.56
+    DelimiterEnum:
+      enum:
+      - ;
+      - ','
+      - "\t"
+      type: string
+      description: "* `;` - Ponto e vírgula\n* `,` - Vírgula\n* `\t` - Tabulação"
     Detail:
       type: object
       description: 'Resposta simples com uma mensagem (`{"detail": "..."}`).'
@@ -1921,6 +2357,14 @@ components:
           type: string
       required:
       - detail
+    DirectionEnum:
+      enum:
+      - DEBIT
+      - CREDIT
+      type: string
+      description: |-
+        * `DEBIT` - Débito
+        * `CREDIT` - Crédito
     ExpensesByCategory:
       type: object
       properties:
@@ -1986,6 +2430,24 @@ components:
       - name
       - role
       - updated_at
+    FlagEnum:
+      enum:
+      - CARD_PAYMENT
+      - POSSIBLE_DUPLICATE
+      type: string
+      description: |-
+        * `CARD_PAYMENT` - Provável pagamento de fatura
+        * `POSSIBLE_DUPLICATE` - Possível duplicidade
+    FormatEnum:
+      enum:
+      - OFX
+      - CSV
+      - PDF
+      type: string
+      description: |-
+        * `OFX` - OFX
+        * `CSV` - CSV
+        * `PDF` - PDF
     FrequencyEnum:
       enum:
       - WEEKLY
@@ -2003,6 +2465,57 @@ components:
           type: string
       required:
       - status
+    ImportBatch:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+        format:
+          allOf:
+          - $ref: '#/components/schemas/FormatEnum'
+          readOnly: true
+        period_start:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        period_end:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        rows_total:
+          type: integer
+          readOnly: true
+        rows_new:
+          type: integer
+          readOnly: true
+        rows_duplicated:
+          type: integer
+          readOnly: true
+        pending_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - format
+      - id
+      - pending_count
+      - period_end
+      - period_start
+      - rows_duplicated
+      - rows_new
+      - rows_total
+      - source
     IncomeVsExpense:
       type: object
       properties:
@@ -2411,7 +2924,7 @@ components:
           type: string
           maxLength: 255
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/SettlementStatusEnum'
         cancelled_at:
           type: string
           format: date-time
@@ -2468,6 +2981,33 @@ components:
       - expected
       - member
       - paid
+    PaginatedCsvMappingList:
+      oneOf:
+      - type: array
+        items:
+          $ref: '#/components/schemas/CsvMapping'
+      - type: object
+        required:
+        - count
+        - results
+        properties:
+          count:
+            type: integer
+            example: 123
+          next:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=4
+          previous:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=2
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/CsvMapping'
     PaginatedFamilyOverviewList:
       oneOf:
       - type: array
@@ -2495,6 +3035,33 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/FamilyOverview'
+    PaginatedImportBatchList:
+      oneOf:
+      - type: array
+        items:
+          $ref: '#/components/schemas/ImportBatch'
+      - type: object
+        required:
+        - count
+        - results
+        properties:
+          count:
+            type: integer
+            example: 123
+          next:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=4
+          previous:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=2
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/ImportBatch'
     PaginatedListExpenseList:
       oneOf:
       - type: array
@@ -2684,6 +3251,33 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ListSettlement'
+    PaginatedPendingList:
+      oneOf:
+      - type: array
+        items:
+          $ref: '#/components/schemas/Pending'
+      - type: object
+        required:
+        - count
+        - results
+        properties:
+          count:
+            type: integer
+            example: 123
+          next:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=4
+          previous:
+            type: string
+            nullable: true
+            format: uri
+            example: http://api.example.org/accounts/?page=2
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/Pending'
     PasswordResetConfirmRequest:
       type: object
       properties:
@@ -2798,6 +3392,150 @@ components:
           nullable: true
         is_active:
           type: boolean
+    Pending:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        batch:
+          type: integer
+          readOnly: true
+        direction:
+          allOf:
+          - $ref: '#/components/schemas/DirectionEnum'
+          readOnly: true
+        kind:
+          type: string
+          readOnly: true
+        account_ref:
+          type: string
+          readOnly: true
+        source_category:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        occurred_at:
+          type: string
+          format: date
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        counterparty:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PendingStatusEnum'
+          readOnly: true
+        flag:
+          allOf:
+          - $ref: '#/components/schemas/FlagEnum'
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - account_ref
+      - amount
+      - batch
+      - counterparty
+      - description
+      - direction
+      - expires_at
+      - flag
+      - id
+      - kind
+      - occurred_at
+      - source_category
+      - status
+    PendingDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        batch:
+          type: integer
+          readOnly: true
+        direction:
+          allOf:
+          - $ref: '#/components/schemas/DirectionEnum'
+          readOnly: true
+        kind:
+          type: string
+          readOnly: true
+        account_ref:
+          type: string
+          readOnly: true
+        source_category:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        occurred_at:
+          type: string
+          format: date
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        counterparty:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PendingStatusEnum'
+          readOnly: true
+        flag:
+          allOf:
+          - $ref: '#/components/schemas/FlagEnum'
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+        possible_duplicate:
+          type: boolean
+          description: Já existe despesa de mesmo valor e data próxima em alguma família
+            do usuário?
+          readOnly: true
+      required:
+      - account_ref
+      - amount
+      - batch
+      - counterparty
+      - description
+      - direction
+      - expires_at
+      - flag
+      - id
+      - kind
+      - occurred_at
+      - possible_duplicate
+      - source_category
+      - status
+    PendingStatusEnum:
+      enum:
+      - PENDING
+      - IMPORTED
+      - DISMISSED
+      - EXPIRED
+      type: string
+      description: |-
+        * `PENDING` - Pendente
+        * `IMPORTED` - Registrada
+        * `DISMISSED` - Lida
+        * `EXPIRED` - Expirada
     Profile:
       type: object
       properties:
@@ -2824,6 +3562,26 @@ components:
           maxLength: 150
         avatar:
           $ref: '#/components/schemas/AvatarEnum'
+    RegisterPendingRequest:
+      type: object
+      properties:
+        family:
+          type: integer
+        category:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+          maxLength: 1000
+      required:
+      - category
+      - family
     RegisterRequest:
       type: object
       properties:
@@ -2875,7 +3633,7 @@ components:
       - first_name
       - id
       - last_name
-    StatusEnum:
+    SettlementStatusEnum:
       enum:
       - ACTIVE
       - CANCELLED
@@ -2883,6 +3641,14 @@ components:
       description: |-
         * `ACTIVE` - Ativo
         * `CANCELLED` - Estornado
+    SourceEnum:
+      enum:
+      - STATEMENT
+      - CARD_INVOICE
+      type: string
+      description: |-
+        * `STATEMENT` - Extrato bancário
+        * `CARD_INVOICE` - Fatura de cartão
     Suggestion:
       type: object
       properties:
@@ -2991,6 +3757,24 @@ components:
       required:
       - amount
       - category
+    UploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        mapping:
+          type: integer
+          nullable: true
+      required:
+      - file
+      - source
     User:
       type: object
       properties:

@@ -1,9 +1,7 @@
 import hashlib
 import hmac
 from collections import Counter
-from dataclasses import dataclass
-from datetime import date, timedelta
-from decimal import Decimal
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import transaction
@@ -11,32 +9,7 @@ from django.utils import timezone
 
 from apps.imports.enums import PendingStatus
 from apps.imports.models import ImportBatch, PendingTransaction
-
-
-class UploadRejected(Exception):
-    """Arquivo recusado. A mensagem é genérica de propósito: nunca expõe trechos do conteúdo."""
-
-
-@dataclass
-class ParsedRow:
-    direction: str
-    amount: Decimal
-    occurred_at: date
-    description: str = ""
-    external_id: str = ""
-    kind: str = ""
-    account_ref: str = ""
-    source_category: str = ""
-    counterparty: str = ""
-    flag: str = ""
-
-
-def validate_upload(content):
-    if not content:
-        raise UploadRejected("Arquivo vazio.")
-
-    if len(content) > settings.IMPORT_MAX_FILE_BYTES:
-        raise UploadRejected("Arquivo grande demais.")
+from apps.imports.parsed import ParsedRow, UploadRejected, validate_upload  # noqa: F401
 
 
 def row_hash(owner_id, row, occurrence):

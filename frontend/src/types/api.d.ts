@@ -294,6 +294,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/imports/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_list"];
+        put?: never;
+        post: operations["imports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["imports_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/csv-mappings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_csv_mappings_list"];
+        put?: never;
+        post: operations["imports_csv_mappings_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/csv-mappings/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["imports_csv_mappings_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/invitations/": {
         parameters: {
             query?: never;
@@ -453,6 +517,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pending-transactions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["pending_transactions_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pending-transactions/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["pending_transactions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pending-transactions/{id}/import/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Registra a pendência como despesa; valor, data e descrição podem ser ajustados. */
+        post: operations["pending_transactions_import_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pending-transactions/bulk/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Registra ou marca como lidas várias pendências de uma vez (mesma família e categoria). */
+        post: operations["pending_transactions_bulk_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/profile/": {
         parameters: {
             query?: never;
@@ -596,6 +726,12 @@ export interface components {
             data: components["schemas"]["AcceptInvitationData"];
         };
         /**
+         * @description * `import` - import
+         *     * `dismiss` - dismiss
+         * @enum {string}
+         */
+        ActionEnum: "import" | "dismiss";
+        /**
          * @description * `avatar-1` - Avatar 1
          *     * `avatar-2` - Avatar 2
          *     * `avatar-3` - Avatar 3
@@ -630,6 +766,17 @@ export interface components {
             settled: string;
             /** Format: decimal */
             balance: string;
+        };
+        /** @enum {unknown} */
+        BlankEnum: "";
+        BulkPendingRequest: {
+            ids: number[];
+            action: components["schemas"]["ActionEnum"];
+            family?: number;
+            category?: number;
+        };
+        BulkResult: {
+            processed: number;
         };
         CategoryComparison: {
             name: string;
@@ -695,6 +842,29 @@ export interface components {
              */
             paid_at?: string;
         };
+        CsvMapping: {
+            readonly id: number;
+            name: string;
+            delimiter?: components["schemas"]["DelimiterEnum"] | components["schemas"]["BlankEnum"];
+            date_column: string;
+            amount_column: string;
+            description_column: string;
+            date_format?: components["schemas"]["DateFormatEnum"];
+            decimal_separator?: components["schemas"]["DecimalSeparatorEnum"];
+            debit_is_negative?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        CsvMappingRequest: {
+            name: string;
+            delimiter?: components["schemas"]["DelimiterEnum"] | components["schemas"]["BlankEnum"];
+            date_column: string;
+            amount_column: string;
+            description_column: string;
+            date_format?: components["schemas"]["DateFormatEnum"];
+            decimal_separator?: components["schemas"]["DecimalSeparatorEnum"];
+            debit_is_negative?: boolean;
+        };
         /** @description Serializador para obter um par de token e dados do usuário que usa email e senha para autenticação. */
         CustomTokenObtainPairRequest: {
             username?: string;
@@ -727,10 +897,36 @@ export interface components {
             expense: string;
             members: number;
         };
+        /**
+         * @description * `%d/%m/%Y` - dd/mm/aaaa
+         *     * `%Y-%m-%d` - aaaa-mm-dd
+         *     * `%d-%m-%Y` - dd-mm-aaaa
+         * @enum {string}
+         */
+        DateFormatEnum: "%d/%m/%Y" | "%Y-%m-%d" | "%d-%m-%Y";
+        /**
+         * @description * `COMMA` - 1.234,56
+         *     * `DOT` - 1,234.56
+         * @enum {string}
+         */
+        DecimalSeparatorEnum: "COMMA" | "DOT";
+        /**
+         * @description * `;` - Ponto e vírgula
+         *     * `,` - Vírgula
+         *     * `	` - Tabulação
+         * @enum {string}
+         */
+        DelimiterEnum: ";" | "," | "\t";
         /** @description Resposta simples com uma mensagem (`{"detail": "..."}`). */
         Detail: {
             detail: string;
         };
+        /**
+         * @description * `DEBIT` - Débito
+         *     * `CREDIT` - Crédito
+         * @enum {string}
+         */
+        DirectionEnum: "DEBIT" | "CREDIT";
         ExpensesByCategory: {
             category: string;
             /** Format: double */
@@ -754,6 +950,19 @@ export interface components {
             readonly updated_at: string | null;
         };
         /**
+         * @description * `CARD_PAYMENT` - Provável pagamento de fatura
+         *     * `POSSIBLE_DUPLICATE` - Possível duplicidade
+         * @enum {string}
+         */
+        FlagEnum: "CARD_PAYMENT" | "POSSIBLE_DUPLICATE";
+        /**
+         * @description * `OFX` - OFX
+         *     * `CSV` - CSV
+         *     * `PDF` - PDF
+         * @enum {string}
+         */
+        FormatEnum: "OFX" | "CSV" | "PDF";
+        /**
          * @description * `WEEKLY` - Semanal
          *     * `MONTHLY` - Mensal
          *     * `YEARLY` - Anual
@@ -762,6 +971,21 @@ export interface components {
         FrequencyEnum: "WEEKLY" | "MONTHLY" | "YEARLY";
         Health: {
             status: string;
+        };
+        ImportBatch: {
+            readonly id: number;
+            readonly source: components["schemas"]["SourceEnum"];
+            readonly format: components["schemas"]["FormatEnum"];
+            /** Format: date */
+            readonly period_start: string | null;
+            /** Format: date */
+            readonly period_end: string | null;
+            readonly rows_total: number;
+            readonly rows_new: number;
+            readonly rows_duplicated: number;
+            readonly pending_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         IncomeVsExpense: {
             period: string;
@@ -903,7 +1127,7 @@ export interface components {
             /** Format: date */
             paid_at?: string;
             note?: string;
-            status?: components["schemas"]["StatusEnum"];
+            status?: components["schemas"]["SettlementStatusEnum"];
             /** Format: date-time */
             cancelled_at?: string | null;
             readonly cancelled_by: components["schemas"]["UserRef"] | null;
@@ -920,6 +1144,21 @@ export interface components {
             /** Format: double */
             difference: number;
         };
+        PaginatedCsvMappingList: components["schemas"]["CsvMapping"][] | {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CsvMapping"][];
+        };
         PaginatedFamilyOverviewList: components["schemas"]["FamilyOverview"][] | {
             /** @example 123 */
             count: number;
@@ -934,6 +1173,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["FamilyOverview"][];
+        };
+        PaginatedImportBatchList: components["schemas"]["ImportBatch"][] | {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ImportBatch"][];
         };
         PaginatedListExpenseList: components["schemas"]["ListExpense"][] | {
             /** @example 123 */
@@ -1040,6 +1294,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["ListSettlement"][];
         };
+        PaginatedPendingList: components["schemas"]["Pending"][] | {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Pending"][];
+        };
         PasswordResetConfirmRequest: {
             uid: string;
             token: string;
@@ -1095,6 +1364,52 @@ export interface components {
             end_date?: string | null;
             is_active?: boolean;
         };
+        Pending: {
+            readonly id: number;
+            readonly batch: number;
+            readonly direction: components["schemas"]["DirectionEnum"];
+            readonly kind: string;
+            readonly account_ref: string;
+            readonly source_category: string;
+            /** Format: decimal */
+            readonly amount: string;
+            /** Format: date */
+            readonly occurred_at: string;
+            readonly description: string;
+            readonly counterparty: string;
+            readonly status: components["schemas"]["PendingStatusEnum"];
+            readonly flag: components["schemas"]["FlagEnum"];
+            /** Format: date-time */
+            readonly expires_at: string;
+        };
+        PendingDetail: {
+            readonly id: number;
+            readonly batch: number;
+            readonly direction: components["schemas"]["DirectionEnum"];
+            readonly kind: string;
+            readonly account_ref: string;
+            readonly source_category: string;
+            /** Format: decimal */
+            readonly amount: string;
+            /** Format: date */
+            readonly occurred_at: string;
+            readonly description: string;
+            readonly counterparty: string;
+            readonly status: components["schemas"]["PendingStatusEnum"];
+            readonly flag: components["schemas"]["FlagEnum"];
+            /** Format: date-time */
+            readonly expires_at: string;
+            /** @description Já existe despesa de mesmo valor e data próxima em alguma família do usuário? */
+            readonly possible_duplicate: boolean;
+        };
+        /**
+         * @description * `PENDING` - Pendente
+         *     * `IMPORTED` - Registrada
+         *     * `DISMISSED` - Lida
+         *     * `EXPIRED` - Expirada
+         * @enum {string}
+         */
+        PendingStatusEnum: "PENDING" | "IMPORTED" | "DISMISSED" | "EXPIRED";
         Profile: {
             /** Primeiro nome */
             first_name?: string;
@@ -1108,6 +1423,15 @@ export interface components {
             /** Último nome */
             last_name?: string;
             avatar?: components["schemas"]["AvatarEnum"];
+        };
+        RegisterPendingRequest: {
+            family: number;
+            category: number;
+            /** Format: decimal */
+            amount?: string;
+            /** Format: date */
+            date?: string;
+            description?: string;
         };
         RegisterRequest: {
             first_name: string;
@@ -1134,7 +1458,13 @@ export interface components {
          *     * `CANCELLED` - Estornado
          * @enum {string}
          */
-        StatusEnum: "ACTIVE" | "CANCELLED";
+        SettlementStatusEnum: "ACTIVE" | "CANCELLED";
+        /**
+         * @description * `STATEMENT` - Extrato bancário
+         *     * `CARD_INVOICE` - Fatura de cartão
+         * @enum {string}
+         */
+        SourceEnum: "STATEMENT" | "CARD_INVOICE";
         Suggestion: {
             payer: number;
             payer_name: string;
@@ -1181,6 +1511,13 @@ export interface components {
             /** Format: date */
             end_date?: string | null;
             is_active?: boolean;
+        };
+        UploadRequest: {
+            /** Format: binary */
+            file: string;
+            source: components["schemas"]["SourceEnum"];
+            password?: string;
+            mapping?: number | null;
         };
         User: {
             readonly id: number;
@@ -2173,6 +2510,166 @@ export interface operations {
             };
         };
     };
+    imports_list: {
+        parameters: {
+            query?: {
+                /** @description Um número de página dentro do conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a serem retornados por página. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedImportBatchList"];
+                };
+            };
+        };
+    };
+    imports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["UploadRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+        };
+    };
+    imports_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este import batch. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+        };
+    };
+    imports_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este import batch. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    imports_csv_mappings_list: {
+        parameters: {
+            query?: {
+                /** @description Um número de página dentro do conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a serem retornados por página. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCsvMappingList"];
+                };
+            };
+        };
+    };
+    imports_csv_mappings_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvMappingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CsvMappingRequest"];
+                "multipart/form-data": components["schemas"]["CsvMappingRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvMapping"];
+                };
+            };
+        };
+    };
+    imports_csv_mappings_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este csv mapping. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     invitations_list: {
         parameters: {
             query?: {
@@ -2392,6 +2889,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Detail"];
+                };
+            };
+        };
+    };
+    pending_transactions_list: {
+        parameters: {
+            query?: {
+                batch?: number;
+                /**
+                 * @description * `DEBIT` - Débito
+                 *     * `CREDIT` - Crédito
+                 */
+                direction?: "CREDIT" | "DEBIT";
+                /**
+                 * @description * `CARD_PAYMENT` - Provável pagamento de fatura
+                 *     * `POSSIBLE_DUPLICATE` - Possível duplicidade
+                 */
+                flag?: "CARD_PAYMENT" | "POSSIBLE_DUPLICATE";
+                /** @description Um número de página dentro do conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a serem retornados por página. */
+                page_size?: number;
+                /**
+                 * @description * `PENDING` - Pendente
+                 *     * `IMPORTED` - Registrada
+                 *     * `DISMISSED` - Lida
+                 *     * `EXPIRED` - Expirada
+                 */
+                status?: "DISMISSED" | "EXPIRED" | "IMPORTED" | "PENDING";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPendingList"];
+                };
+            };
+        };
+    };
+    pending_transactions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este pending transaction. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingDetail"];
+                };
+            };
+        };
+    };
+    pending_transactions_import_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Um valor inteiro único que identifica este pending transaction. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterPendingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RegisterPendingRequest"];
+                "multipart/form-data": components["schemas"]["RegisterPendingRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListExpense"];
+                };
+            };
+        };
+    };
+    pending_transactions_bulk_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkPendingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["BulkPendingRequest"];
+                "multipart/form-data": components["schemas"]["BulkPendingRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkResult"];
                 };
             };
         };

@@ -200,6 +200,7 @@ REST_FRAMEWORK = {
         "register": env.str("THROTTLE_RATE_REGISTER", default="10/hour"),
         "password_reset": env.str("THROTTLE_RATE_PASSWORD_RESET", default="10/hour"),
         "invitation_validate": env.str("THROTTLE_RATE_INVITATION_VALIDATE", default="30/min"),
+        "import_upload": env.str("THROTTLE_RATE_IMPORT_UPLOAD", default="10/hour"),
     },
     # Quantos proxies confiáveis ficam na frente da API (ex.: 1 no Render). Sem isso, o IP
     # vem do X-Forwarded-For inteiro e pode ser forjado para escapar do limite.
@@ -215,6 +216,10 @@ SPECTACULAR_SETTINGS = {
     # O schema só é servido a quem está autenticado.
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
     "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {
+        "PendingStatusEnum": "apps.imports.enums.PendingStatus",
+        "SettlementStatusEnum": "apps.settlements.enums.SettlementStatus",
+    },
 }
 
 SIMPLE_JWT = {
